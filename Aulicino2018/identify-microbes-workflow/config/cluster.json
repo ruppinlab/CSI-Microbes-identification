@@ -1,0 +1,71 @@
+{
+    "__default__" :
+    {
+        "time" : "08:00:00",
+        "mem": "16g",
+        "nthreads" : 4,
+        "gres": 10
+    },
+    "run_fastp" :
+    {
+        "time": "08:00:00",
+        "nthreads": 6,
+        "mem": "16g"
+    },
+    "create_star_index" :
+    {
+        "nthreads" : 16,
+        "mem": "64g"
+    },
+    "run_star_pe":
+    {
+        "time": "24:00:00",
+        "nthreads" : 48,
+        "mem": "64g"
+    },
+    "run_star_pe_pass1":
+    {
+        "time": "24:00:00",
+        "nthreads" : 48,
+        "mem": "64g"
+    },
+    "run_star_pe_pass2":
+    {
+        "time": "24:00:00",
+        "nthreads" : 48,
+        "mem": "64g"
+    },
+    "run_STARsolo_10x":
+    {
+        "time": "1-00:00:00",
+        "nthreads" : 48,
+        "mem": "64g"
+    },
+    "build_host_kmer_file":
+    {
+        "mem": "80g",
+        "nthreads": 16
+    },
+    "run_PathSeq":
+    {
+        "mem": "150g",
+        "time": "7-00:00:00",
+        "nthreads": 32,
+        "gres": 300
+    },
+    "combine_QNAME_CB_UB_files":
+    {
+      "mem": "100g",
+    },
+    "combine_PathSeq_STAR":
+    {
+      "mem": "120g",
+      "time": "2-00:00:00"
+    },
+    "download_FASTQ_from_SRA":
+    {
+      "nthreads": 6,
+      "gres": 200,
+      "mem": "32g"
+    }
+}

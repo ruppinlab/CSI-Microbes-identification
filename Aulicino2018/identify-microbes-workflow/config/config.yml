@@ -1,0 +1,10 @@
+-----
+patients: data/patients.tsv
+samples: data/samples.tsv
+
+ref:
+  annotation: "raw/genome/gencode.v22.annotation.gtf"
+  genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
+
+params:
+  PathSeq: "--filter-duplicates false --min-clipped-read-length 31"
