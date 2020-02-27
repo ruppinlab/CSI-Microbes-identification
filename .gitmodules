@@ -1,0 +1,3 @@
+[submodule "RNA-snakemake-rules"]
+	path = RNA-snakemake-rules
+	url = git@github.com:ruppinlab/RNA-snakemake-rules.git
