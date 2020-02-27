@@ -1,4 +1,4 @@
------
+---
 patients: data/patients.tsv
 samples: data/samples.tsv
 
@@ -8,3 +8,5 @@ ref:
 
 params:
   PathSeq: "--filter-duplicates false --min-clipped-read-length 31"
+trimming:
+  skip: True
