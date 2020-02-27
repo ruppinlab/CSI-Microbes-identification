@@ -5,7 +5,7 @@ from snakemake.utils import min_version
 min_version("5.1.2")
 
 ##### load config and sample sheets #####
-configfile: "config.yaml"
+configfile: "config.yml"
 #validate(config, schema="schemas/config.schema.yaml")
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
