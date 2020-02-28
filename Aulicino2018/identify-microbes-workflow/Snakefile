@@ -32,7 +32,7 @@ PathSeq_Output_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.t
 include: "../../RNA-snakemake-rules/rules/genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
 include: "../../pathogen-discovery-rules/rules/make-bacteria-files.smk"
-include: "./../pathogen-discovery-rules/rules/PathSeq.smk"
+include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 
 samples = samples.iloc[0:2]
 
