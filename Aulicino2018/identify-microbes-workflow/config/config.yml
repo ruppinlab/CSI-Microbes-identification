@@ -7,7 +7,7 @@ ref:
   genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
 
 params:
-  PathSeq: "--filter-duplicates false --min-clipped-read-length 31"
+  PathSeq: "--filter-duplicates true --min-clipped-read-length 31"
 trimming:
   skip: True
 

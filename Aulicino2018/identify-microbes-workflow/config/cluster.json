@@ -36,7 +36,7 @@
     },
     "run_PathSeq":
     {
-        "mem": "50g",
+        "mem": "120g",
         "time": "7-00:00:00",
         "nthreads": 16,
         "gres": 50
