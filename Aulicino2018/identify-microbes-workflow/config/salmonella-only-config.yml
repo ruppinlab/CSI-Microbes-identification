@@ -7,7 +7,7 @@ ref:
   genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
 
 params:
-  PathSeq: "--filter-duplicates true --min-clipped-read-length 31"
+  PathSeq: "--filter-duplicates false --min-clipped-read-length 31"
 trimming:
   skip: True
 
@@ -15,7 +15,7 @@ PathSeq:
   bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"
   microbe_fasta: "data/salmonella-Aulicino2018.fa"
   microbe_bwa_image: "data/salmonella-Aulicino2018.fa.img"
-  taxonomy_db: "data/salmonella-Aulicino2018_taxonomy.db"
+  taxonomy_db: "/data/salmonella-Aulicino_taxonomy.db"
   microbes_of_interest:
     - "Salmonella enterica subsp. enterica serovar Typhimurium str. SL1344"
     - "Salmonella enterica subsp. enterica serovar Typhimurium str. LT2"

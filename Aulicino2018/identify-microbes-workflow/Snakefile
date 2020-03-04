@@ -5,7 +5,7 @@ from snakemake.utils import min_version
 min_version("5.1.2")
 
 ##### load config and sample sheets #####
-configfile: "config/config.yml"
+configfile: "config/salmonella-PathSeq-config.yml"
 #validate(config, schema="schemas/config.schema.yaml")
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
@@ -31,7 +31,7 @@ PathSeq_Output_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.t
 # include rules
 include: "../../RNA-snakemake-rules/rules/genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
-include: "../../pathogen-discovery-rules/rules/make-bacteria-files.smk"
+include: "../../pathogen-discovery-rules/rules/add-microbes-to-PathSeq.smk"
 include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 
 #wildcard_constraints:
