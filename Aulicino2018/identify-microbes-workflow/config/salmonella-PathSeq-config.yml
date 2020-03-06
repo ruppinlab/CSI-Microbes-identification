@@ -13,8 +13,9 @@ trimming:
 
 PathSeq:
   bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"
+  microbe_prefix: "salmonella-PathSeq-Aulicino2018"
   microbe_fasta: "data/salmonella-PathSeq-Aulicino2018.fa"
   microbe_bwa_image: "data/salmonella-PathSeq-Aulicino2018.fa.img"
   taxonomy_db: "/data/salmonella-PathSeq-Aulicino_taxonomy.db"
   microbes_of_interest:
-    - "Salmonella enterica subsp. enterica serovar Typhimurium str. SL1344"
+    - "Salmonella enterica subsp. enterica serovar Typhimurium str. D23580"
