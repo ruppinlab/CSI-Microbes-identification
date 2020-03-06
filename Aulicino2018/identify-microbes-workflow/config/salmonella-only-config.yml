@@ -16,7 +16,7 @@ PathSeq:
   microbe_prefix: "salmonella-Aulicino2018"
   microbe_fasta: "data/salmonella-Aulicino2018.fa"
   microbe_bwa_image: "data/salmonella-Aulicino2018.fa.img"
-  taxonomy_db: "/data/salmonella-Aulicino_taxonomy.db"
+  taxonomy_db: "data/salmonella-Aulicino2018_taxonomy.db"
   microbes_of_interest:
     - "Salmonella enterica subsp. enterica serovar Typhimurium str. D23580"
     - "Salmonella enterica subsp. enterica serovar Typhimurium str. LT2"
