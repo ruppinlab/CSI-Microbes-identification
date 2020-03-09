@@ -51,5 +51,12 @@
     {
       "nthreads": 32,
       "mem": "16g"
+    },
+    "build_BWA_image":
+    {
+      "nthreads": 2,
+      "mem": "200g",
+      "gres": 100,
+      "time": "7-00:00:00"
     }
 }
