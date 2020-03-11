@@ -1,0 +1,11 @@
+Organism	source_name	infection	patient
+Mus musculus	WT Mouse intestinal epithelial cells	None	Pt0
+Mus musculus	WT Mouse intestinal epithelial cells	H. polygyrus	Pt1
+Mus musculus	WT Mouse intestinal epithelial cells	Salmonella	Pt2
+Mus musculus	Intestinal epithelial cells extracted from from WT mouse jejunum	None	Pt3
+Mus musculus	Intestinal epithelial cells extracted from from WT mouse duodenum	None	Pt4
+Mus musculus	Intestinal epithelial cells extracted from from WT mouse ileum	None	Pt5
+Mus musculus	Intestinal epithelial cells extracted from WT mouse small intestine\, isolated using a FACS sorting protocol designed to enriched for large cells\, particularly Paneth cells	None	Pt6
+Mus musculus	Intestinal epithelial cells extracted from WT mouse small intestine during infection with Salmonella Enterica	Salmonella	Pt7
+Mus musculus	Intestinal organoid epithelial cells	None	Pt8
+Mus musculus	WT Mouse intestinal epithelial cells extracted from follicle-associated epithelia (FAE)	None	Pt9
