@@ -1,3 +1,4 @@
 **/.snakemake
 **/.DS_Store
 **/output
+**/slurm-*.out
