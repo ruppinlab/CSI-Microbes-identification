@@ -1,0 +1,17 @@
+from os.path import join
+
+SRA_RUN_FILE = join("data", "SraRunTable.txt")
+GSE_SERIES_FILE = join("data", "GSE97693_series_matrix.txt")
+
+PATIENT_FILE = join("output", "patients.tsv")
+SAMPLE_FILE = join("output", "samples.tsv")
+
+rule clean_metadata:
+    input:
+        GSE_SERIES_FILE,
+        SRA_RUN_FILE
+    output:
+        PATIENT_FILE,
+        SAMPLE_FILE
+    script:
+        "src/clean_GSE_series_matrix.py"
