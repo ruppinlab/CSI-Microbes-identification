@@ -43,6 +43,8 @@ include: "../../RNA-snakemake-rules/rules/STAR.smk"
 include: "../../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
 include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 
+localrules: download_ERCC92_spike_ins, download_D23580_complete_genome, download_LT2_complete_genome, combine_LT2_D23580_ERCC92
+
 #wildcard_constraints:
 #    sample="SRR*"
 
