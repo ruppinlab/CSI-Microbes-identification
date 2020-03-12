@@ -5,7 +5,7 @@ from snakemake.utils import min_version
 min_version("5.1.2")
 
 ##### load config and sample sheets #####
-configfile: "config/salmonella-PathSeq-config.yml"
+configfile: "config/salmonella-only-config.yml"
 #validate(config, schema="schemas/config.schema.yaml")
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
@@ -30,7 +30,8 @@ FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
 FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
 D23580_FA = join("data", "D23580_genomic.fna")
 LT2_FA = join("data", "LT2_genomic.fna")
-ERCC92_FA = join("data", "ERCC_92.fna")
+ERCC92_FA = join("data", "ERCC92.fa")
+ERCC92_GTF = join("data", "ERCC92.gtf")
 PATHSEQ_FA_FILE = "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
 LT2_D23580_ERCC92_FA_FILE = join("data", "LT2_D23580_ERCC92.fa")
 PATHSEQ_D23580_FA_FILE = join("data", "D23580+PathSeq.fa")
@@ -48,10 +49,11 @@ localrules: download_ERCC92_spike_ins, download_D23580_complete_genome, download
 #wildcard_constraints:
 #    sample="SRR*"
 
+samples = samples.iloc[0:10]
 rule all:
     input:
-        LT2_D23580_ERCC92_FA_FILE
-        # expand(PathSeq_Output_File, zip, patient=samples["patient"], sample=samples["sample"])
+        #LT2_D23580_ERCC92_FA_FILE
+        expand(PathSeq_Output_File, zip, patient=samples["patient"], sample=samples["sample"])
 
 rule add_D23580_to_PathSeq_DB:
     input:
