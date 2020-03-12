@@ -18,6 +18,8 @@ samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.l
 
 # URLs
 D23580_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/027/025/GCF_000027025.1_ASM2702v1/GCF_000027025.1_ASM2702v1_genomic.fna.gz"
+LT2_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.fna.gz"
+ERCC92_URL = "https://tools.thermofisher.com/content/sfs/manuals/ERCC92.zip"
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
 
@@ -27,7 +29,10 @@ SRA_FASTQ2_FILE = join(FASTQ_DIR, "{sample}_2.fastq")
 FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
 FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
 D23580_FA = join("data", "D23580_genomic.fna")
+LT2_FA = join("data", "LT2_genomic.fna")
+ERCC92_FA = join("data", "ERCC_92.fna")
 PATHSEQ_FA_FILE = "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
+LT2_D23580_ERCC92_FA_FILE = join("data", "LT2_D23580_ERCC92.fa")
 PATHSEQ_D23580_FA_FILE = join("data", "D23580+PathSeq.fa")
 # Output Files
 PathSeq_Output_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
@@ -43,8 +48,8 @@ include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 
 rule all:
     input:
-        # PATHSEQ_D23580_FA_FILE
-        expand(PathSeq_Output_File, zip, patient=samples["patient"], sample=samples["sample"])
+        LT2_D23580_ERCC92_FA_FILE
+        # expand(PathSeq_Output_File, zip, patient=samples["patient"], sample=samples["sample"])
 
 rule add_D23580_to_PathSeq_DB:
     input:
@@ -55,13 +60,43 @@ rule add_D23580_to_PathSeq_DB:
     shell:
         "cat {input[0]} {input[1]} > {output}"
 
-rule download_D23580_complete_sequence:
+rule combine_LT2_D23580_ERCC92:
+    input:
+        LT2_FA,
+        D23580_FA,
+        ERCC92_FA
+    output:
+        LT2_D23580_ERCC92_FA_FILE
+    shell:
+        "cat {input[0]} {input[1]} {input[2]} > {output}"
+
+rule download_LT2_complete_genome:
+    params:
+        url=LT2_URL
+    output:
+        LT2_FA
+    shell:
+        "wget -O - {params.url} | gunzip -c > {output}"
+
+rule download_D23580_complete_genome:
     params:
         url=D23580_URL
     output:
         D23580_FA
     shell:
         "wget -O - {params.url} | gunzip -c > {output}"
+
+rule download_ERCC92_spike_ins:
+    params:
+        url=ERCC92_URL,
+        odir="data"
+    output:
+        zip=temp("ERCC92.zip"),
+        gtf=temp(ERCC92_GTF),
+        fa=ERCC92_FA
+    shell:
+        "wget {params.url} && unzip {output.zip} -d {params.odir}"
+
 
 rule compress_FASTQ_File:
     input:
