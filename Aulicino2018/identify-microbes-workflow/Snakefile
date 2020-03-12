@@ -33,7 +33,7 @@ LT2_FA = join("data", "LT2_genomic.fna")
 ERCC92_FA = join("data", "ERCC92.fa")
 ERCC92_GTF = join("data", "ERCC92.gtf")
 PATHSEQ_FA_FILE = "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
-LT2_D23580_ERCC92_FA_FILE = join("data", "LT2_D23580_ERCC92.fa")
+LT2_D23580_FA_FILE = join("data", "LT2_D23580.fa")
 PATHSEQ_D23580_FA_FILE = join("data", "D23580+PathSeq.fa")
 # Output Files
 PathSeq_Output_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
@@ -44,7 +44,7 @@ include: "../../RNA-snakemake-rules/rules/STAR.smk"
 include: "../../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
 include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 
-localrules: download_ERCC92_spike_ins, download_D23580_complete_genome, download_LT2_complete_genome, combine_LT2_D23580_ERCC92
+localrules: download_ERCC92_spike_ins, download_D23580_complete_genome, download_LT2_complete_genome, combine_LT2_D23580, combine_human_ERCC92_GTF, combine_human_ERCC92_fasta
 
 #wildcard_constraints:
 #    sample="SRR*"
@@ -64,15 +64,14 @@ rule add_D23580_to_PathSeq_DB:
     shell:
         "cat {input[0]} {input[1]} > {output}"
 
-rule combine_LT2_D23580_ERCC92:
+rule combine_LT2_D23580:
     input:
         LT2_FA,
-        D23580_FA,
-        ERCC92_FA
+        D23580_FA
     output:
-        LT2_D23580_ERCC92_FA_FILE
+        LT2_D23580_FA_FILE
     shell:
-        "cat {input[0]} {input[1]} {input[2]} > {output}"
+        "cat {input[0]} {input[1]} > {output}"
 
 rule download_LT2_complete_genome:
     params:
@@ -90,13 +89,31 @@ rule download_D23580_complete_genome:
     shell:
         "wget -O - {params.url} | gunzip -c > {output}"
 
+rule combine_human_ERCC92_fasta:
+    input:
+        config["PathSeq"]["genome"],
+        ERCC92_FA
+    output:
+        config["ref"]["genome"]
+    shell:
+        "cat {input[0]} {input[1]} > {output}"
+
+rule combine_human_ERCC92_GTF:
+    input:
+        config["PathSeq"]["annotation"],
+        ERCC92_GTF
+    output:
+        config["ref"]["annotation"]
+    shell:
+        "cat {input[0]} {input[1]} > {output}"
+
 rule download_ERCC92_spike_ins:
     params:
         url=ERCC92_URL,
         odir="data"
     output:
         zip=temp("ERCC92.zip"),
-        gtf=temp(ERCC92_GTF),
+        gtf=ERCC92_GTF,
         fa=ERCC92_FA
     shell:
         "wget {params.url} && unzip {output.zip} -d {params.odir}"
