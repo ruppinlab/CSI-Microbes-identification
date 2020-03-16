@@ -1,0 +1,15 @@
+from os.path import join
+
+SRA_RUN_FILE = join("data", "SraRunTable.txt")
+
+PATIENTS_FILE = join("output", "patient.tsv")
+SAMPLES_FILE = join("output", "samples.tsv")
+
+rule generate_metadata:
+    input:
+        SRA_RUN_FILE
+    output:
+        PATIENTS_FILE,
+        SAMPLES_FILE
+    script:
+        "src/extract_patient_sample.py"
