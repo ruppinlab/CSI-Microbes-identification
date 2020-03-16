@@ -1,0 +1,38 @@
+{
+    "__default__" :
+    {
+        "time" : "08:00:00",
+        "mem": "16g",
+        "nthreads" : 4,
+        "gres": 10
+    },
+    "create_star_index" :
+    {
+        "nthreads" : 16,
+        "mem": "64g"
+    },
+    "run_STARsolo_10x":
+    {
+        "time": "24:00:00",
+        "nthreads" : 48,
+        "mem": "64g"
+    },
+    "build_host_kmer_file":
+    {
+        "mem": "80g",
+        "nthreads": 16
+    },
+    "run_PathSeq":
+    {
+        "mem": "180g",
+        "time": "7-00:00:00",
+        "nthreads": 32,
+        "gres": 50
+    },
+    "download_FASTQ_from_SRA":
+    {
+      "nthreads": 6,
+      "gres": 200,
+      "mem": "32g"
+    }
+}

@@ -1,0 +1,20 @@
+---
+patients: data/patients.tsv
+samples: data/samples.tsv
+
+ref:
+  annotation: "raw/genome/gencode.v22.annotation.gtf"
+  genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
+  barcode_whitelist: "/data/Robinson-SB/CellRanger-data/737K-august-2016.txt"
+
+params:
+  PathSeq: '--filter-duplicates false --min-clipped-read-length 31 --spark-master 32 "-Xmx175g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=23"'
+  STARsolo: ""
+trimming:
+  skip: True
+
+PathSeq:
+  bam_file: "output/STARsolo/{patient}-{sample}/Aligned.sortedByCoord.out.bam"
+  microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
+  microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
+  taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
