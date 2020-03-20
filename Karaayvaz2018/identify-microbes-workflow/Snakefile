@@ -33,7 +33,6 @@ include: "../../RNA-snakemake-rules/rules/genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
 include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 
-samples = samples.iloc[0:10]
 rule all:
     input:
         expand(PathSeq_Output_File, zip, patient=samples["patient"], sample=samples["sample"])
