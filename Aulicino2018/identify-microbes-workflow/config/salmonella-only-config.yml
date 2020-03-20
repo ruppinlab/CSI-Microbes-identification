@@ -13,8 +13,8 @@ trimming:
 
 PathSeq:
   bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"
-  microbe_fasta: "data/LT2_D23580_ERCC92.fa"
-  microbe_bwa_image: "data/LT2_D23580_ERCC92.fa.img"
-  taxonomy_db: "data/LT2_D23580_ERCC92_taxonomy.db"
+  microbe_fasta: "data/LT2_D23580.fa"
+  microbe_bwa_image: "data/LT2_D23580.fa.img"
+  taxonomy_db: "data/LT2_D23580_taxonomy.db"
   genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
   annotation: "raw/genome/gencode.v22.annotation.gtf"

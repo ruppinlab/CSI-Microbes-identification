@@ -5,7 +5,7 @@ from snakemake.utils import min_version
 min_version("5.1.2")
 
 ##### load config and sample sheets #####
-configfile: "config/salmonella-only-config.yml"
+configfile: "config/PathSeq-config.yaml"
 #validate(config, schema="schemas/config.schema.yaml")
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
@@ -44,12 +44,12 @@ include: "../../RNA-snakemake-rules/rules/STAR.smk"
 include: "../../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
 include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 
-localrules: download_ERCC92_spike_ins, download_D23580_complete_genome, download_LT2_complete_genome, combine_LT2_D23580, combine_human_ERCC92_GTF, combine_human_ERCC92_fasta
+localrules: download_ERCC92_spike_ins, download_D23580_complete_genome, download_LT2_complete_genome, combine_LT2_D23580
+# localrules: combine_human_ERCC92_GTF, combine_human_ERCC92_fasta
 
 #wildcard_constraints:
 #    sample="SRR*"
 
-samples = samples.iloc[0:10]
 rule all:
     input:
         #LT2_D23580_ERCC92_FA_FILE
@@ -89,23 +89,23 @@ rule download_D23580_complete_genome:
     shell:
         "wget -O - {params.url} | gunzip -c > {output}"
 
-rule combine_human_ERCC92_fasta:
-    input:
-        config["PathSeq"]["genome"],
-        ERCC92_FA
-    output:
-        config["ref"]["genome"]
-    shell:
-        "cat {input[0]} {input[1]} > {output}"
+#rule combine_human_ERCC92_fasta:
+#    input:
+#        config["PathSeq"]["genome"],
+#        ERCC92_FA
+#    output:
+#        config["ref"]["genome"]
+#    shell:
+#        "cat {input[0]} {input[1]} > {output}"
 
-rule combine_human_ERCC92_GTF:
-    input:
-        config["PathSeq"]["annotation"],
-        ERCC92_GTF
-    output:
-        config["ref"]["annotation"]
-    shell:
-        "cat {input[0]} {input[1]} > {output}"
+#rule combine_human_ERCC92_GTF:
+#    input:
+#        config["PathSeq"]["annotation"],
+#        ERCC92_GTF
+#    output:
+#        config["ref"]["annotation"]
+#    shell:
+#        "cat {input[0]} {input[1]} > {output}"
 
 rule download_ERCC92_spike_ins:
     params:
