@@ -7,7 +7,7 @@ ref:
   genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
 
 params:
-  PathSeq: "--filter-duplicates false --min-clipped-read-length 25" # make shorter because reads are only 38 bp long
+  PathSeq: '--filter-duplicates true --min-score-identity 0.7 --spark-master 16 --java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13"'
 trimming:
   skip: True
 
