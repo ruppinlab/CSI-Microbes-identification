@@ -8,7 +8,7 @@ ref:
   barcode_whitelist: "/data/Robinson-SB/CellRanger-data/737K-august-2016.txt"
 
 params:
-  PathSeq: '--filter-duplicates false --min-clipped-read-length 31 --spark-master 32 "-Xmx175g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=23"'
+  PathSeq: '--filter-duplicates false --min-clipped-read-length 31 --spark-master local[32] --java-options "-Xmx175g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=23"'
   STARsolo: ""
 trimming:
   skip: True
