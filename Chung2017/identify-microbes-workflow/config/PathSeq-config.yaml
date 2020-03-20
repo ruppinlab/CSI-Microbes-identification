@@ -1,0 +1,18 @@
+---
+patients: data/patients.tsv
+samples: data/samples.tsv
+
+ref:
+  annotation: "raw/genome/gencode.v22.annotation.gtf"
+  genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
+
+params:
+  PathSeq: '--filter-duplicates true --min-score-identity 0.7 --spark-master 16 --java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13"'
+trimming:
+  skip: True
+
+PathSeq:
+  bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"
+  microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
+  microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
+  taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
