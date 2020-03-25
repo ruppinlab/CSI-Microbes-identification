@@ -37,12 +37,14 @@ LT2_D23580_FA_FILE = join("data", "LT2_D23580.fa")
 PATHSEQ_D23580_FA_FILE = join("data", "D23580+PathSeq.fa")
 # Output Files
 PathSeq_Output_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
+kraken_output_File = join("output", "kraken", "{patient}-{sample}.kraken")
 
 # include rules
 include: "../../RNA-snakemake-rules/rules/genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
 include: "../../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
 include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
+include: "../../pathogen-discovery-rules/rules/kraken.smk"
 
 localrules: download_ERCC92_spike_ins, download_D23580_complete_genome, download_LT2_complete_genome, combine_LT2_D23580
 # localrules: combine_human_ERCC92_GTF, combine_human_ERCC92_fasta
