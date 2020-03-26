@@ -8,8 +8,13 @@ ref:
 
 params:
   PathSeq: "--filter-duplicates true --min-clipped-read-length 31"
+  Kraken: "--threads 16 "
 trimming:
   skip: True
+
+Kraken:
+  dbname: "20180220_standard"
+  taxonomic_rank: "genus"
 
 PathSeq:
   bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"

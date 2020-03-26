@@ -4,7 +4,8 @@
         "time" : "08:00:00",
         "mem": "16g",
         "nthreads" : 4,
-        "gres": 10
+        "gres": 10,
+        "partition": "norm,ccr"
     },
     "create_star_index" :
     {
@@ -58,5 +59,21 @@
       "mem": "200g",
       "gres": 100,
       "time": "7-00:00:00"
-    }
+    },
+    "run_Kraken":
+    {
+      "nthreads": 16,
+      "mem": "450g",
+      "gres": 50,
+      "time": "3-00:00:00",
+      "partition": "largemem"
+    },
+    "run_Kraken_translate":
+    {
+      "nthreads": 2,
+      "mem": "450g",
+      "gres": 50,
+      "time": "3-00:00:00",
+      "partition": "largemem"
+    },
 }

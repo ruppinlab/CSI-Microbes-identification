@@ -38,6 +38,7 @@ PATHSEQ_D23580_FA_FILE = join("data", "D23580+PathSeq.fa")
 # Output Files
 PathSeq_Output_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
 kraken_output_File = join("output", "kraken", "{patient}-{sample}.kraken")
+KRAKEN_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "sequences.biom")
 
 # include rules
 include: "../../RNA-snakemake-rules/rules/genome.smk"
@@ -55,7 +56,7 @@ localrules: download_ERCC92_spike_ins, download_D23580_complete_genome, download
 rule all:
     input:
         #LT2_D23580_ERCC92_FA_FILE
-        expand(PathSeq_Output_File, zip, patient=samples["patient"], sample=samples["sample"])
+        expand(KRAKEN_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"])
 
 rule add_D23580_to_PathSeq_DB:
     input:
