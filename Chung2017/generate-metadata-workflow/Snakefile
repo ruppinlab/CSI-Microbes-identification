@@ -8,7 +8,9 @@ SAMPLE_FILE = join("output", "samples.tsv")
 
 rule generate_patient_sample_metadata:
     input:
-        SRA_RUN_FILE
+        SRA_RUN_FILE,
+        join("data", "GSE75688_series_matrix.txt"),
+        join("data", "GSE75688_final_sample_information.txt")
     output:
         PATIENT_FILE,
         SAMPLE_FILE
