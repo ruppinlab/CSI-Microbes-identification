@@ -37,6 +37,7 @@ LT2_D23580_FA_FILE = join("data", "LT2_D23580.fa")
 PATHSEQ_D23580_FA_FILE = join("data", "D23580+PathSeq.fa")
 # Output Files
 PathSeq_Output_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
+PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 kraken_output_File = join("output", "kraken", "{patient}-{sample}.kraken")
 KRAKEN_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "sequences.biom")
 
@@ -57,6 +58,27 @@ rule all:
     input:
         #LT2_D23580_ERCC92_FA_FILE
         expand(KRAKEN_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"])
+
+rule compute_mapping_statistics:
+    # input:
+    #     expand(config["PathSeq"]["bam_file"], zip, patient=samples["patient"], sample=samples["sample"]),
+    #     expand(PathSeq_BAM_File, zip, patient=samples["patient"], sample=samples["sample"])
+    output:
+        join("output", "mapping-statistics.tsv")
+    run:
+        shell("module load samtools")
+        shell("touch {output}")
+        for p, s in zip(samples["patient"], samples["sample"]):
+            STAR_bam = config["PathSeq"]["bam_file"].format(patient=p, sample=s)
+            PathSeq_bam = PathSeq_BAM_File.format(patient=p, sample=s)
+            shell("mr=$(samtools view -c -F 4 {STAR_bam})")
+            shell("ur=$(samtools view -c -f 4 {STAR_bam})")
+            try:
+                shell("pmr=$(samtools view -c -F 4 {PathSeq_bam})")
+                shell("pur=$(samtools view -c -f 4 {PathSeq_bam})")
+                shell("echo $mr,$ur,$pmr,$pur >> {output}")
+            except:
+                print("missing {}-{}".format(p,s))
 
 rule add_D23580_to_PathSeq_DB:
     input:
