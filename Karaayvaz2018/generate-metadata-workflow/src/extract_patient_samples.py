@@ -13,5 +13,7 @@ patients = df[patient_cols]
 sample_cols = ["sample", "patient", "sample_name", "celltype"]
 samples = df[sample_cols]
 samples = samples.rename(columns={"Run": "sample"})
-patients.to_csv(snakemake.output[0], index=False, sep="\t")
+samples["cancer"] = samples["celltype"].apply(lambda x: "Tumor" if x == "epithelial" else "nonTumor")
+samples["plate"] = samples["sample_name"].apply(lambda x: x.split("_")[1])
+patients.drop_duplicates().to_csv(snakemake.output[0], index=False, sep="\t")
 samples.to_csv(snakemake.output[1], index=False, sep="\t")
