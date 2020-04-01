@@ -4,7 +4,7 @@
         "time" : "08:00:00",
         "mem": "16g",
         "nthreads" : 4,
-        "gres": 10
+        "gres": 0
     },
     "create_star_index" :
     {
@@ -39,6 +39,11 @@
     {
       "nthreads": 6,
       "gres": 200,
+      "mem": "32g"
+    },
+    "run_PathSeq_filter":
+    {
+      "nthreads": 8,
       "mem": "32g"
     }
 }
