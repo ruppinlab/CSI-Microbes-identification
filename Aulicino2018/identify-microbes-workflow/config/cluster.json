@@ -76,4 +76,12 @@
       "time": "3-00:00:00",
       "partition": "largemem"
     },
+    "add_D23580_to_PathSeq_DB":
+    {
+      "nthreads": 2,
+      "mem": "550g",
+      "gres": 50,
+      "time": "10-00:00:00",
+      "partition": "largemem"
+    }
 }

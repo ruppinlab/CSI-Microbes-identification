@@ -3,21 +3,30 @@ patients: data/patients.tsv
 samples: data/samples.tsv
 
 ref:
+  annotation: "raw/genome/gencodev22_ERCC92.gtf"
+  genome: "raw/genome/Hg38_ERCC92.fasta"
+
+ref:
   annotation: "raw/genome/gencode.v22.annotation.gtf"
   genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
 
 params:
-  PathSeq: "--filter-duplicates true --min-clipped-read-length 31"
+  PathSeq:
+    filter: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" -- \ --spark-runner LOCAL --spark-master local[1]'
+    BWA: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" -- \ --spark-runner LOCAL --spark-master local[8]'
+    pipeline: '--java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13" -- \ --spark-runner LOCAL --spark-master local[16] '
   Kraken: "--threads 16 "
 trimming:
   skip: True
 
-Kraken:
-  dbname: "20180220_standard"
-  taxonomic_rank: "genus"
+# Kraken:
+#   dbname: "20180220_standard"
+#   taxonomic_rank: "genus"
 
 PathSeq:
   bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"
-  microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
-  microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
-  taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
+  microbe_fasta: "data/D23580+PathSeq.fa"
+  microbe_bwa_image: "data/D23580+PathSeq.fa.img"
+  taxonomy_db: "data/D23580+PathSeq_taxonomy.db"
+  genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
+  annotation: "raw/genome/gencode.v22.annotation.gtf"
