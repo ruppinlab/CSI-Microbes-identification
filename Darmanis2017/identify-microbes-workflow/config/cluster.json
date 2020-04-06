@@ -4,7 +4,7 @@
         "time" : "08:00:00",
         "mem": "16g",
         "nthreads" : 4,
-        "gres": 5 
+        "gres": 5
     },
     "create_star_index" :
     {
@@ -45,12 +45,12 @@
     {
       "nthreads": 2,
       "mem": "64g",
-      "gres": 20 
+      "gres": 20
     },
     "PathSeqBwaSpark":
     {
       "nthreads": 8,
-      "mem": "64g",
+      "mem": "120g",
       "gres": 20,
       "time": "2-00:00:00"
     }
