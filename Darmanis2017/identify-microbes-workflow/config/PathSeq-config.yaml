@@ -7,7 +7,9 @@ ref:
   genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
 
 params:
-  PathSeq: '--filter-duplicates true --min-score-identity 0.7 --spark-master local[16] --java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13"'
+  PathSeq: #'--filter-duplicates true --min-score-identity 0.7 --spark-master local[16] --java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13"'
+    filter: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID"'
+    BWA: '--spark-master local[8] --java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID"'
 trimming:
   skip: True
 

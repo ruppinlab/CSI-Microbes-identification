@@ -4,7 +4,7 @@
         "time" : "08:00:00",
         "mem": "16g",
         "nthreads" : 4,
-        "gres": 0
+        "gres": 5 
     },
     "create_star_index" :
     {
@@ -41,9 +41,17 @@
       "gres": 200,
       "mem": "32g"
     },
-    "run_PathSeq_filter":
+    "PathSeqFilterSpark":
+    {
+      "nthreads": 2,
+      "mem": "64g",
+      "gres": 20 
+    },
+    "PathSeqBwaSpark":
     {
       "nthreads": 8,
-      "mem": "32g"
+      "mem": "64g",
+      "gres": 20,
+      "time": "2-00:00:00"
     }
 }

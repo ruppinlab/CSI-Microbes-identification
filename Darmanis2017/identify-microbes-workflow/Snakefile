@@ -28,14 +28,18 @@ FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
 # Output Files
 PathSeq_Output_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
 PATHSEQ_FILTERED_PAIRED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-paired.bam")
+PATHSEQ_PAIRED_ALIGNED_BAM = join("output", "PathSeq", "{patient}-{sample}", "aligned-paired.bam")
+
 # include rules
 include: "../../RNA-snakemake-rules/rules/genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
 include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
+
 samples = samples.iloc[0:1]
+
 rule all:
     input:
-        expand(PATHSEQ_FILTERED_PAIRED_BAM, zip, patient=samples["patient"], sample=samples["sample"])
+        expand(PATHSEQ_PAIRED_ALIGNED_BAM, zip, patient=samples["patient"], sample=samples["sample"])
 
 rule compress_FASTQ_File:
     input:
