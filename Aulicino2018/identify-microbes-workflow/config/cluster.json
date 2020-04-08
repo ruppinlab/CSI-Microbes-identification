@@ -42,7 +42,7 @@
         "nthreads": 16,
         "gres": 50
     },
-    "PathSeqSparkFilter":
+    "PathSeqFilterSpark":
     {
         "mem": "64g",
         "time": "4:00:00",

@@ -1,0 +1,3 @@
+RNA_SPIKE_1_(EC2)_AE000151  SPIKE exon  1 776  0.000000	+	.	gene_id "RNA_SPIKE_1_(EC2)_AE000151"; transcript_id "RNA_SPIKE_1_(EC2)_AE000151.1";
+RNA_SPIKE_4_(EC15)	SPIKE	exon	1	1027	0.000000	+	.	gene_id "RNA_SPIKE_4_(EC15)"; transcript_id "RNA_SPIKE_4_(EC15).1";
+RNA_SPIKE_7_(EC18)	SPIKE	exon	1	1474	0.000000	+	.	gene_id "RNA_SPIKE_7_(EC18)"; transcript_id "RNA_SPIKE_7_(EC18).1";

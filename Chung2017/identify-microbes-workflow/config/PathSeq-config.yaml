@@ -3,11 +3,15 @@ patients: data/patients.tsv
 samples: data/samples.tsv
 
 ref:
-  annotation: "raw/genome/gencode.v22.annotation.gtf"
-  genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
+  annotation: "raw/genome/Hg38_v22_RNA_SPIKE.gtf"
+  genome: "raw/genome/Hg38_RNA_SPIKE.fasta"
 
 params:
-  PathSeq: '--filter-duplicates true --min-score-identity 0.7 --spark-master local[16] --java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13"'
+  PathSeq:
+    filter: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" --spark-master local[1]'
+    BWA: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" --spark-master local[8]'
+    pipeline: '--java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13" --spark-master local[16] '
+
 trimming:
   skip: True
 
@@ -16,3 +20,5 @@ PathSeq:
   microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
   microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
   taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
+  genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
+  annotation: "raw/genome/gencode.v22.annotation.gtf"
