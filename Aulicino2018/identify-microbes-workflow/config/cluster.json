@@ -42,6 +42,12 @@
         "nthreads": 16,
         "gres": 50
     },
+    "PathSeqSparkFilter":
+    {
+        "mem": "64g",
+        "time": "4:00:00",
+        "nthreads": 1
+    },
     "download_FASTQ_from_SRA":
     {
       "nthreads": 6,
@@ -56,9 +62,10 @@
     "build_BWA_image":
     {
       "nthreads": 2,
-      "mem": "200g",
+      "mem": "600g",
       "gres": 100,
-      "time": "7-00:00:00"
+      "time": "10-00:00:00",
+      "partition": "largemem"
     },
     "run_Kraken":
     {
@@ -74,14 +81,6 @@
       "mem": "450g",
       "gres": 50,
       "time": "3-00:00:00",
-      "partition": "largemem"
-    },
-    "add_D23580_to_PathSeq_DB":
-    {
-      "nthreads": 2,
-      "mem": "550g",
-      "gres": 50,
-      "time": "10-00:00:00",
       "partition": "largemem"
     }
 }
