@@ -43,7 +43,7 @@
     },
     "PathSeqFilterSpark":
     {
-      "nthreads": 2,
+      "nthreads": 1,
       "mem": "64g",
       "gres": 20
     },
@@ -51,7 +51,7 @@
     {
       "nthreads": 8,
       "mem": "120g",
-      "gres": 20,
+      "gres": 800,
       "time": "2-00:00:00"
     }
 }

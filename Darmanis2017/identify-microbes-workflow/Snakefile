@@ -35,11 +35,10 @@ include: "../../RNA-snakemake-rules/rules/genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
 include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 
-samples = samples.iloc[0:1]
 
 rule all:
     input:
-        expand(PATHSEQ_PAIRED_ALIGNED_BAM, zip, patient=samples["patient"], sample=samples["sample"])
+        expand(PATHSEQ_FILTERED_PAIRED_BAM, zip, patient=samples["patient"], sample=samples["sample"])
 
 rule compress_FASTQ_File:
     input:
