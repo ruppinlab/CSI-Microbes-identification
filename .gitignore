@@ -2,3 +2,12 @@
 **/.DS_Store
 **/output
 **/slurm-*.out
+**/FASTQ/
+**/._.DS_Store
+**/*.dict
+**/*.fa
+**/*.fna
+**/Log.out
+**/*.db
+**/*.fai
+**/raw/
