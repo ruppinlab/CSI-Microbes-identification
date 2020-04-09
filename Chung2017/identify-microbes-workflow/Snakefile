@@ -19,7 +19,7 @@ SRA_FASTQ2_FILE = join(FASTQ_DIR, "{sample}_2.fastq")
 FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
 FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
 # file containing sequences for RNA Spike In sequences
-RNA_SPIKE_SEQUENCES = join("data", "E-MTAB-5466_spike_in_sequences.fa")
+RNA_SPIKE_SEQUENCES = join("data", "spike_in_sequences.fa")
 # handcrafted TODO generate from fasta file
 RNA_SPIKE_GTF = join("data", "spike_in_sequences.gtf")
 # Output Files
@@ -54,16 +54,17 @@ rule combine_human_spikein_GTF:
    shell:
        "cat {input[0]} {input[1]} > {output}"
 
-rule download_RNA_spikes:
-    params:
-        url="https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-5466/E-MTAB-5466.additional.1.zip",
-        dir="data"
-    output:
-        RNA_SPIKE_SEQUENCES,
-        temp("temp.zip"),
-        temp(join("data", "E-MTAB-5466_spike_in_concentration.txt"))
-    shell:
-        "wget {params.url} -O temp.zip && unzip temp.zip -d {params.dir}"
+# PathSeq doesn't like names so just add to Git for now
+# rule download_RNA_spikes:
+#     params:
+#         url="https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-5466/E-MTAB-5466.additional.1.zip",
+#         dir="data"
+#     output:
+#         RNA_SPIKE_SEQUENCES,
+#         temp("temp.zip"),
+#         temp(join("data", "E-MTAB-5466_spike_in_concentration.txt"))
+#     shell:
+#         "wget {params.url} -O temp.zip && unzip temp.zip -d {params.dir}"
 
 rule compress_FASTQ_File:
     input:
