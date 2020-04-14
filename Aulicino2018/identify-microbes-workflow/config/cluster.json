@@ -45,7 +45,7 @@
     "PathSeqFilterSpark":
     {
         "mem": "64g",
-        "time": "4:00:00",
+        "time": "8:00:00",
         "nthreads": 1
     },
     "download_FASTQ_from_SRA":
@@ -63,7 +63,7 @@
     {
       "nthreads": 2,
       "mem": "600g",
-      "gres": 100,
+      "gres": 200,
       "time": "10-00:00:00",
       "partition": "largemem"
     },
