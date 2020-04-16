@@ -6,6 +6,11 @@ ref:
   annotation: "raw/genome/Hg38_v22_RNA_SPIKE.gtf"
   genome: "raw/genome/Hg38_RNA_SPIKE.fasta"
 
+human_ref:
+  genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
+  annotation: "raw/genome/gencode.v22.annotation.gtf"
+
+
 params:
   PathSeq:
     filter: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" --spark-master local[1]'
@@ -20,5 +25,3 @@ PathSeq:
   microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
   microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
   taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
-  genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
-  annotation: "raw/genome/gencode.v22.annotation.gtf"

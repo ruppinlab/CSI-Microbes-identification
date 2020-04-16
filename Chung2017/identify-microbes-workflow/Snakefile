@@ -24,21 +24,23 @@ RNA_SPIKE_SEQUENCES = join("data", "spike_in_sequences.fa")
 RNA_SPIKE_GTF = join("data", "spike_in_sequences.gtf")
 # Output Files
 PAIRED_FILTERED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-paired.bam")
+KRAKEN_PAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "paired-sequences.biom")
+KRAKEN_UNPAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "unpaired-sequences.biom")
 
 # include rules
 include: "../../RNA-snakemake-rules/rules/genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
-include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
+include: "../../pathogen-discovery-rules/rules/kraken.smk"
 
-samples = samples.iloc[0:5]
 
 rule all:
     input:
-        expand(PAIRED_FILTERED_BAM, zip, patient=samples["patient"], sample=samples["sample"])
+        expand(KRAKEN_PAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(KRAKEN_UNPAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
 
 rule combine_human_spikein_fasta:
     input:
-        config["PathSeq"]["genome"],
+        config["human_ref"]["genome"],
         RNA_SPIKE_SEQUENCES
     output:
         config["ref"]["genome"]
@@ -47,7 +49,7 @@ rule combine_human_spikein_fasta:
 
 rule combine_human_spikein_GTF:
    input:
-       config["PathSeq"]["annotation"],
+       config["human_ref"]["annotation"],
        RNA_SPIKE_GTF
    output:
        config["ref"]["annotation"]
