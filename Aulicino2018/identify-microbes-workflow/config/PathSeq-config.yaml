@@ -6,7 +6,7 @@ ref:
   annotation: "raw/genome/gencodev22_ERCC92.gtf"
   genome: "raw/genome/Hg38_ERCC92.fasta"
 
-ref:
+human_ref:
   annotation: "raw/genome/gencode.v22.annotation.gtf"
   genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
 
@@ -19,9 +19,9 @@ params:
 trimming:
   skip: True
 
-# Kraken:
-#   dbname: "20180220_standard"
-#   taxonomic_rank: "genus"
+Kraken:
+  dbname: "20180220_standard"
+  taxonomic_rank: "genus"
 
 PathSeq:
   bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"

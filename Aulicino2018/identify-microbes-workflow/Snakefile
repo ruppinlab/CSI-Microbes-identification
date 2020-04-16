@@ -19,7 +19,7 @@ samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.l
 # URLs
 D23580_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/027/025/GCF_000027025.1_ASM2702v1/GCF_000027025.1_ASM2702v1_genomic.fna.gz"
 #LT2_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.fna.gz"
-ERCC92_URL = "https://tools.thermofisher.com/content/sfs/manuals/ERCC92.zip"
+
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
 
@@ -38,46 +38,48 @@ PATHSEQ_D23580_FA_FILE = join("data", "D23580+PathSeq.fa")
 # Output Files
 PathSeq_Output_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
 PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
-kraken_output_File = join("output", "kraken", "{patient}-{sample}.kraken")
-KRAKEN_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "sequences.biom")
-
-PAIRED_FILTERED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-paired.bam")
+KRAKEN_PAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "paired-sequences.biom")
+KRAKEN_UNPAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "unpaired-sequences.biom")
 
 # include rules
+include: "../../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../../RNA-snakemake-rules/rules/genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
-include: "../../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
-include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
-# include: "../../pathogen-discovery-rules/rules/kraken.smk"
+#include: "../../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
+#include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
+include: "../../pathogen-discovery-rules/rules/kraken.smk"
 
-localrules: download_ERCC92_spike_ins, download_D23580_complete_genome
-# localrules: combine_human_ERCC92_GTF, combine_human_ERCC92_fasta
+
+localrules: combine_human_ERCC92_GTF, combine_human_ERCC92_fasta
 
 #wildcard_constraints:
 #    sample="SRR*"
 
 rule all:
     input:
-        config["PathSeq"]["microbe_bwa_image"],
         expand(PAIRED_FILTERED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
 
- # rule compute_mapping_statistics:
- #     output:
- #         join("output", "mapping-statistics.tsv")
- #     run:
- #         shell("touch {output}")
- #         for p, s in zip(samples["patient"], samples["sample"]):
- #             try:
- #                STAR_bam = config["PathSeq"]["bam_file"].format(patient=p, sample=s)
- #                PathSeq_bam = PathSeq_BAM_File.format(patient=p, sample=s)
- #                shell("module load samtools && "
- #                      "mr=$(samtools view -c -F 4 {STAR_bam}) && "
- #                      "ur=$(samtools view -c -f 4 {STAR_bam}) && "
- #                      "pmr=$(samtools view -c -F 4 {PathSeq_bam}) && "
- #                      "pur=$(samtools view -c -f 4 {PathSeq_bam}) && "
- #                      "echo {p}-{s},$mr,$ur,$pmr,$pur >> {output}")
- #             except:
- #                 print("missing {}-{}".format(p,s))
+
+rule combine_human_ERCC92_fasta:
+   input:
+       config["human_ref"]["genome"],
+       ERCC92_FA
+   output:
+       config["ref"]["genome"]
+   shell:
+       "cat {input[0]} {input[1]} > {output}"
+
+rule combine_human_ERCC92_GTF:
+   input:
+       config["human_ref"]["annotation"],
+       ERCC92_GTF
+   output:
+       config["ref"]["annotation"]
+   shell:
+       "cat {input[0]} {input[1]} > {output}"
+
+# rules for adding DS23580 genome to the PathSeq DB
+localrules: download_D23580_complete_genome, add_D23580_to_PathSeq_DB
 
 rule add_D23580_to_PathSeq_DB:
     input:
@@ -88,23 +90,6 @@ rule add_D23580_to_PathSeq_DB:
     shell:
         "cat {input[0]} {input[1]} > {output}"
 
-# rule combine_LT2_D23580:
-#     input:
-#         LT2_FA,
-#         D23580_FA
-#     output:
-#         LT2_D23580_FA_FILE
-#     shell:
-#         "cat {input[0]} {input[1]} > {output}"
-#
-# rule download_LT2_complete_genome:
-#     params:
-#         url=LT2_URL
-#     output:
-#         LT2_FA
-#     shell:
-#         "wget -O - {params.url} | gunzip -c > {output}"
-
 rule download_D23580_complete_genome:
     params:
         url=D23580_URL
@@ -113,35 +98,7 @@ rule download_D23580_complete_genome:
     shell:
         "wget -O - {params.url} | gunzip -c > {output}"
 
-rule combine_human_ERCC92_fasta:
-   input:
-       config["PathSeq"]["genome"],
-       ERCC92_FA
-   output:
-       config["ref"]["genome"]
-   shell:
-       "cat {input[0]} {input[1]} > {output}"
-
-rule combine_human_ERCC92_GTF:
-   input:
-       config["PathSeq"]["annotation"],
-       ERCC92_GTF
-   output:
-       config["ref"]["annotation"]
-   shell:
-       "cat {input[0]} {input[1]} > {output}"
-
-rule download_ERCC92_spike_ins:
-    params:
-        url=ERCC92_URL,
-        odir="data"
-    output:
-        zip=temp("ERCC92.zip"),
-        gtf=ERCC92_GTF,
-        fa=ERCC92_FA
-    shell:
-        "wget {params.url} && unzip {output.zip} -d {params.odir}"
-
+# rules for downloading data
 
 rule compress_FASTQ_File:
     input:
