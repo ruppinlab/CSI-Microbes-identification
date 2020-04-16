@@ -1,6 +1,6 @@
 #!/bin/bash
 
-module load snakemake/5.5.2
+module load snakemake
 snakemake \
 --use-conda \
 --rerun-incomplete \
@@ -9,4 +9,4 @@ snakemake \
 --jobs 100 \
 --latency-wait 60 \
 --keep-going \
---local-cores 16 all
+--local-cores 4 all

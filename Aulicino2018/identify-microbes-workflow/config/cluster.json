@@ -67,15 +67,31 @@
       "time": "10-00:00:00",
       "partition": "largemem"
     },
-    "run_Kraken":
+    "run_Kraken_paired_reads":
     {
       "nthreads": 16,
+      "mem": "450g",
+      "gres": 50,
+      "time": "7-00:00:00",
+      "partition": "largemem"
+    },
+    "run_Kraken_unpaired_reads":
+    {
+      "nthreads": 16,
+      "mem": "450g",
+      "gres": 50,
+      "time": "7-00:00:00",
+      "partition": "largemem"
+    },
+    "run_Kraken_translate_paired_reads":
+    {
+      "nthreads": 2,
       "mem": "450g",
       "gres": 50,
       "time": "3-00:00:00",
       "partition": "largemem"
     },
-    "run_Kraken_translate":
+    "run_Kraken_translate_unpaired_reads":
     {
       "nthreads": 2,
       "mem": "450g",

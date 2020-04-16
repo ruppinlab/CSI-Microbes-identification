@@ -57,7 +57,8 @@ localrules: combine_human_ERCC92_GTF, combine_human_ERCC92_fasta
 
 rule all:
     input:
-        expand(PAIRED_FILTERED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(KRAKEN_UNPAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(KRAKEN_PAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
 
 
 rule combine_human_ERCC92_fasta:
