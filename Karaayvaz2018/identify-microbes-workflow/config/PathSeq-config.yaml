@@ -7,9 +7,16 @@ ref:
   genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
 
 params:
-  PathSeq: '--filter-duplicates true --min-score-identity 0.7 --spark-master local[16] --java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13"'
+  PathSeq:
+    filter: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" --spark-master local[1]'
+    BWA: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" --spark-master local[8]'
+    pipeline: '--java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13" --spark-master local[16] '
 trimming:
   skip: True
+
+Kraken:
+  dbname: "20180220_standard"
+  taxonomic_rank: "genus"
 
 PathSeq:
   bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"

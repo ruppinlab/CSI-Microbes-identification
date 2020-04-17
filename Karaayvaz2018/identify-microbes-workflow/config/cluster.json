@@ -4,7 +4,8 @@
         "time" : "08:00:00",
         "mem": "16g",
         "nthreads" : 4,
-        "gres": 10
+        "gres": 10,
+        "partition": "norm,ccr"
     },
     "create_star_index" :
     {
@@ -40,5 +41,43 @@
       "nthreads": 6,
       "gres": 200,
       "mem": "32g"
+    },
+    "PathSeqFilterSpark":
+    {
+        "mem": "64g",
+        "time": "4:00:00",
+        "nthreads": 1
+    },
+    "run_Kraken_paired_reads":
+    {
+      "nthreads": 16,
+      "mem": "450g",
+      "gres": 50,
+      "time": "7-00:00:00",
+      "partition": "largemem"
+    },
+    "run_Kraken_unpaired_reads":
+    {
+      "nthreads": 16,
+      "mem": "450g",
+      "gres": 50,
+      "time": "7-00:00:00",
+      "partition": "largemem"
+    },
+    "run_Kraken_translate_paired_reads":
+    {
+      "nthreads": 2,
+      "mem": "450g",
+      "gres": 50,
+      "time": "3-00:00:00",
+      "partition": "largemem"
+    },
+    "run_Kraken_translate_unpaired_reads":
+    {
+      "nthreads": 2,
+      "mem": "450g",
+      "gres": 50,
+      "time": "3-00:00:00",
+      "partition": "largemem"
     }
 }

@@ -10,7 +10,9 @@ rule generate_patient_sample_metadata:
     input:
         SRA_RUN_FILE,
         join("data", "cell_types_tab_S9.tsv"),
-        join("data", "GSE118389_series_matrix.txt")
+        join("data", "GSE118389_series_matrix.txt"),
+        join("data", "qc_original.txt"),
+        join("data", "pd_norm.txt")
     output:
         PATIENT_FILE,
         SAMPLE_FILE
