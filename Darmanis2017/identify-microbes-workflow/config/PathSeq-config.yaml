@@ -2,17 +2,26 @@
 patients: data/patients.tsv
 samples: data/samples.tsv
 
-ref:
+human_ref:
   annotation: "raw/genome/gencode.v22.annotation.gtf"
   genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
 
+ref:
+  annotation: "raw/genome/gencodev22_ERCC92.gtf"
+  genome: "raw/genome/Hg38_ERCC92.fasta"
+
 params:
-  PathSeq: #'--filter-duplicates true --min-score-identity 0.7 --spark-master local[16] --java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13"'
+  PathSeq:
     filter: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" --spark-master local[1]'
     BWA: '--java-options "-Xms80g -Xmx110g -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2 -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" --spark-master local[8]'
     pipeline: '--spark-master local[16] --java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13"'
+  Kraken: "--threads 16 "
 trimming:
   skip: True
+
+Kraken:
+  dbname: "20180220_standard"
+  taxonomic_rank: "genus"
 
 PathSeq:
   bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"

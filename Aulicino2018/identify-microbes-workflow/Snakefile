@@ -45,15 +45,8 @@ KRAKEN_UNPAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "unpa
 include: "../../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../../RNA-snakemake-rules/rules/genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
-#include: "../../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
-#include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 include: "../../pathogen-discovery-rules/rules/kraken.smk"
 
-
-localrules: combine_human_ERCC92_GTF, combine_human_ERCC92_fasta
-
-#wildcard_constraints:
-#    sample="SRR*"
 
 rule all:
     input:
@@ -61,23 +54,7 @@ rule all:
         expand(KRAKEN_PAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
 
 
-rule combine_human_ERCC92_fasta:
-   input:
-       config["human_ref"]["genome"],
-       ERCC92_FA
-   output:
-       config["ref"]["genome"]
-   shell:
-       "cat {input[0]} {input[1]} > {output}"
 
-rule combine_human_ERCC92_GTF:
-   input:
-       config["human_ref"]["annotation"],
-       ERCC92_GTF
-   output:
-       config["ref"]["annotation"]
-   shell:
-       "cat {input[0]} {input[1]} > {output}"
 
 # rules for adding DS23580 genome to the PathSeq DB
 localrules: download_D23580_complete_genome, add_D23580_to_PathSeq_DB
