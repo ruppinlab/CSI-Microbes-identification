@@ -28,7 +28,8 @@ FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
 # Output Files
 KRAKEN_PAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "paired-sequences.biom")
 KRAKEN_UNPAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "unpaired-sequences.biom")
-
+# SRR3936341 is corrupted
+samples = samples.loc[~samples["sample"].isin(["SRR3936341"])]
 # include rules
 include: "../../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../../RNA-snakemake-rules/rules/genome.smk"
