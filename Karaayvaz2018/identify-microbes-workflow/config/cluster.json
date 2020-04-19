@@ -48,6 +48,18 @@
         "time": "4:00:00",
         "nthreads": 1
     },
+    "PathSeqFilterSpark_paired_only":
+    {
+        "mem": "64g",
+        "time": "4:00:00",
+        "nthreads": 1
+    },
+    "PathSeqFilterSpark_unpaired_only":
+    {
+        "mem": "64g",
+        "time": "4:00:00",
+        "nthreads": 1
+    },
     "run_Kraken_paired_reads":
     {
       "nthreads": 16,
