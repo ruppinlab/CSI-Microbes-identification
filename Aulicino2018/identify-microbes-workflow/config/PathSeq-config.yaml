@@ -20,8 +20,10 @@ trimming:
   skip: True
 
 Kraken:
-  dbname: "20180220_standard"
+  db_path: "/data/Robinson-SB/Kraken-data"
+  dbname: "pathseqDB"
   taxonomic_rank: "genus"
+  microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
 
 PathSeq:
   bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"
