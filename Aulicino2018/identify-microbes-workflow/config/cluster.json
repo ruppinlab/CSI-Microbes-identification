@@ -102,8 +102,9 @@
     "build_Kraken_DB":
     {
       "gres": 500,
-      "nthreads": 24,
-      "mem": "180g",
-      "time": "2-00:00:00"
+      "nthreads": 16,
+      "mem": "500g",
+      "time": "2-00:00:00",
+      "partition": "largemem"
     }
 }
