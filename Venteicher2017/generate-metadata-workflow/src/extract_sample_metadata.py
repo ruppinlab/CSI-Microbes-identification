@@ -25,7 +25,7 @@ for patient in patients:
         output_df.append(other_df)
 
 df = pd.concat(output_df)
-df["sample"] = df["sample"].apply(lambda x: x if x.startswith("MGH") else "MGH{}".format(x))
+df["sample"] = df["sample"].apply(lambda x: x if x.upper().startswith("MGH") else "MGH{}".format(x))
 df["sample"] = df["sample"].str.replace("_", "-")
 # for some reason, we are missing fastq files for MGH57-P14 samples
 df = df.loc[~df["sample"].str.startswith("MGH57-P14")]
