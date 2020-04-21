@@ -27,6 +27,8 @@ for patient in patients:
 df = pd.concat(output_df)
 df["sample"] = df["sample"].apply(lambda x: x if x.startswith("MGH") else "MGH{}".format(x))
 df["sample"] = df["sample"].str.replace("_", "-")
+# for some reason, we are missing fastq files for MGH57-P14 samples
+df = df.loc[~df["sample"].str.startswith("MGH57-P14")]
 df["plate"] = df["sample"].apply(lambda x: x.split("-")[1]) #x.split("_")[1])
 df["well"] = df["sample"].apply(lambda x: x.split("-")[2])
 df.to_csv(snakemake.output[0], sep="\t", index=False)
