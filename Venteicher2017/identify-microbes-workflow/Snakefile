@@ -1,0 +1,50 @@
+from os.path import join
+import pandas as pd
+from snakemake.utils import min_version
+##### set minimum snakemake version #####
+min_version("5.1.2")
+
+wildcard_constraints:
+    patient="MGH42|MGH43|MGH44|MGH45|MGH56|MGH57|MGH61|MGH64|MGH103|MGH107"
+
+##### load config and sample sheets #####
+configfile: join("config", "PathSeq-config.yaml")
+patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
+samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
+samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
+
+# directories
+FASTQ_DIR = join("FASTQ", "raw")
+
+# Intermediate Files
+RAW_FASTQ1_FILE = "/data/Robinson-SB/Venteicher2017-fastq-files/{sample}_R1.fastq.gz"
+RAW_FASTQ2_FILE = "/data/Robinson-SB/Venteicher2017-fastq-files/{sample}_R2.fastq.gz"
+FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
+FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
+
+# Output Files
+PAIRED_FILTERED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-paired.bam")
+UNPAIRED_FILTERED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-unpaired.bam")
+
+# include rules
+include: "../../RNA-snakemake-rules/rules/genome.smk"
+include: "../../RNA-snakemake-rules/rules/STAR.smk"
+include: "../../pathogen-discovery-rules/rules/kraken.smk"
+
+localrules: move_and_rename_FASTQ_File
+
+rule all:
+    input:
+        expand(PAIRED_FILTERED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(UNPAIRED_FILTERED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
+
+rule move_and_rename_FASTQ_File:
+    input:
+        RAW_FASTQ1_FILE,
+        RAW_FASTQ2_FILE
+    output:
+        temp(FASTQ1_FILE),
+        temp(FASTQ2_FILE)
+    shell:
+        "cp {input[0]} {output[0]} && "
+        "cp {input[1]} {output[1]}"
