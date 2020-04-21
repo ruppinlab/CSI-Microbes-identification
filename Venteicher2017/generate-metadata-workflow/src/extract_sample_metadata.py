@@ -25,6 +25,7 @@ for patient in patients:
         output_df.append(other_df)
 
 df = pd.concat(output_df)
+df["sample"] = df["sample"].apply(lambda x: x if x.startswith("MGH") else "MGH{}".format(x))
 df["sample"] = df["sample"].str.replace("_", "-")
 df["plate"] = df["sample"].apply(lambda x: x.split("-")[1]) #x.split("_")[1])
 df["well"] = df["sample"].apply(lambda x: x.split("-")[2])
