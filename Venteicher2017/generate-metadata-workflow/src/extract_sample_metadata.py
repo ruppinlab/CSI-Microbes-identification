@@ -21,7 +21,7 @@ for patient in patients:
     output_df.append(tumor_df)
     if patient != "MGH103":
         other_samples = pd.read_csv("data/{}_other_columns_selected.txt".format(patient), sep="\t", nrows=0, index_col=0).columns
-        other_df = pd.DataFrame(data={"patient": patient, "sample": tumor_samples, "celltype": "nonTumor"})
+        other_df = pd.DataFrame(data={"patient": patient, "sample": other_samples, "celltype": "nonTumor"})
         output_df.append(other_df)
 
 df = pd.concat(output_df)
