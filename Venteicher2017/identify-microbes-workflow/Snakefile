@@ -27,8 +27,8 @@ PAIRED_FILTERED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-
 UNPAIRED_FILTERED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-unpaired.bam")
 
 # include rules
-include: "../../RNA-snakemake-rules/rules/genome.smk"
-include: "../../RNA-snakemake-rules/rules/STAR.smk"
+#include: "../../RNA-snakemake-rules/rules/genome.smk"
+#include: "../../RNA-snakemake-rules/rules/STAR.smk"
 include: "../../pathogen-discovery-rules/rules/kraken.smk"
 
 localrules: move_and_rename_FASTQ_File
@@ -37,6 +37,19 @@ rule all:
     input:
         expand(PAIRED_FILTERED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
         expand(UNPAIRED_FILTERED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
+
+rule convert_FASTQ_to_BAM:
+    input:
+        fq1=RAW_FASTQ1_FILE,
+        fq2=RAW_FASTQ2_FILE
+    output:
+        config["PathSeq"]["bam"]
+    shell:
+        "module load picard && "
+        "java -Xmx???g -XX:ParallelGCThreads=5 -jar $PICARDJARPATH/picard.jar "
+        "FastqToSam F1={input.fq1} F2={input.fq2} O={output} "
+        "SM={wildcards.sample} RG={wildcards.sample} "
+        "TMP_DIR=/lscratch/$SLURM_JOBID"
 
 rule move_and_rename_FASTQ_File:
     input:

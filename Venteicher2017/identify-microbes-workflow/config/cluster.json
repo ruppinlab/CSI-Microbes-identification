@@ -7,27 +7,12 @@
         "gres": 10,
         "partition": "norm,ccr"
     },
-    "create_star_index" :
+    "convert_FASTQ_to_BAM":
     {
-        "nthreads" : 16,
-        "mem": "64g"
-    },
-    "run_star_pe_pass1":
-    {
-        "time": "24:00:00",
-        "nthreads" : 48,
-        "mem": "64g"
-    },
-    "run_star_pe_pass2":
-    {
-        "time": "24:00:00",
-        "nthreads" : 48,
-        "mem": "64g"
-    },
-    "build_host_kmer_file":
-    {
-        "mem": "80g",
-        "nthreads": 16
+        "time": "02:00:00",
+        "mem": "16g",
+        "nthreads": 6,
+        "gres": 20
     },
     "run_PathSeq":
     {
@@ -35,12 +20,6 @@
         "time": "7-00:00:00",
         "nthreads": 16,
         "gres": 50
-    },
-    "download_FASTQ_from_SRA":
-    {
-      "nthreads": 6,
-      "gres": 200,
-      "mem": "32g"
     },
     "PathSeqFilterSpark":
     {
