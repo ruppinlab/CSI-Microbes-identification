@@ -32,3 +32,5 @@ PathSeq:
   taxonomy_db: "data/D23580+PathSeq_taxonomy.db"
   genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
   annotation: "raw/genome/gencode.v22.annotation.gtf"
+  host_img: "output/PathSeq/HG38+ERCC_host.fa.img"
+  host_bfi: "output/PathSeq/HG38+ERCC_host.bfi"

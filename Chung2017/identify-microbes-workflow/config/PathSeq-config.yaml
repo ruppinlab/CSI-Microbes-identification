@@ -31,3 +31,5 @@ PathSeq:
   microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
   microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
   taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
+  host_img: "output/PathSeq/HG38+RNA_SPIKE_host.fa.img"
+  host_bfi: "output/PathSeq/HG38+RNA_SPIKE_host.bfi"
