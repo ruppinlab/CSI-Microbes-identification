@@ -30,6 +30,7 @@ KRAKEN_UNPAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "unpa
 # include rules
 include: "../../RNA-snakemake-rules/rules/genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
+include: "../../pathogen-discovery-rules/rules/make-Kraken-files.smk"
 include: "../../pathogen-discovery-rules/rules/kraken.smk"
 
 

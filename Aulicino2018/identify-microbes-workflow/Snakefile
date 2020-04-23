@@ -51,9 +51,8 @@ include: "../../pathogen-discovery-rules/rules/kraken.smk"
 
 rule all:
     input:
-        #expand(KRAKEN_UNPAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
-        #expand(KRAKEN_PAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
-        join(config["Kraken"]["db_path"], config["Kraken"]["dbname"], "database.kdb")
+        expand(KRAKEN_UNPAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(KRAKEN_PAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
 
 
 
