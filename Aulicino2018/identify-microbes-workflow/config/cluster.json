@@ -103,7 +103,7 @@
     {
       "gres": 500,
       "nthreads": 16,
-      "mem": "500g",
+      "mem": "700g",
       "time": "2-00:00:00",
       "partition": "largemem"
     }
