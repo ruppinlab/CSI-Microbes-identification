@@ -35,8 +35,17 @@ include: "../../pathogen-discovery-rules/rules/kraken.smk"
 
 rule all:
     input:
-        expand(config["PathSeq"]["bam_file"], zip, patient=samples["patient"], sample=samples["sample"]),
+        "hacky-hack.txt"
         # expand(UNPAIRED_FILTERED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
+
+rule hack:
+    input:
+        expand(config["PathSeq"]["bam_file"], zip, patient=samples["patient"], sample=samples["sample"]),
+    output:
+        touch("hacky-hack.txt")
+    group:
+        "PathSeqFilter"
+
 
 rule convert_FASTQ_to_BAM:
     input:
