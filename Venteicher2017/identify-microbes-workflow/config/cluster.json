@@ -9,23 +9,15 @@
     },
     "convert_FASTQ_to_BAM":
     {
-        "time": "02:00:00",
-        "mem": "16g",
-        "nthreads": 6,
-        "gres": 20
+        "time": "1:00:00",
+        "mem": "8g",
+        "nthreads": 6
     },
-    "run_PathSeq":
+    "PathSeqFilter":
     {
-        "mem": "120g",
-        "time": "7-00:00:00",
-        "nthreads": 16,
-        "gres": 50
-    },
-    "PathSeqFilterSpark":
-    {
-        "mem": "64g",
-        "time": "4:00:00",
-        "nthreads": 1
+        "mem": "48g",
+        "time": "8:00:00",
+        "nthreads": 8
     },
     "run_Kraken_paired_reads":
     {

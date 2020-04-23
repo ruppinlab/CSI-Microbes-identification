@@ -25,26 +25,32 @@ FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
 # Output Files
 PAIRED_FILTERED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-paired.bam")
 UNPAIRED_FILTERED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-unpaired.bam")
-samples = samples.iloc[0:5]
-# include rules
-#include: "../../RNA-snakemake-rules/rules/genome.smk"
-#include: "../../RNA-snakemake-rules/rules/STAR.smk"
+
 include: "../../pathogen-discovery-rules/rules/kraken.smk"
+
+n_samples = samples.shape[0]
+n_batches = math.ceil(n_samples/20)
 
 # localrules: move_and_rename_FASTQ_File
 
 rule all:
     input:
-        "hacky-hack.txt"
-        # expand(UNPAIRED_FILTERED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand("hacky-hack-{i}.txt", i=range(0, n_batches)),
+        expand(UNPAIRED_FILTERED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(PAIRED_FILTERED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
 
-rule hack:
-    input:
-        expand(config["PathSeq"]["bam_file"], zip, patient=samples["patient"], sample=samples["sample"]),
-    output:
-        touch("hacky-hack.txt")
-    group:
-        "PathSeqFilter"
+# let's run PathSeqFilterSpark for batches of 20 samples
+
+sample_list = np.array_split(samples, n_batches)
+for i in range(0, n_batches):
+    rule:
+        input:
+            expand(PAIRED_FILTERED_BAM, zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"])
+        output:
+            temp(touch("hacky-hack-{}.txt".format(i)))
+        group:
+            "PathSeqFilter"
+
 
 
 rule convert_FASTQ_to_BAM:
@@ -55,7 +61,7 @@ rule convert_FASTQ_to_BAM:
         config["PathSeq"]["bam_file"]
     shell:
         "module load picard && "
-        "java -Xmx16g -XX:ParallelGCThreads=5 -jar $PICARDJARPATH/picard.jar "
+        "java -Xmx8g -XX:ParallelGCThreads=5 -jar $PICARDJARPATH/picard.jar "
         "FastqToSam F1={input.fq1} F2={input.fq2} O={output} "
         "SM={wildcards.sample} RG={wildcards.sample} "
         "TMP_DIR=/lscratch/$SLURM_JOBID"

@@ -5,14 +5,13 @@ samples: data/samples.tsv
 
 ref:
   genome: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa"
-  # annotation: "raw/genome/gencode.v22.annotation.gtf"
 
 
 params:
   PathSeq:
-    filter: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" --spark-master local[1]'
-    BWA: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" --spark-master local[8]'
-    pipeline: '--java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13" --spark-master local[16] '
+    filter: '--java-options "-Xmx48g -Xms48G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" --spark-master local[4]'
+    BWA: '--java-options "-Xmx48g -Xms48G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" --spark-master local[4]'
+    pipeline: '--java-options "-Xmx48g -Xms48G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" --spark-master local[4]'
   Kraken: '--threads 16 '
 trimming:
   skip: True
