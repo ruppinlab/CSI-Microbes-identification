@@ -31,7 +31,7 @@ include: "../../pathogen-discovery-rules/rules/kraken.smk"
 n_samples = samples.shape[0]
 n_batches = math.ceil(n_samples/20)
 
-# localrules: move_and_rename_FASTQ_File
+localrules: convert_FASTQ_to_BAM
 
 rule all:
     input:
