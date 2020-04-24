@@ -43,12 +43,10 @@ sample_list = np.array_split(samples, n_batches)
 for i in range(0, n_batches):
     rule:
         input:
-            paired = expand(join("output", "PathSeq", "{patient}-{sample}", "{batch}-filtered-paired.bam"),
-                   zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"],
-                   batch=i),
-            unpaired = expand(join("output", "PathSeq", "{patient}-{sample}", "{batch}-filtered-unpaired.bam"),
-                   zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"],
-                   batch=i),
+            paired = expand(join("output", "PathSeq", "{patient}-{sample}", "{}-filtered-paired.bam".format(i)),
+                   zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"]),
+            unpaired = expand(join("output", "PathSeq", "{patient}-{sample}", "{}-filtered-unpaired.bam".format(i)),
+                   zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"]),
         output:
             paired = expand(join("output", "PathSeq", "{patient}-{sample}", "filtered-paired.bam"),
                    zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"]),
@@ -58,8 +56,8 @@ for i in range(0, n_batches):
             "PathSeqFilter"
         run:
             for i1, i2, o1, o2 in zip(input.paired, input.unpaired, output.paired, output.unpaired):
-                shell("mv {i1} {o1}")
-                shell("mv {i2} {o2}")
+                shell("cp {i1} {o1}")
+                shell("cp {i2} {o2}")
 
 
 

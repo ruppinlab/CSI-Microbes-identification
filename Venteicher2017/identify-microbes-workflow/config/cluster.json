@@ -17,7 +17,8 @@
     {
         "mem": "48g",
         "time": "8:00:00",
-        "nthreads": 8
+        "nthreads": 8,
+        "gres": 40
     },
     "run_Kraken_paired_reads":
     {
