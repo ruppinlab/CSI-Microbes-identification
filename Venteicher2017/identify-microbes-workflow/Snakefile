@@ -1,5 +1,7 @@
 from os.path import join
+import math
 import pandas as pd
+import numpy as np
 from snakemake.utils import min_version
 ##### set minimum snakemake version #####
 min_version("5.1.2")
