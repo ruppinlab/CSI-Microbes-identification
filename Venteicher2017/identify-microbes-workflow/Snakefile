@@ -27,6 +27,8 @@ FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
 # Output Files
 PAIRED_FILTERED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-paired.bam")
 UNPAIRED_FILTERED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-unpaired.bam")
+PAIRED_ALIGNED_BAM = join("output", "PathSeq", "{patient}-{sample}", "aligned-paired.bam")
+UNPAIRED_ALIGNED_BAM = join("output", "PathSeq", "{patient}-{sample}", "aligned-unpaired.bam")
 
 include: "../../pathogen-discovery-rules/rules/kraken.smk"
 
@@ -34,8 +36,8 @@ localrules: convert_FASTQ_to_BAM
 
 rule all:
     input:
-        expand(UNPAIRED_FILTERED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
-        expand(PAIRED_FILTERED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(PAIRED_ALIGNED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(UNPAIRED_ALIGNED_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
 
 # let's run PathSeqFilterSpark for batches of 20 samples
 batch_size = 20
@@ -60,6 +62,26 @@ for i in range(0, n_batches):
             for i1, i2, o1, o2 in zip(input.paired, input.unpaired, output.paired, output.unpaired):
                 shell("cp {i1} {o1}")
                 shell("cp {i2} {o2}")
+
+for i in range(0, n_batches):
+    rule:
+        input:
+            paired = expand(join("output", "PathSeq", "{patient}-{sample}", "{}-aligned-paired.bam".format(i)),
+                   zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"]),
+            unpaired = expand(join("output", "PathSeq", "{patient}-{sample}", "{}-aligned-unpaired.bam".format(i)),
+                   zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"]),
+        output:
+            paired = expand(join("output", "PathSeq", "{patient}-{sample}", "aligned-paired.bam"),
+                   zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"]),
+            unpaired = expand(join("output", "PathSeq", "{patient}-{sample}", "aligned-unpaired.bam"),
+                   zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"]),
+        group:
+            "PathSeqBwa"
+        run:
+            for i1, i2, o1, o2 in zip(input.paired, input.unpaired, output.paired, output.unpaired):
+                shell("cp {i1} {o1}")
+                shell("cp {i2} {o2}")
+
 
 
 

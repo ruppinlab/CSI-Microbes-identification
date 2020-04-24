@@ -16,9 +16,16 @@
     "PathSeqFilter":
     {
         "mem": "48g",
-        "time": "8:00:00",
+        "time": "1-00:00:00",
         "nthreads": 8,
         "gres": 40
+    },
+    "PathSeqBwa":
+    {
+        "mem": "48g",
+        "time": "1-00:00:00",
+        "nthreads": 8,
+        "gres": 250
     },
     "run_Kraken_paired_reads":
     {
