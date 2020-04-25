@@ -23,7 +23,7 @@ RNA_SPIKE_SEQUENCES = join("data", "spike_in_sequences.fa")
 # handcrafted TODO generate from fasta file
 RNA_SPIKE_GTF = join("data", "spike_in_sequences.gtf")
 # Output Files
-PAIRED_FILTERED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-paired.bam")
+# PAIRED_FILTERED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-paired.bam")
 KRAKEN_PAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "paired-sequences.biom")
 KRAKEN_UNPAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "unpaired-sequences.biom")
 
@@ -38,29 +38,6 @@ rule all:
     input:
         expand(KRAKEN_PAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
         expand(KRAKEN_UNPAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
-
-batch_size = 1000
-n_samples = samples.shape[0]
-n_batches = math.ceil(n_samples/batch_size)
-sample_list = np.array_split(samples, n_batches)
-for i in range(0, n_batches):
-    rule:
-        input:
-            paired = expand(join("output", "Kraken", "{patient}-{sample}", "{}-paired-sequences.kraken".format(i)),
-                   zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"],),
-            # unpaired = expand(join("output", "PathSeq", "{patient}-{sample}", "{}-filtered-unpaired.bam".format(i)),
-            #        zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"]),
-        output:
-            paired = expand(join("output", "Kraken", "{patient}-{sample}", "paired-sequences.kraken"),
-                   zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"]),
-            # unpaired = expand(join("output", "PathSeq", "{patient}-{sample}", "filtered-unpaired.bam"),
-            #        zip, patient=sample_list[i]["patient"], sample=sample_list[i]["sample"]),
-        group:
-            "Kraken"
-        run:
-            for i1, o1 in zip(input.paired, output.paired):
-                shell("mv {i1} {o1}")
-                # shell("mv {i2} {o2}")
 
 
 rule combine_human_spikein_fasta:
