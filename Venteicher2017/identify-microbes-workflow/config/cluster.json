@@ -4,8 +4,25 @@
         "time" : "08:00:00",
         "mem": "16g",
         "nthreads" : 4,
-        "gres": 10,
+        "gres": "lscratch:10",
         "partition": "norm,ccr"
+    },
+    "PathSeqPipelineSpark_lscratch4":
+    {
+      "mem":"48g",
+      "nthreads": 8,
+      "gres":"lscratch:300"
+    },
+    "PathSeqPipelineSpark_lscratch8":
+    {
+      "mem":"48g",
+      "nthreads": 12,
+      "gres":"lscratch:300"
+    },
+    "PathSeqPipelineSpark":
+    {
+      "mem":"48g",
+      "nthreads": 8
     },
     "convert_FASTQ_to_BAM":
     {
