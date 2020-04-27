@@ -36,9 +36,9 @@ localrules: convert_FASTQ_to_BAM
 
 rule all:
     input:
-        expand(join("output", "PathSeq", "v1", "{patient}-{sample}", "pathseq.txt"), sample=samples["sample"], sample=samples["patient"]),
-        expand(join("output", "PathSeq", "v2", "{patient}-{sample}", "pathseq.txt"), sample=samples["sample"], sample=samples["patient"]),
-        expand(join("output", "PathSeq", "v3", "{patient}-{sample}", "pathseq.txt"), sample=samples["sample"], sample=samples["patient"]),
+        expand(join("output", "PathSeq", "v1", "{patient}-{sample}", "pathseq.txt"), sample=samples["sample"], patient=samples["patient"]),
+        expand(join("output", "PathSeq", "v2", "{patient}-{sample}", "pathseq.txt"), sample=samples["sample"], patient=samples["patient"]),
+        expand(join("output", "PathSeq", "v3", "{patient}-{sample}", "pathseq.txt"), sample=samples["sample"], patient=samples["patient"]),
 
 
 
