@@ -77,6 +77,12 @@ rule PathSeqPipelineSpark_lscratch4:
         microbe_fasta_file = config["PathSeq"]["microbe_fasta"],
         host_hss_file = config["PathSeq"]["host_bfi"],
         taxonomy_db = config["PathSeq"]["taxonomy_db"]
+    params:
+        host_bwa_image = basename(config["PathSeq"]["host_img"]),
+        microbe_bwa_image = basename(config["PathSeq"]["microbe_bwa_image"]),
+        microbe_fasta_file = basename(config["PathSeq"]["microbe_fasta"]),
+        host_hss_file = basename(config["PathSeq"]["host_bfi"]),
+        taxonomy_db = basename(config["PathSeq"]["taxonomy_db"])
     output:
         pathseq_bam = join("output", "PathSeq", "v2", "{patient}-{sample}", "pathseq.bam"),
         pathseq_output = join("output", "PathSeq", "v2", "{patient}-{sample}", "pathseq.txt")
@@ -89,11 +95,11 @@ rule PathSeqPipelineSpark_lscratch4:
         "module load GATK/4.1.6.0 && "
         "gatk PathSeqPipelineSpark "
         "--input '{input.bam_file}' "
-        "--filter-bwa-image /lscratch/$SLURM_JOBID/{} ".format(basename(input.host_bwa_image))
-        "--kmer-file /lscratch/$SLURM_JOBID/{} ".format(basename(input.host_hss_file))
-        "--microbe-fasta /scratch/$SLURM_JOBID/{} ".format(basename(input.microbe_fasta_file))
-        "--microbe-bwa-image /scratch/$SLURM_JOBID/{} ".format(basename(input.microbe_bwa_image))
-        "--taxonomy-file /lscratch/$SLURM_JOBID/{} ".format(basename(input.taxonomy_db))
+        "--filter-bwa-image /lscratch/$SLURM_JOBID/{params.host_bwa_image} "
+        "--kmer-file /lscratch/$SLURM_JOBID/{params.host_hss_file} "
+        "--microbe-fasta /scratch/$SLURM_JOBID/{params.microbe_fasta_file} "
+        "--microbe-bwa-image /scratch/$SLURM_JOBID/{params.microbe_bwa_image} "
+        "--taxonomy-file /lscratch/$SLURM_JOBID/{params.taxonomy_db} "
         "--output '{output.pathseq_bam}' "
         "--scores-output '{output.pathseq_output}' "
         '--java-options "-Xmx48g -Xms48G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" '
@@ -107,6 +113,12 @@ rule PathSeqPipelineSpark_lscratch8:
         microbe_fasta_file = config["PathSeq"]["microbe_fasta"],
         host_hss_file = config["PathSeq"]["host_bfi"],
         taxonomy_db = config["PathSeq"]["taxonomy_db"]
+    params:
+        host_bwa_image = basename(config["PathSeq"]["host_img"]),
+        microbe_bwa_image = basename(config["PathSeq"]["microbe_bwa_image"]),
+        microbe_fasta_file = basename(config["PathSeq"]["microbe_fasta"]),
+        host_hss_file = basename(config["PathSeq"]["host_bfi"]),
+        taxonomy_db = basename(config["PathSeq"]["taxonomy_db"])
     output:
         pathseq_bam = join("output", "PathSeq", "v3", "{patient}-{sample}", "pathseq.bam"),
         pathseq_output = join("output", "PathSeq", "v3", "{patient}-{sample}", "pathseq.txt")
@@ -119,11 +131,11 @@ rule PathSeqPipelineSpark_lscratch8:
         "module load GATK/4.1.6.0 && "
         "gatk PathSeqPipelineSpark "
         "--input '{input.bam_file}' "
-        "--filter-bwa-image /lscratch/$SLURM_JOBID/{} ".format(basename(input.host_bwa_image))
-        "--kmer-file /lscratch/$SLURM_JOBID/{} ".format(basename(input.host_hss_file))
-        "--microbe-fasta /scratch/$SLURM_JOBID/{} ".format(basename(input.microbe_fasta_file))
-        "--microbe-bwa-image /scratch/$SLURM_JOBID/{} ".format(basename(input.microbe_bwa_image))
-        "--taxonomy-file /lscratch/$SLURM_JOBID/{} ".format(basename(input.taxonomy_db))
+        "--filter-bwa-image /lscratch/$SLURM_JOBID/{params.host_bwa_image} "
+        "--kmer-file /lscratch/$SLURM_JOBID/{params.host_hss_file} "
+        "--microbe-fasta /scratch/$SLURM_JOBID/{params.microbe_fasta_file} "
+        "--microbe-bwa-image /scratch/$SLURM_JOBID/{params.microbe_bwa_image} "
+        "--taxonomy-file /lscratch/$SLURM_JOBID/{params.taxonomy_db} "
         "--output '{output.pathseq_bam}' "
         "--scores-output '{output.pathseq_output}' "
         '--java-options "-Xmx64g -Xms64G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" '
