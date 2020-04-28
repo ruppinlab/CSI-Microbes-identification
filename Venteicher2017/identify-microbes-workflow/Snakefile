@@ -17,6 +17,10 @@ samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patien
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
 samples = samples.loc[samples.patient == patient]
 samples = samples.loc[samples.plate == plate]
+samples = samples.shuffle(frac=1, random_state=0)
+nrows = min(30, samples.shape[0])
+print(nrows)
+samples = samples.iloc[0:nrows]
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
 
