@@ -21,6 +21,7 @@ samples = samples.sample(frac=1, random_state=0)
 nrows = min(30, samples.shape[0])
 print(nrows)
 samples = samples.iloc[0:nrows]
+print(samples[["sample", "patient"]])
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
 
