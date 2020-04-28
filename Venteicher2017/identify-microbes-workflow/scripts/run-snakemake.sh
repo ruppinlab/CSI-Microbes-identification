@@ -1,8 +1,12 @@
 #!/bin/bash
 INPUT=scripts/data.csv
+OLDIFS=$IFS
+IFS=','
 [ ! -f $INPUT ] && { echo "$INPUT file not found"; exit 99; }
 while read patient plate
 do
+  echo $patient
+  echo $plate
   module load snakemake
   snakemake \
   --use-conda \

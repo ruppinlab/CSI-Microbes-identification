@@ -9,7 +9,10 @@ min_version("5.1.2")
 wildcard_constraints:
     patient="MGH42|MGH43|MGH44|MGH45|MGH56|MGH57|MGH61|MGH64|MGH103|MGH107"
 patient = config["patient"]
+print(patient)
 plate = config["plate"]
+print(plate)
+print(config)
 ##### load config and sample sheets #####
 configfile: join("config", "PathSeq-config.yaml")
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
@@ -40,7 +43,7 @@ UNPAIRED_ALIGNED_BAM = join("output", "PathSeq", "{patient}-{sample}", "aligned-
 # include: "../../pathogen-discovery-rules/rules/kraken.smk"
 # use parameters passed to subset the samples
 # samples = samples.iloc[0:10]
-localrules: convert_FASTQ_to_BAM
+# localrules: convert_FASTQ_to_BAM
 
 rule all:
     input:
