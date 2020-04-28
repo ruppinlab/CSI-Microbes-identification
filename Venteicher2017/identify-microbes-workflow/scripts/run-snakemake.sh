@@ -10,4 +10,5 @@ snakemake \
 --jobs 100 \
 --latency-wait 60 \
 --keep-going \
+--config patient=MGH42 plate=P3
 --local-cores 16 all
