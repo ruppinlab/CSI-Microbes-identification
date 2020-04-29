@@ -22,7 +22,7 @@ trimming:
 
 Kraken:
   db_path: "/data/Robinson-SB/Kraken-data"
-  dbname: "pathseqDB"
+  dbname: "pathseqDBv2"
   taxonomic_rank: "genus"
   microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
 
