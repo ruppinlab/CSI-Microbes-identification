@@ -50,7 +50,7 @@ rule all:
 
 rule PathSeqPipelineSpark_lscratch8:
     input:
-        bam_file = expand(config["PathSeq"]["bam_file"], sample=samples["sample"], patient=samples["patient"]),
+        bam_file = expand(config["PathSeq"]["bam_file"], zip, sample=samples["sample"], patient=samples["patient"]),
         host_bwa_image = config["PathSeq"]["host_img"],
         microbe_bwa_image = config["PathSeq"]["microbe_bwa_image"],
         microbe_fasta_file = config["PathSeq"]["microbe_fasta"],
