@@ -19,9 +19,7 @@ samples = samples.loc[samples.patient == patient]
 samples = samples.loc[samples.plate == plate]
 samples = samples.sample(frac=1, random_state=0)
 nrows = min(30, samples.shape[0])
-print(nrows)
 samples = samples.iloc[0:nrows]
-print(samples[["sample", "patient"]])
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
 
@@ -44,7 +42,7 @@ UNPAIRED_ALIGNED_BAM = join("output", "PathSeq", "{patient}-{sample}", "aligned-
 
 rule all:
     input:
-        expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt"), sample=samples["sample"], patient=samples["patient"]),
+        expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt"), zip, sample=samples["sample"], patient=samples["patient"]),
 
 
 
@@ -65,8 +63,8 @@ rule PathSeqPipelineSpark_lscratch8:
         host_hss_file = basename(config["PathSeq"]["host_bfi"]),
         taxonomy_db = basename(config["PathSeq"]["taxonomy_db"])
     output:
-        pathseq_bam = expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"), sample=samples["sample"], patient=samples["patient"]),
-        pathseq_output = expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt"), sample=samples["sample"], patient=samples["patient"])
+        pathseq_bam = expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"), zip, sample=samples["sample"], patient=samples["patient"]),
+        pathseq_output = expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt"), zip, sample=samples["sample"], patient=samples["patient"])
     run:
         shell("mkdir /lscratch/$SLURM_JOBID/tmp")
         shell("cp /data/Robinson-SB/PathSeq-data/* /lscratch/$SLURM_JOBID")
