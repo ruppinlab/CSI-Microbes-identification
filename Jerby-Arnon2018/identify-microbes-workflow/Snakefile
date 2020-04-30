@@ -1,4 +1,4 @@
-from os.path import join
+from os.path import join, basename
 import pandas as pd
 from snakemake.utils import min_version
 ##### set minimum snakemake version #####
