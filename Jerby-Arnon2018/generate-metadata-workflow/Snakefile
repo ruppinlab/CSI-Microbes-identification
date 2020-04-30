@@ -1,0 +1,12 @@
+
+
+
+rule clean_metadata:
+    input:
+        "data/participant.tsv",
+        "data/sample.tsv"
+    output:
+        "output/patients.tsv",
+        "output/samples.tsv"
+    script:
+        "src/extract_patient_sample.py"
