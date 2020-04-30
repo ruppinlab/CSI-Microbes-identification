@@ -72,16 +72,18 @@ samples = samples.iloc[0:nrows]
 # samples = samples.loc[samples["sample"].isin(samples_without_unpaired_microbial_reads)]
 # only run for samples that passed QC - other samples give issues
 # samples = samples.loc[samples.QC_status == "Passed"]
-
+print(samples)
 # include rules
 #include: "../../RNA-snakemake-rules/rules/genome.smk"
 #include: "../../RNA-snakemake-rules/rules/STAR.smk"
 # include: "../../pathogen-discovery-rules/rules/kraken.smk"
 
+PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+PATHSEQ_FILE = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
 rule all:
     input:
-        expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"), zip, sample=samples["sample"], patient=samples["patient"]),
-        expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt"), zip, sample=samples["sample"], patient=samples["patient"])
+        expand(PATHSEQ_BAM, zip, sample=samples["sample"], patient=samples["patient"]),
+        # expand(PATHSEQ_FILE, zip, sample=samples["sample"], patient=samples["patient"])
 
 
 rule PathSeqPipelineSpark_lscratch8:
@@ -99,8 +101,8 @@ rule PathSeqPipelineSpark_lscratch8:
         host_hss_file = basename(config["PathSeq"]["host_bfi"]),
         taxonomy_db = basename(config["PathSeq"]["taxonomy_db"])
     output:
-        pathseq_bam = expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"), zip, sample=samples["sample"], patient=samples["patient"]),
-        pathseq_output = expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt"), zip, sample=samples["sample"], patient=samples["patient"])
+        pathseq_bam = expand(PATHSEQ_BAM, zip, sample=samples["sample"], patient=samples["patient"]),
+        pathseq_output = expand(PATHSEQ_FILE, zip, sample=samples["sample"], patient=samples["patient"])
     run:
         shell("mkdir /lscratch/$SLURM_JOBID/tmp")
         shell("cp /data/Robinson-SB/PathSeq-data/* /lscratch/$SLURM_JOBID")
