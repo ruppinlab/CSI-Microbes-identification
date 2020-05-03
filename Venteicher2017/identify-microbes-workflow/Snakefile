@@ -18,8 +18,8 @@ samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.l
 samples = samples.loc[samples.patient == patient]
 samples = samples.loc[samples.plate == plate]
 samples = samples.sample(frac=1, random_state=0)
-nrows = min(30, samples.shape[0])
-samples = samples.iloc[0:nrows]
+nrows = min(60, samples.shape[0])
+samples = samples.iloc[30:nrows]
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
 
@@ -80,8 +80,8 @@ rule PathSeqPipelineSpark_lscratch8:
                 "--taxonomy-file /lscratch/$SLURM_JOBID/{params.taxonomy_db} "
                 "--output '{pathseq_bam}' "
                 "--scores-output '{pathseq_output}' "
-                '--java-options "-Xmx64g -Xms64G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" '
-                '--spark-master local[8]'
+                '--java-options "-Xmx90g -Xms90G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" '
+                '--spark-master local[10]'
             )
 
 
