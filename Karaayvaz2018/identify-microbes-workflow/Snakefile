@@ -142,21 +142,20 @@ rule PathSeqPipelineSpark_lscratch8:
     run:
         shell("mkdir /lscratch/$SLURM_JOBID/tmp")
         shell("cp /data/Robinson-SB/PathSeq-data/* /lscratch/$SLURM_JOBID")
-        for bam_file, pathseq_bam, pathseq_output in zip(input.bam_file, output.pathseq_bam, output.pathseq_output):
-            shell(
-                "module load GATK/4.1.6.0 && "
-                "gatk PathSeqPipelineSpark "
-                "--input '{bam_file}' "
-                "--filter-bwa-image /lscratch/$SLURM_JOBID/{params.host_bwa_image} "
-                "--kmer-file /lscratch/$SLURM_JOBID/{params.host_hss_file} "
-                "--microbe-fasta /lscratch/$SLURM_JOBID/{params.microbe_fasta_file} "
-                "--microbe-bwa-image /lscratch/$SLURM_JOBID/{params.microbe_bwa_image} "
-                "--taxonomy-file /lscratch/$SLURM_JOBID/{params.taxonomy_db} "
-                "--output '{pathseq_bam}' "
-                "--scores-output '{pathseq_output}' "
-                '--java-options "-Xmx64g -Xms64G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" '
-                '--spark-master local[8]'
-            )
+        shell(
+            "module load GATK/4.1.6.0 && "
+            "gatk PathSeqPipelineSpark "
+            "--input '{input.bam_file}' "
+            "--filter-bwa-image /lscratch/$SLURM_JOBID/{params.host_bwa_image} "
+            "--kmer-file /lscratch/$SLURM_JOBID/{params.host_hss_file} "
+            "--microbe-fasta /lscratch/$SLURM_JOBID/{params.microbe_fasta_file} "
+            "--microbe-bwa-image /lscratch/$SLURM_JOBID/{params.microbe_bwa_image} "
+            "--taxonomy-file /lscratch/$SLURM_JOBID/{params.taxonomy_db} "
+            "--output '{output.pathseq_bam}' "
+            "--scores-output '{output.pathseq_output}' "
+            '--java-options "-Xmx64g -Xms64G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" '
+            '--spark-master local[8]'
+        )
 
 rule convert_FASTQ_to_BAM:
     input:
