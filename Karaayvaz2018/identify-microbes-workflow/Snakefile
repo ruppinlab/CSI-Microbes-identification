@@ -34,8 +34,8 @@ samples = samples.loc[~samples["sample"].isin(["SRR7667879"])]
 samples = samples.loc[~samples["sample"].isin(["SRR7667876"])]
 samples = samples.loc[samples.plate == plate]
 samples = samples.sample(frac=1, random_state=0)
-#nrows = min(30, samples.shape[0])
-#samples = samples.iloc[0:nrows]
+nrows = min(60, samples.shape[0])
+samples = samples.iloc[60:]
 
 # # samples with no reads (paired or unpaired) that pass PathSeqFilter
 # samples_without_microbial_reads = [
@@ -86,45 +86,9 @@ rule all:
         # expand(PATHSEQ_FILE, zip, sample=samples["sample"], patient=samples["patient"])
 
 
-# rule PathSeqPipelineSpark_lscratch8:
-#     input:
-#         bam_file = expand(config["PathSeq"]["bam_file"], zip, sample=samples["sample"], patient=samples["patient"]),
-#         host_bwa_image = config["PathSeq"]["host_img"],
-#         microbe_bwa_image = config["PathSeq"]["microbe_bwa_image"],
-#         microbe_fasta_file = config["PathSeq"]["microbe_fasta"],
-#         host_hss_file = config["PathSeq"]["host_bfi"],
-#         taxonomy_db = config["PathSeq"]["taxonomy_db"]
-#     params:
-#         host_bwa_image = basename(config["PathSeq"]["host_img"]),
-#         microbe_bwa_image = basename(config["PathSeq"]["microbe_bwa_image"]),
-#         microbe_fasta_file = basename(config["PathSeq"]["microbe_fasta"]),
-#         host_hss_file = basename(config["PathSeq"]["host_bfi"]),
-#         taxonomy_db = basename(config["PathSeq"]["taxonomy_db"])
-#     output:
-#         pathseq_bam = expand(PATHSEQ_BAM, zip, sample=samples["sample"], patient=samples["patient"]),
-#         pathseq_output = expand(PATHSEQ_FILE, zip, sample=samples["sample"], patient=samples["patient"])
-#     run:
-#         shell("mkdir /lscratch/$SLURM_JOBID/tmp")
-#         shell("cp /data/Robinson-SB/PathSeq-data/* /lscratch/$SLURM_JOBID")
-#         for bam_file, pathseq_bam, pathseq_output in zip(input.bam_file, output.pathseq_bam, output.pathseq_output):
-#             shell(
-#                 "module load GATK/4.1.6.0 && "
-#                 "gatk PathSeqPipelineSpark "
-#                 "--input '{bam_file}' "
-#                 "--filter-bwa-image /lscratch/$SLURM_JOBID/{params.host_bwa_image} "
-#                 "--kmer-file /lscratch/$SLURM_JOBID/{params.host_hss_file} "
-#                 "--microbe-fasta /lscratch/$SLURM_JOBID/{params.microbe_fasta_file} "
-#                 "--microbe-bwa-image /lscratch/$SLURM_JOBID/{params.microbe_bwa_image} "
-#                 "--taxonomy-file /lscratch/$SLURM_JOBID/{params.taxonomy_db} "
-#                 "--output '{pathseq_bam}' "
-#                 "--scores-output '{pathseq_output}' "
-#                 '--java-options "-Xmx64g -Xms64G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" '
-#                 '--spark-master local[8]'
-#             )
-
 rule PathSeqPipelineSpark_lscratch8:
     input:
-        bam_file = config["PathSeq"]["bam_file"],
+        bam_file = expand(config["PathSeq"]["bam_file"], zip, sample=samples["sample"], patient=samples["patient"]),
         host_bwa_image = config["PathSeq"]["host_img"],
         microbe_bwa_image = config["PathSeq"]["microbe_bwa_image"],
         microbe_fasta_file = config["PathSeq"]["microbe_fasta"],
@@ -137,25 +101,26 @@ rule PathSeqPipelineSpark_lscratch8:
         host_hss_file = basename(config["PathSeq"]["host_bfi"]),
         taxonomy_db = basename(config["PathSeq"]["taxonomy_db"])
     output:
-        pathseq_bam = PATHSEQ_BAM,
-        pathseq_output = PATHSEQ_FILE
+        pathseq_bam = expand(PATHSEQ_BAM, zip, sample=samples["sample"], patient=samples["patient"]),
+        pathseq_output = expand(PATHSEQ_FILE, zip, sample=samples["sample"], patient=samples["patient"])
     run:
         shell("mkdir /lscratch/$SLURM_JOBID/tmp")
         shell("cp /data/Robinson-SB/PathSeq-data/* /lscratch/$SLURM_JOBID")
-        shell(
-            "module load GATK/4.1.6.0 && "
-            "gatk PathSeqPipelineSpark "
-            "--input '{input.bam_file}' "
-            "--filter-bwa-image /lscratch/$SLURM_JOBID/{params.host_bwa_image} "
-            "--kmer-file /lscratch/$SLURM_JOBID/{params.host_hss_file} "
-            "--microbe-fasta /lscratch/$SLURM_JOBID/{params.microbe_fasta_file} "
-            "--microbe-bwa-image /lscratch/$SLURM_JOBID/{params.microbe_bwa_image} "
-            "--taxonomy-file /lscratch/$SLURM_JOBID/{params.taxonomy_db} "
-            "--output '{output.pathseq_bam}' "
-            "--scores-output '{output.pathseq_output}' "
-            '--java-options "-Xmx64g -Xms64G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" '
-            '--spark-master local[8]'
-        )
+        for bam_file, pathseq_bam, pathseq_output in zip(input.bam_file, output.pathseq_bam, output.pathseq_output):
+            shell(
+                "module load GATK/4.1.6.0 && "
+                "gatk PathSeqPipelineSpark "
+                "--input '{bam_file}' "
+                "--filter-bwa-image /lscratch/$SLURM_JOBID/{params.host_bwa_image} "
+                "--kmer-file /lscratch/$SLURM_JOBID/{params.host_hss_file} "
+                "--microbe-fasta /lscratch/$SLURM_JOBID/{params.microbe_fasta_file} "
+                "--microbe-bwa-image /lscratch/$SLURM_JOBID/{params.microbe_bwa_image} "
+                "--taxonomy-file /lscratch/$SLURM_JOBID/{params.taxonomy_db} "
+                "--output '{pathseq_bam}' "
+                "--scores-output '{pathseq_output}' "
+                '--java-options "-Xmx64g -Xms64G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" '
+                '--spark-master local[8]'
+            )
 
 rule convert_FASTQ_to_BAM:
     input:
