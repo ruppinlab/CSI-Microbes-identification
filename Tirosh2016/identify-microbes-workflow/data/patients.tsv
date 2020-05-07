@@ -1,0 +1,19 @@
+patient	age	braf_nras_mutations	gender	post_treatment	pre_treatment
+Melanoma_53	77	Wild-type	Female	None	None
+Melanoma_58	67	Wild-type	Female	None	Ipilimumab
+Melanoma_59	80	Wild-type	Male	Nivolumab	None
+Melanoma_60	69	BRAF V600K	Male	None	Trametinib,ipilimumab
+Melanoma_67	58	BRAF V600E	Male	None	None
+Melanoma_71	79	NRAS Q61L	Male	None	None
+Melanoma_72	57	NRAS Q61R	Female	None	IL-2,nivolumab,ipilimumab+antiKIR-Ab
+Melanoma_74	63		Male	None	Nivolumab
+Melanoma_75	80	Wild-type	Male	Nivolumab	ipilimumab+nivolumab,WDVAX
+Melanoma_78	73	NRAS Q61L	Male	None	WDVAX,ipilimumab+nivolumab
+Melanoma_79	74	Wild-type	Male	None	None
+Melanoma_80	86	NRAS Q61L	Female	None	None
+Melanoma_81	43	BRAF V600E	Female	None	None
+Melanoma_82	81	Wild-type	Male	None	None
+Melanoma_84	67	Wild-type	Male	None	None
+Melanoma_88	54	NRAS Q61L	Female	None	Tremelimumab+MEDI3617
+Melanoma_89	67		Male	ipilimumab	None
+Melanoma_94	54	Wild-type	Female	ipilimumab	IFN,ipilimumab+nivolumab

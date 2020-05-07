@@ -1,0 +1,23 @@
+{
+    "__default__" :
+    {
+        "time" : "08:00:00",
+        "mem": "16g",
+        "nthreads" : 4,
+        "gres": "10",
+        "partition": "norm,ccr"
+    },
+    "PathSeqPipelineSpark_lscratch8":
+    {
+      "mem":"80g",
+      "nthreads": 12,
+      "gres":"300",
+      "time": "7-00:00:00"
+    },
+    "convert_FASTQ_to_BAM":
+    {
+        "time": "1:00:00",
+        "mem": "8g",
+        "nthreads": 6
+    }
+}
