@@ -32,7 +32,14 @@ sample_df = pd.read_csv("data/sample.tsv", sep="\t")
 # ex. cy72-CD45-pos-H12-S960 belongs to Melanoma 74 - one sample
 # ex. all 224 cy94-* assigned to Melanoma 75 but all CY94 samples are assigned to Melanoma 94
 sample_df = sample_df.drop(columns="participant")
-sample_df = sample_df.rename(columns={'entity:sample_id': 'sample'})
+sample_df = sample_df.rename(columns={
+    'entity:sample_id': 'sample',
+    "file_path_read1": "fastq1",
+    "file_path_read2": "fastq2"
+    })
+
+sample_df["fastq1"] = sample_df["fastq1"].apply(lambda x: "gs://{}".format(x))
+sample_df["fastq2"] = sample_df["fastq2"].apply(lambda x: "gs://{}".format(x))
 
 patient_df = pd.read_csv("data/participant.tsv", sep="\t")
 patient_df = patient_df.rename(columns={"entity:participant_id": "patient"})
