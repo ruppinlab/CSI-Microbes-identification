@@ -79,8 +79,24 @@ rule PathSeqPipelineSpark_lscratch8:
             )
 
 
+rule convert_FASTQ_to_BAM:
+    group:
+        "FASTQ"
+    input:
+        fq1=FASTQ1_FILE,
+        fq2=FASTQ2_FILE
+    output:
+        config["PathSeq"]["bam_file"]
+    shell:
+        "module load picard && "
+        "java -Xmx8g -XX:ParallelGCThreads=5 -jar $PICARDJARPATH/picard.jar "
+        "FastqToSam F1={input.fq1} F2={input.fq2} O={output} "
+        "SM={wildcards.sample} RG={wildcards.sample} "
+        "TMP_DIR=/lscratch/$SLURM_JOBID"
 
-rule compress_FASTQ_File:
+rule rename_FASTQ_File:
+    group:
+        "FASTQ"
     input:
         SRA_FASTQ1_FILE,
         SRA_FASTQ2_FILE
@@ -88,10 +104,12 @@ rule compress_FASTQ_File:
         FASTQ1_FILE,
         FASTQ2_FILE
     shell:
-        "gzip -vc {input[0]} > {output[0]} && "
-        "gzip -vc {input[1]} > {output[1]}"
+        "my {input[0]} {output[0]} && "
+        "mv {input[1]} {output[1]}"
 
 rule download_FASTQ_from_SRA:
+    group:
+        "FASTQ"
     params:
         FASTQ_DIR
     output:

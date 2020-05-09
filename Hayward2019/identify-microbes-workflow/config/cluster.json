@@ -14,10 +14,11 @@
       "gres":"300",
       "time": "3-00:00:00"
     },
-    "convert_FASTQ_to_BAM":
+    "FASTQ":
     {
-        "time": "1:00:00",
-        "mem": "8g",
-        "nthreads": 6
+        "time": "2:00:00",
+        "nthreads": 6,
+        "gres": 200,
+        "mem": "32g"
     }
 }
