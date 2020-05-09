@@ -1,0 +1,265 @@
+sample	Condition	Hours_post_infection	plate	patient
+SRR9267098	infected	3	1	Pt0
+SRR9267099	infected	3	1	Pt0
+SRR9267100	infected	3	1	Pt0
+SRR9267101	infected	3	1	Pt0
+SRR9267102	infected	3	1	Pt0
+SRR9267103	infected	3	1	Pt0
+SRR9267104	infected	3	1	Pt0
+SRR9267105	infected	3	1	Pt0
+SRR9267106	infected	3	1	Pt0
+SRR9267107	infected	3	1	Pt0
+SRR9267108	infected	3	1	Pt0
+SRR9267109	infected	3	1	Pt0
+SRR9267110	infected	3	1	Pt0
+SRR9267111	infected	3	1	Pt0
+SRR9267112	infected	3	1	Pt0
+SRR9267113	infected	3	1	Pt0
+SRR9267114	infected	3	2	Pt0
+SRR9267115	infected	3	2	Pt0
+SRR9267116	infected	3	2	Pt0
+SRR9267117	infected	3	2	Pt0
+SRR9267118	infected	3	2	Pt0
+SRR9267119	infected	3	2	Pt0
+SRR9267120	infected	3	2	Pt0
+SRR9267121	infected	3	2	Pt0
+SRR9267122	infected	3	2	Pt0
+SRR9267123	infected	3	2	Pt0
+SRR9267124	infected	3	2	Pt0
+SRR9267126	infected	3	2	Pt0
+SRR9267127	infected	3	2	Pt0
+SRR9267128	infected	3	2	Pt0
+SRR9267129	infected	3	2	Pt0
+SRR9267130	infected	3	3	Pt0
+SRR9267131	infected	3	3	Pt0
+SRR9267132	infected	3	3	Pt0
+SRR9267133	infected	3	3	Pt0
+SRR9267134	infected	3	3	Pt0
+SRR9267135	infected	3	3	Pt0
+SRR9267136	infected	3	3	Pt0
+SRR9267137	infected	3	3	Pt0
+SRR9267138	infected	3	3	Pt0
+SRR9267139	infected	3	3	Pt0
+SRR9267140	infected	3	3	Pt0
+SRR9267141	infected	3	3	Pt0
+SRR9267142	infected	3	3	Pt0
+SRR9267143	infected	3	3	Pt0
+SRR9267144	infected	3	3	Pt0
+SRR9267145	infected	3	3	Pt0
+SRR9267146	mock infected	3	2	Pt0
+SRR9267147	mock infected	3	2	Pt0
+SRR9267148	mock infected	3	2	Pt0
+SRR9267149	mock infected	3	2	Pt0
+SRR9267150	mock infected	3	2	Pt0
+SRR9267151	mock infected	3	2	Pt0
+SRR9267152	mock infected	3	2	Pt0
+SRR9267153	mock infected	3	2	Pt0
+SRR9267154	mock infected	3	2	Pt0
+SRR9267155	mock infected	3	2	Pt0
+SRR9267156	mock infected	3	2	Pt0
+SRR9267157	mock infected	3	2	Pt0
+SRR9267158	mock infected	3	2	Pt0
+SRR9267159	mock infected	3	2	Pt0
+SRR9267160	mock infected	3	2	Pt0
+SRR9267161	mock infected	3	2	Pt0
+SRR9267162	mock infected	3	3	Pt0
+SRR9267163	mock infected	3	3	Pt0
+SRR9267164	mock infected	3	3	Pt0
+SRR9267165	mock infected	3	3	Pt0
+SRR9267166	mock infected	3	3	Pt0
+SRR9267167	mock infected	3	3	Pt0
+SRR9267168	mock infected	3	3	Pt0
+SRR9267169	mock infected	3	3	Pt0
+SRR9267170	mock infected	3	3	Pt0
+SRR9267171	mock infected	3	3	Pt0
+SRR9267172	mock infected	3	3	Pt0
+SRR9267173	mock infected	3	3	Pt0
+SRR9267174	mock infected	3	3	Pt0
+SRR9267175	mock infected	3	3	Pt0
+SRR9267176	mock infected	3	3	Pt0
+SRR9267177	mock infected	3	3	Pt0
+SRR9267178	infected	6	1	Pt0
+SRR9267179	infected	6	1	Pt0
+SRR9267180	infected	6	1	Pt0
+SRR9267181	infected	6	1	Pt0
+SRR9267182	infected	6	1	Pt0
+SRR9267183	infected	6	1	Pt0
+SRR9267184	infected	6	1	Pt0
+SRR9267185	infected	6	1	Pt0
+SRR9267186	infected	6	1	Pt0
+SRR9267187	infected	6	1	Pt0
+SRR9267188	infected	6	1	Pt0
+SRR9267189	infected	6	1	Pt0
+SRR9267190	infected	6	1	Pt0
+SRR9267191	infected	6	1	Pt0
+SRR9267192	infected	6	1	Pt0
+SRR9267193	infected	6	1	Pt0
+SRR9267194	infected	6	2	Pt0
+SRR9267195	infected	6	2	Pt0
+SRR9267196	infected	6	2	Pt0
+SRR9267197	infected	6	2	Pt0
+SRR9267198	infected	6	2	Pt0
+SRR9267199	infected	6	2	Pt0
+SRR9267200	infected	6	2	Pt0
+SRR9267201	infected	6	2	Pt0
+SRR9267202	infected	6	2	Pt0
+SRR9267203	infected	6	2	Pt0
+SRR9267204	infected	6	2	Pt0
+SRR9267205	infected	6	2	Pt0
+SRR9267206	infected	6	2	Pt0
+SRR9267207	infected	6	2	Pt0
+SRR9267208	infected	6	2	Pt0
+SRR9267209	infected	6	2	Pt0
+SRR9267210	infected	6	3	Pt0
+SRR9267211	infected	6	3	Pt0
+SRR9267212	infected	6	3	Pt0
+SRR9267213	infected	6	3	Pt0
+SRR9267214	infected	6	3	Pt0
+SRR9267215	infected	6	3	Pt0
+SRR9267216	infected	6	3	Pt0
+SRR9267217	infected	6	3	Pt0
+SRR9267218	infected	6	3	Pt0
+SRR9267219	infected	6	3	Pt0
+SRR9267220	infected	6	3	Pt0
+SRR9267221	infected	6	3	Pt0
+SRR9267222	infected	6	3	Pt0
+SRR9267223	infected	6	3	Pt0
+SRR9267224	infected	6	3	Pt0
+SRR9267225	infected	6	3	Pt0
+SRR9267226	mock infected	6	1	Pt0
+SRR9267227	mock infected	6	1	Pt0
+SRR9267228	mock infected	6	1	Pt0
+SRR9267229	mock infected	6	1	Pt0
+SRR9267230	mock infected	6	1	Pt0
+SRR9267231	mock infected	6	1	Pt0
+SRR9267232	mock infected	6	1	Pt0
+SRR9267233	mock infected	6	1	Pt0
+SRR9267234	mock infected	6	1	Pt0
+SRR9267235	mock infected	6	1	Pt0
+SRR9267236	mock infected	6	1	Pt0
+SRR9267237	mock infected	6	1	Pt0
+SRR9267238	mock infected	6	1	Pt0
+SRR9267239	mock infected	6	1	Pt0
+SRR9267240	mock infected	6	1	Pt0
+SRR9267241	mock infected	6	1	Pt0
+SRR9267242	mock infected	6	2	Pt0
+SRR9267243	mock infected	6	2	Pt0
+SRR9267244	mock infected	6	2	Pt0
+SRR9267245	mock infected	6	2	Pt0
+SRR9267246	mock infected	6	2	Pt0
+SRR9267247	mock infected	6	2	Pt0
+SRR9267248	mock infected	6	2	Pt0
+SRR9267249	mock infected	6	2	Pt0
+SRR9267250	mock infected	6	2	Pt0
+SRR9267251	mock infected	6	2	Pt0
+SRR9267252	mock infected	6	2	Pt0
+SRR9267253	mock infected	6	2	Pt0
+SRR9267254	mock infected	6	2	Pt0
+SRR9267255	mock infected	6	2	Pt0
+SRR9267256	mock infected	6	2	Pt0
+SRR9267257	mock infected	6	2	Pt0
+SRR9267258	mock infected	6	3	Pt0
+SRR9267259	mock infected	6	3	Pt0
+SRR9267260	mock infected	6	3	Pt0
+SRR9267261	mock infected	6	3	Pt0
+SRR9267262	mock infected	6	3	Pt0
+SRR9267263	mock infected	6	3	Pt0
+SRR9267264	mock infected	6	3	Pt0
+SRR9267265	mock infected	6	3	Pt0
+SRR9267266	mock infected	6	3	Pt0
+SRR9267267	mock infected	6	3	Pt0
+SRR9267268	mock infected	6	3	Pt0
+SRR9267269	mock infected	6	3	Pt0
+SRR9267270	mock infected	6	3	Pt0
+SRR9267271	mock infected	6	3	Pt0
+SRR9267272	mock infected	6	3	Pt0
+SRR9267273	mock infected	6	3	Pt0
+SRR9267274	infected	12	1	Pt0
+SRR9267275	infected	12	1	Pt0
+SRR9267276	infected	12	1	Pt0
+SRR9267277	infected	12	1	Pt0
+SRR9267278	infected	12	1	Pt0
+SRR9267279	infected	12	1	Pt0
+SRR9267280	infected	12	1	Pt0
+SRR9267281	infected	12	1	Pt0
+SRR9267282	infected	12	1	Pt0
+SRR9267283	infected	12	1	Pt0
+SRR9267284	infected	12	1	Pt0
+SRR9267285	infected	12	1	Pt0
+SRR9267286	infected	12	1	Pt0
+SRR9267287	infected	12	1	Pt0
+SRR9267288	infected	12	1	Pt0
+SRR9267289	infected	12	1	Pt0
+SRR9267290	infected	12	2	Pt0
+SRR9267291	infected	12	2	Pt0
+SRR9267292	infected	12	2	Pt0
+SRR9267293	infected	12	2	Pt0
+SRR9267294	infected	12	2	Pt0
+SRR9267295	infected	12	2	Pt0
+SRR9267296	infected	12	2	Pt0
+SRR9267297	infected	12	2	Pt0
+SRR9267298	infected	12	2	Pt0
+SRR9267299	infected	12	2	Pt0
+SRR9267300	infected	12	2	Pt0
+SRR9267301	infected	12	2	Pt0
+SRR9267302	infected	12	2	Pt0
+SRR9267303	infected	12	2	Pt0
+SRR9267304	infected	12	2	Pt0
+SRR9267305	infected	12	2	Pt0
+SRR9267306	infected	12	3	Pt0
+SRR9267307	infected	12	3	Pt0
+SRR9267308	infected	12	3	Pt0
+SRR9267309	infected	12	3	Pt0
+SRR9267310	infected	12	3	Pt0
+SRR9267311	infected	12	3	Pt0
+SRR9267312	infected	12	3	Pt0
+SRR9267313	infected	12	3	Pt0
+SRR9267314	infected	12	3	Pt0
+SRR9267315	infected	12	3	Pt0
+SRR9267316	infected	12	3	Pt0
+SRR9267317	infected	12	3	Pt0
+SRR9267318	infected	12	3	Pt0
+SRR9267319	infected	12	3	Pt0
+SRR9267320	infected	12	3	Pt0
+SRR9267321	infected	12	3	Pt0
+SRR9267322	mock infected	12	1	Pt0
+SRR9267323	mock infected	12	1	Pt0
+SRR9267324	mock infected	12	1	Pt0
+SRR9267325	mock infected	12	1	Pt0
+SRR9267326	mock infected	12	1	Pt0
+SRR9267327	mock infected	12	1	Pt0
+SRR9267328	mock infected	12	1	Pt0
+SRR9267329	mock infected	12	1	Pt0
+SRR9267330	mock infected	12	2	Pt0
+SRR9267331	mock infected	12	2	Pt0
+SRR9267332	mock infected	12	2	Pt0
+SRR9267333	mock infected	12	2	Pt0
+SRR9267334	mock infected	12	2	Pt0
+SRR9267335	mock infected	12	2	Pt0
+SRR9267336	mock infected	12	2	Pt0
+SRR9267337	mock infected	12	2	Pt0
+SRR9267338	mock infected	12	2	Pt0
+SRR9267339	mock infected	12	2	Pt0
+SRR9267340	mock infected	12	2	Pt0
+SRR9267341	mock infected	12	2	Pt0
+SRR9267342	mock infected	12	2	Pt0
+SRR9267343	mock infected	12	2	Pt0
+SRR9267344	mock infected	12	2	Pt0
+SRR9267345	mock infected	12	2	Pt0
+SRR9267346	mock infected	12	3	Pt0
+SRR9267347	mock infected	12	3	Pt0
+SRR9267348	mock infected	12	3	Pt0
+SRR9267349	mock infected	12	3	Pt0
+SRR9267350	mock infected	12	3	Pt0
+SRR9267351	mock infected	12	3	Pt0
+SRR9267352	mock infected	12	3	Pt0
+SRR9267353	mock infected	12	3	Pt0
+SRR9267354	mock infected	12	3	Pt0
+SRR9267355	mock infected	12	3	Pt0
+SRR9267356	mock infected	12	3	Pt0
+SRR9267357	mock infected	12	3	Pt0
+SRR9267358	mock infected	12	3	Pt0
+SRR9267359	mock infected	12	3	Pt0
+SRR9267360	mock infected	12	3	Pt0
+SRR9267361	mock infected	12	3	Pt0
+SRR9267125	infected	3	2	Pt0
