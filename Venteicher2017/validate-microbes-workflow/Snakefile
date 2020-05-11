@@ -1,0 +1,9 @@
+
+P_BERGHEI_URL="https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/900/002/375/GCA_900002375.2_GCA_900002375/GCA_900002375.2_GCA_900002375_genomic.fna.gz"
+
+rule download_plasmodium_berghei_anka_sequence:
+    params:
+        url=P_BERGHEI_URL
+    shell:
+        "wget {url} -O output/GCA_900002375.2_genomic.fna.gz && "
+        "gunzip output/GCA_900002375.2_genomic.fna.gz > output/GCA_900002375.2_genomic.fna"
