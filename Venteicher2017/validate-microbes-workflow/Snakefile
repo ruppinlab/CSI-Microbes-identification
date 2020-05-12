@@ -1,9 +1,67 @@
+from os.path import join, basename
+import pandas as pd
 
-P_BERGHEI_URL="https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/900/002/375/GCA_900002375.2_GCA_900002375/GCA_900002375.2_GCA_900002375_genomic.fna.gz"
 
-rule download_plasmodium_berghei_anka_sequence:
-    params:
-        url=P_BERGHEI_URL
+PATHSEQ_BAM_FILE=join("..", "identify-microbes-workflow", "output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+PATHOGEN_BAM_FILE=join("output", "{patient}-{sample}", "pathseq_{taxid}.bam")
+PATHOGEN_FASTA_FILE=join("/data/Lab_ruppin/projects/CSI-Microbes/data/FASTA", "{patient}-{sample}", "pathseq_{taxid}.fasta")
+
+samples = pd.read_csv("data/genus_PathSeq_sample_metadata.tsv", sep="\t")
+samples = samples.loc[samples.patient == "MGH43"]
+samples = samples.iloc[0:2]
+
+rule all:
+    input:
+        expand(PATHOGEN_FASTA_FILE, zip, patient=samples["patient"], sample=samples["sample"], taxid=["5823"])
+
+rule extract_specific_reads:
+    input:
+        PATHSEQ_BAM_FILE
+    output:
+        PATHOGEN_BAM_FILE
     shell:
-        "wget {url} -O output/GCA_900002375.2_genomic.fna.gz && "
-        "gunzip output/GCA_900002375.2_genomic.fna.gz > output/GCA_900002375.2_genomic.fna"
+        "module load picard && "
+        "java -jar $PICARDJARPATH/picard.jar FilterSamReads "
+        "I={input} O={output} TAG_VALUE={wildcards.taxid} TAG=YP FILTER=includeTagValues"
+
+rule convert_to_fastq:
+    input:
+        PATHOGEN_BAM_FILE
+    output:
+        PATHOGEN_FASTA_FILE
+    shell:
+        "module load samtools && "
+        "samtools fasta {input} > {output}"
+
+# P_BERGHEI_URL="https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/900/002/375/GCA_900002375.2_GCA_900002375/GCA_900002375.2_GCA_900002375_genomic.fna.gz"
+# P_BERGHEI_FA=join("output", "GCA_900002375.2_genomic.fna")
+# BLASTDB_DIR =
+#
+# PATHSEQ_BAM_FILE=join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+#
+# rule download_plasmodium_berghei_anka_sequence:
+#     params:
+#         url=P_BERGHEI_URL
+#     output:
+#         P_BERGHEI_FA
+#     shell:
+#         "wget {url} -O output/GCA_900002375.2_genomic.fna.gz && "
+#         "gunzip -f output/GCA_900002375.2_genomic.fna.gz > {output}"
+#
+# rule make_BlastDB:
+#     input:
+#         P_BERGHEI_FA
+#     output:
+#
+#     shell:
+#         "module load blast && "
+#         "makeblastdb -in {input} -dbtype nucl -title PBerghei -out PBerghei"
+#
+# rule extract_reads_from_P_Berghei:
+#     input:
+#         PATHSEQ_BAM_FILE
+#     output:
+#         FILTERED_FASTA_FILE
+#     shell:
+
+#
