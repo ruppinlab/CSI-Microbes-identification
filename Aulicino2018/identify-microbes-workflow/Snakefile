@@ -17,7 +17,7 @@ samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.l
 # validate(units, schema="schemas/units.schema.yaml")
 
 # URLs
-D23580_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/027/025/GCF_000027025.1_ASM2702v1/GCF_000027025.1_ASM2702v1_genomic.fna.gz"
+#D23580_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/027/025/GCF_000027025.1_ASM2702v1/GCF_000027025.1_ASM2702v1_genomic.fna.gz"
 #LT2_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.fna.gz"
 
 # directories
@@ -28,58 +28,28 @@ SRA_FASTQ1_FILE = join(FASTQ_DIR,  "{sample}_1.fastq")
 SRA_FASTQ2_FILE = join(FASTQ_DIR, "{sample}_2.fastq")
 FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
 FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
-D23580_FA = join("data", "D23580_genomic.fna")
-#LT2_FA = join("data", "LT2_genomic.fna")
-ERCC92_FA = join("data", "ERCC92.fa")
-ERCC92_GTF = join("data", "ERCC92.gtf")
-PATHSEQ_FA_FILE = "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
-#LT2_D23580_FA_FILE = join("data", "LT2_D23580.fa")
-PATHSEQ_D23580_FA_FILE = join("data", "D23580+PathSeq.fa")
+
 # Output Files
 PathSeq_Output_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
 PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
-KRAKEN_PAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "paired-sequences.biom")
-KRAKEN_UNPAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "unpaired-sequences.biom")
+
 
 # include rules
 include: "../../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../../RNA-snakemake-rules/rules/genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
-include: "../../pathogen-discovery-rules/rules/make-Kraken-files.smk"
-include: "../../pathogen-discovery-rules/rules/kraken.smk"
+include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 
 
 rule all:
     input:
-        expand(KRAKEN_UNPAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
-        expand(KRAKEN_PAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(PathSeq_BAM_File, zip, sample=samples["sample"], patient=samples["patient"])
 
-
-
-
-# rules for adding DS23580 genome to the PathSeq DB
-localrules: download_D23580_complete_genome, add_D23580_to_PathSeq_DB
-
-rule add_D23580_to_PathSeq_DB:
-    input:
-        D23580_FA,
-        PATHSEQ_FA_FILE
-    output:
-        PATHSEQ_D23580_FA_FILE
-    shell:
-        "cat {input[0]} {input[1]} > {output}"
-
-rule download_D23580_complete_genome:
-    params:
-        url=D23580_URL
-    output:
-        D23580_FA
-    shell:
-        "wget -O - {params.url} | gunzip -c > {output}"
 
 # rules for downloading data
-
 rule compress_FASTQ_File:
+    group:
+        "FASTQ"
     input:
         SRA_FASTQ1_FILE,
         SRA_FASTQ2_FILE
@@ -91,6 +61,8 @@ rule compress_FASTQ_File:
         "gzip -vc {input[1]} > {output[1]}"
 
 rule download_FASTQ_from_SRA:
+    group:
+        "FASTQ"
     params:
         FASTQ_DIR
     output:
@@ -100,3 +72,24 @@ rule download_FASTQ_from_SRA:
         "module load sratoolkit && "
         "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
         "--split-files {wildcards.sample}"
+
+# rules for adding D23580 genome
+# # rules for adding DS23580 genome to the PathSeq DB
+# localrules: download_D23580_complete_genome, add_D23580_to_PathSeq_DB
+#
+# rule add_D23580_to_PathSeq_DB:
+#     input:
+#         D23580_FA,
+#         PATHSEQ_FA_FILE
+#     output:
+#         PATHSEQ_D23580_FA_FILE
+#     shell:
+#         "cat {input[0]} {input[1]} > {output}"
+#
+# rule download_D23580_complete_genome:
+#     params:
+#         url=D23580_URL
+#     output:
+#         D23580_FA
+#     shell:
+#         "wget -O - {params.url} | gunzip -c > {output}"

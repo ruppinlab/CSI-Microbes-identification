@@ -30,34 +30,23 @@
         "nthreads" : 48,
         "mem": "64g"
     },
-    "build_host_kmer_file":
-    {
-        "mem": "80g",
-        "nthreads": 16
-    },
-    "run_PathSeq":
-    {
-        "mem": "120g",
-        "time": "7-00:00:00",
-        "nthreads": 16,
-        "gres": 50
-    },
-    "PathSeqFilterSpark":
-    {
-        "mem": "64g",
-        "time": "8:00:00",
-        "nthreads": 1
-    },
-    "download_FASTQ_from_SRA":
+    "FASTQ":
     {
       "nthreads": 6,
       "gres": 200,
       "mem": "32g"
     },
-    "filter_bacteria_fna_refseq":
+    "build_host_kmer_file":
     {
-      "nthreads": 32,
-      "mem": "16g"
+        "mem": "80g",
+        "nthreads": 16
+    },
+    "PathSeqPipelineSpark_batch":
+    {
+      "mem":"70g",
+      "nthreads": 10,
+      "gres":"300",
+      "time": "7-00:00:00"
     },
     "build_BWA_image":
     {
@@ -67,44 +56,5 @@
       "time": "10-00:00:00",
       "partition": "largemem"
     },
-    "run_Kraken_paired_reads":
-    {
-      "nthreads": 16,
-      "mem": "450g",
-      "gres": 50,
-      "time": "7-00:00:00",
-      "partition": "largemem"
-    },
-    "run_Kraken_unpaired_reads":
-    {
-      "nthreads": 16,
-      "mem": "450g",
-      "gres": 50,
-      "time": "7-00:00:00",
-      "partition": "largemem"
-    },
-    "run_Kraken_translate_paired_reads":
-    {
-      "nthreads": 2,
-      "mem": "450g",
-      "gres": 50,
-      "time": "3-00:00:00",
-      "partition": "largemem"
-    },
-    "run_Kraken_translate_unpaired_reads":
-    {
-      "nthreads": 2,
-      "mem": "450g",
-      "gres": 50,
-      "time": "3-00:00:00",
-      "partition": "largemem"
-    },
-    "build_Kraken_DB":
-    {
-      "gres": 500,
-      "nthreads": 16,
-      "mem": "700g",
-      "time": "2-00:00:00",
-      "partition": "largemem"
-    }
+
 }
