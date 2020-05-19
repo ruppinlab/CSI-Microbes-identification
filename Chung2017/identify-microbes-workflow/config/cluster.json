@@ -12,6 +12,12 @@
         "nthreads" : 16,
         "mem": "64g"
     },
+    "run_star_pe":
+    {
+        "time": "24:00:00",
+        "nthreads" : 48,
+        "mem": "64g"
+    },
     "run_star_pe_pass1":
     {
         "time": "24:00:00",
@@ -24,60 +30,22 @@
         "nthreads" : 48,
         "mem": "64g"
     },
-    "build_host_kmer_file":
-    {
-        "mem": "80g",
-        "nthreads": 16
-    },
-    "run_PathSeq":
-    {
-        "mem": "120g",
-        "time": "7-00:00:00",
-        "nthreads": 16,
-        "gres": 50
-    },
-    "download_FASTQ_from_SRA":
+    "FASTQ":
     {
       "nthreads": 6,
       "gres": 200,
       "mem": "32g"
     },
-    "PathSeqFilterSpark":
+    "build_host_kmer_file":
     {
-        "mem": "64g",
-        "time": "4:00:00",
-        "nthreads": 1
+        "mem": "80g",
+        "nthreads": 16
     },
-    "run_Kraken_paired_reads":
+    "PathSeqPipelineSpark_batch":
     {
-      "nthreads": 16,
-      "mem": "1000g",
-      "gres": 50,
-      "time": "2-00:00:00",
-      "partition": "largemem"
-    },
-    "run_Kraken_unpaired_reads":
-    {
-      "nthreads": 16,
-      "mem": "1000g",
-      "gres": 50,
-      "time": "2-00:00:00",
-      "partition": "largemem"
-    },
-    "run_Kraken_translate_paired_reads":
-    {
-      "nthreads": 16,
-      "mem": "1000g",
-      "gres": 50,
-      "time": "3-00:00:00",
-      "partition": "largemem"
-    },
-    "run_Kraken_translate_unpaired_reads":
-    {
-      "nthreads": 16,
-      "mem": "1000g",
-      "gres": 50,
-      "time": "3-00:00:00",
-      "partition": "largemem"
+      "mem":"70g",
+      "nthreads": 10,
+      "gres":"300",
+      "time": "7-00:00:00"
     }
 }

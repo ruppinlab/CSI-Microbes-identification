@@ -2,34 +2,25 @@
 patients: data/patients.tsv
 samples: data/samples.tsv
 
+
 ref:
-  annotation: "raw/genome/Hg38_v22_RNA_SPIKE.gtf"
-  genome: "raw/genome/Hg38_RNA_SPIKE.fasta"
+  annotation: "raw/genome/gencodev21_ERCC92.gtf"
+  genome: "raw/genome/Hg38_ERCC92.fasta"
 
 human_ref:
-  genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
-  annotation: "raw/genome/gencode.v22.annotation.gtf"
-
+  annotation: "raw/genome/gencode.v21.annotation.gtf"
+  genome: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa"
 
 params:
-  PathSeq:
-    filter: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" --spark-master local[1]'
-    BWA: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" --spark-master local[8]'
-    pipeline: '--java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13" --spark-master local[16] '
-  Kraken: '--threads 16 '
+  PathSeq: "--is-host-aligned true "
 trimming:
   skip: True
 
-Kraken:
-  db_path: "/data/Robinson-SB/Kraken-data"
-  dbname: "pathseqDBv2"
-  taxonomic_rank: "genus"
-  microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
 
 PathSeq:
   bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"
   microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
   microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
   taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
-  host_img: "output/PathSeq/HG38+RNA_SPIKE_host.fa.img"
-  host_bfi: "output/PathSeq/HG38+RNA_SPIKE_host.bfi"
+  host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
+  host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"

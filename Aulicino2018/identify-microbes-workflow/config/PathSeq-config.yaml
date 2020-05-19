@@ -11,7 +11,7 @@ human_ref:
   genome: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa"
 
 params:
-  PathSeq: "--is-host-aligned true "    
+  PathSeq: "--is-host-aligned true "
   Kraken: "--threads 16 "
 trimming:
   skip: True
@@ -23,7 +23,6 @@ trimming:
 #   microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
 
 PathSeq:
-  data_dir: "data/PathSeq"
   bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"
   microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
   microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"

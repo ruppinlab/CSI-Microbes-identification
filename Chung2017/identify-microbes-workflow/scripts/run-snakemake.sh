@@ -9,4 +9,5 @@ snakemake \
 --jobs 100 \
 --latency-wait 60 \
 --keep-going \
---local-cores 16 all
+--config patient=$1 \
+--local-cores 2 all

@@ -4,12 +4,13 @@ from snakemake.utils import min_version
 ##### set minimum snakemake version #####
 min_version("5.1.2")
 
+patient = config["patient"]
 ##### load config and sample sheets #####
 configfile: join("config", "PathSeq-config.yaml")
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
-
+samples = samples.loc[samples["patient"] == patient]
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
 
@@ -22,22 +23,19 @@ FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
 RNA_SPIKE_SEQUENCES = join("data", "spike_in_sequences.fa")
 # handcrafted TODO generate from fasta file
 RNA_SPIKE_GTF = join("data", "spike_in_sequences.gtf")
-# Output Files
-# PAIRED_FILTERED_BAM = join("output", "PathSeq", "{patient}-{sample}", "filtered-paired.bam")
-KRAKEN_PAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "paired-sequences.biom")
-KRAKEN_UNPAIRED_BIOM_FILE = join("output", "Kraken", "{patient}-{sample}", "unpaired-sequences.biom")
+
 
 # include rules
 include: "../../RNA-snakemake-rules/rules/genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
-# include: "../../pathogen-discovery-rules/rules/make-Kraken-files.smk"
-include: "../../pathogen-discovery-rules/rules/kraken.smk"
+include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 
 
 rule all:
     input:
-        expand(KRAKEN_PAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
-        expand(KRAKEN_UNPAIRED_BIOM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
+        pathseq_bam = expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"), zip, sample=samples["sample"], patient=samples["patient"]),
+        pathseq_output = expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt"), zip, sample=samples["sample"], patient=samples["patient"])
+
 
 
 rule combine_human_spikein_fasta:
@@ -71,6 +69,8 @@ rule combine_human_spikein_GTF:
 #         "wget {params.url} -O temp.zip && unzip temp.zip -d {params.dir}"
 
 rule compress_FASTQ_File:
+    group:
+        "FASTA"
     input:
         SRA_FASTQ1_FILE,
         SRA_FASTQ2_FILE
@@ -82,6 +82,8 @@ rule compress_FASTQ_File:
         "gzip -vc {input[1]} > {output[1]}"
 
 rule download_FASTQ_from_SRA:
+    group:
+        "FASTA"
     params:
         FASTQ_DIR
     output:
