@@ -1,0 +1,70 @@
+from os.path import join
+import pandas as pd
+from snakemake.utils import min_version
+##### set minimum snakemake version #####
+min_version("5.1.2")
+
+##### load config and sample sheets #####
+configfile: "config.yaml"
+#validate(config, schema="schemas/config.schema.yaml")
+
+patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
+# validate(samples, schema="schemas/samples.schema.yaml")
+
+samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
+# print(samples)
+samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
+# validate(units, schema="schemas/units.schema.yaml")
+
+# Directories
+FASTQ_DIR = "FASTQ"
+
+# Input Files
+SRA_FASTQ1_FILE = join(FASTQ_DIR, "{sample}_1.fastq")
+SRA_FASTQ2_FILE = join(FASTQ_DIR, "{sample}_2.fastq")
+# Intermediate Files
+cDNA_FASTQ_FILE = join(FASTQ_DIR, "{patient}-{sample}",
+                       "cDNAfragmentSequence.fastq.gz")
+CellBarcode_FASTQ_FILE = join(FASTQ_DIR, "{patient}-{sample}",
+                              "CellBarcodeUMIsequence.fastq.gz")
+BAM_FILE = join("output", "STARsolo", "{patient}-{sample}", "Aligned.sortedByCoord.out.bam")
+
+# Output File
+# FILTERED_PATHSEQ_READS_FILE = join(SC_PATHSEQ_OUTPUT, "Filtered_PathSeq_reads.tsv")
+
+# Snakemake includes
+include: "../rules/STARsolo.smk"
+#include: "../rules/PathSeq.smk"
+
+rule all:
+    input:
+        expand(BAM_FILE, zip, sample=samples["sample"], patient=samples["patient"])
+
+# download files from SRA
+# need to --include-technical to get the 10x UMI and CB reads
+rule download_FASTQ_from_SRA:
+    group:
+        "FASTQ"
+    params:
+        FASTQ_DIR
+    output:
+        temp(SRA_FASTQ1_FILE),
+        temp(SRA_FASTQ2_FILE)
+    shell:
+        "module load sratoolkit && "
+        "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
+        "--include-technical --split-files {wildcards.sample}"
+
+# compress and rename - the identity of FASTQ1, etc. depends on the dataset
+rule compress_rename_SRA_FASTQ_files:
+    group:
+        "FASTQ"
+    input:
+        CellBarcode_fq = SRA_FASTQ1_FILE,
+        cDNA_fq = SRA_FASTQ2_FILE
+    output:
+        CellBarcode_fq = CellBarcode_FASTQ_FILE,
+        cDNA_fq = cDNA_FASTQ_FILE
+    shell:
+        "gzip -vc {input.CellBarcode_fq} > {output.CellBarcode_fq} && "
+        "gzip -vc {input.cDNA_fq} > {output.cDNA_fq}"

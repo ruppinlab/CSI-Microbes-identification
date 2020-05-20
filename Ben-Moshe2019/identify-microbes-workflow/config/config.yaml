@@ -1,0 +1,22 @@
+patients: data/patients.tsv
+
+samples: data/samples.tsv
+
+ref:
+  annotation: "raw/genome/gencode.v21.annotation.gtf"
+  genome: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa"
+  barcode_whitelist: "../CellRanger-data/737K-august-2016.txt"
+  microbe_fasta_file: "data/pathseq_microbe.fa"
+  microbe_bwa_image: "data/pathseq_microbe.fa.img"
+
+params:
+  STARsolo: ""
+  PathSeq: "--filter-duplicates false --is-host-aligned true "
+
+PathSeq:
+  bam_file: "output/STARsolo/{patient}-{sample}/Aligned.sortedByCoord.out.bam"
+  microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
+  microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
+  taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
+  host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
+  host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
