@@ -1,0 +1,26 @@
+from os.path import join
+
+# urls
+LT2_genome_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.fna.gz"
+
+# files
+LT2_FA = join("raw", "Salmonella-LT2.fa")
+LT2_SRPRISM_DB = join("output", "LT2_db")
+
+rule make_SRPRISM_DB:
+    input:
+        LT2_FA
+    output:
+        directory(LT2_SRPRISM_DB)
+    shell:
+        "srprism mkindex -i {input} -o {output}/LT2"
+
+rule download_LT2_genome:
+    params:
+        LT2_genome_URL
+    output:
+        LT2_FA
+    shell:
+        "wget -O - {params} | gunzip -c > {output} "
+
+# wget -O - {params.FA_URL} | gunzip -c > {output.FA}
