@@ -1,19 +1,58 @@
 from os.path import join
+import pandas as pd
 
 # urls
 LT2_genome_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.fna.gz"
 
 # files
 LT2_FA = join("raw", "Salmonella-LT2.fa")
-LT2_SRPRISM_DB = join("output", "LT2_db")
+LT2_SRPRISM_DB_DIR = join("output", "LT2_db")
+LT2_SRPRISM_DB_PREFIX = join("output", "LT2_db", "LT2")
+LT2_SRPRISM_DB_FILE = join("output", "LT2_db", "LT2.idx")
+
+PathSeq_BAM = join("..", "identify-microbes-workflow", "output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+PathSeq_FQ1 = join("output", "{patient}-{sample}", "pathseq_1.fq")
+PathSeq_FQ2 = join("output", "{patient}-{sample}", "pathseq_2.fq")
+SRPRISM_LT2_SAM = join("output", "SRPRISM", "{patient}-{sample}", "LT2.sam")
+
+# samples = pd.read_csv("../identify-microbes-workflow/data/samples.tsv", dtype=str, sep="\t")
+
+rule all:
+    input:
+        expand(SRPRISM_LT2_SAM, patient="Pt0", sample=["SRR6815616", "SRR6815632"])
+
+rule map_SRPRISM_LT2_genome:
+    params:
+        LT2_SRPRISM_DB_PREFIX
+    input:
+        PathSeq_FQ1,
+        PathSeq_FQ2
+    output:
+        SRPRISM_LT2_SAM
+    shell:
+        "srprism search -I {input[0]},{input[1]} -p true -o {output}"
+
+rule convert_BAM_to_paired_FASTQ:
+    input:
+        PathSeq_BAM
+    output:
+        PathSeq_FQ1,
+        PathSeq_FQ2
+    shell:
+        "module load picard && "
+        "java -jar $PICARDJARPATH/picard.jar SamToFastq I={input} "
+        "F={output[0]} F2={output[1]}"
 
 rule make_SRPRISM_DB:
+    params:
+        LT2_SRPRISM_DB_PREFIX
     input:
         LT2_FA
     output:
-        directory(LT2_SRPRISM_DB)
+        LT2_SRPRISM_DB_FILE
     shell:
-        "srprism mkindex -i {input} -o {output}/LT2"
+        "mkdir {output} && "
+        "srprism mkindex -i {input} -o {params}"
 
 rule download_LT2_genome:
     params:
