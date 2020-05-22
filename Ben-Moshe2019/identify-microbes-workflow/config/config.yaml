@@ -3,11 +3,9 @@ patients: data/patients.tsv
 samples: data/samples.tsv
 
 ref:
-  annotation: "raw/genome/gencode.v21.annotation.gtf"
-  genome: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa"
-  barcode_whitelist: "../CellRanger-data/737K-august-2016.txt"
-  microbe_fasta_file: "data/pathseq_microbe.fa"
-  microbe_bwa_image: "data/pathseq_microbe.fa.img"
+  annotation: "raw/genome/gencode.v22.annotation.gtf"
+  genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
+  barcode_whitelist: "/data/Robinson-SB/CellRanger-data/737K-august-2016.txt"
 
 params:
   STARsolo: ""

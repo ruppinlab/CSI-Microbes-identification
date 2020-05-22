@@ -5,7 +5,7 @@ from snakemake.utils import min_version
 min_version("5.1.2")
 
 ##### load config and sample sheets #####
-configfile: "config.yaml"
+configfile: "config/config.yaml"
 #validate(config, schema="schemas/config.schema.yaml")
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
@@ -33,12 +33,13 @@ BAM_FILE = join("output", "STARsolo", "{patient}-{sample}", "Aligned.sortedByCoo
 # FILTERED_PATHSEQ_READS_FILE = join(SC_PATHSEQ_OUTPUT, "Filtered_PathSeq_reads.tsv")
 
 # Snakemake includes
-include: "../rules/STARsolo.smk"
-#include: "../rules/PathSeq.smk"
+include: "../../RNA-snakemake-rules/rules/genome.smk"
+include: "../../RNA-snakemake-rules/rules/STARsolo.smk"
+include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 
 rule all:
     input:
-        expand(BAM_FILE, zip, sample=samples["sample"], patient=samples["patient"])
+        expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"), zip, sample=samples["sample"], patient=samples["patient"])
 
 # download files from SRA
 # need to --include-technical to get the 10x UMI and CB reads
