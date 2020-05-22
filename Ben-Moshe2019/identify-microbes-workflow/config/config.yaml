@@ -3,9 +3,13 @@ patients: data/patients.tsv
 samples: data/samples.tsv
 
 ref:
-  annotation: "raw/genome/gencode.v22.annotation.gtf"
-  genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
+  annotation: "raw/genome/gencode.v22.SL1344.annotation.gtf"
+  genome: "raw/genome/HG38-SL1344.fa"
   barcode_whitelist: "/data/Robinson-SB/CellRanger-data/737K-august-2016.txt"
+
+STARsolo:
+  genome_index: "output/HG38-SL1344/star-index"
+  output_dir: "output/HG38-SL1344/STARsolo/{patient}-{sample}"
 
 params:
   STARsolo: ""
