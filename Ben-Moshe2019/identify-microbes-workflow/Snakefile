@@ -15,12 +15,17 @@ samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patien
 # print(samples)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
 # validate(units, schema="schemas/units.schema.yaml")
+samples = samples.loc[samples.infection == "Salmonella enterica serovar Typhimurium"]
 
 # urls
 BASE_SL1344_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/210/855/GCF_000210855.2_ASM21085v2"
 
 # Directories
 FASTQ_DIR = "FASTQ"
+ENV_DIR = join("..", "envs")
+
+# Files
+STAR_ENV_FILE = join(ENV_DIR, "star.yml")
 
 # Input Files
 SRA_FASTQ1_FILE = join(FASTQ_DIR, "{sample}_1.fastq")
@@ -41,12 +46,70 @@ SL1344_GTF = join("raw", "genome", "SL1344.gtf")
 
 # Snakemake includes
 include: "../../RNA-snakemake-rules/rules/genome.smk"
-include: "../../RNA-snakemake-rules/rules/STARsolo.smk"
+# include: "../../RNA-snakemake-rules/rules/STARsolo.smk"
 # include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 
 rule all:
     input:
-        # expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"), zip, sample=samples["sample"], patient=samples["patient"])
+        join(config["STARsolo"]["output_dir"], "Aligned.sortedByCoord.out.bam").format(patient="Pt0", sample="infected"),
+
+
+
+# special rules for STARsolo since we want to combine sequencing runs
+rule create_star_index:
+    conda:
+        STAR_ENV_FILE
+    input:
+        config["ref"]["genome"]
+    output:
+        directory(config["STARsolo"]["genome_index"])
+    threads:
+        16
+    shell:
+        "mkdir '{output}' && STAR "
+        "--runThreadN {threads} "
+        "--runMode genomeGenerate "
+        "--genomeDir '{output}' "
+        "--genomeFastaFiles '{input}'"
+
+# STARsolo
+rule run_STARsolo_10x:
+    conda:
+        STAR_ENV_FILE
+    input:
+        barcode_whitelist = config["ref"]["barcode_whitelist"],
+        cDNA_fq = expand(cDNA_FASTQ_FILE, patient=samples["patient"], sample=samples["sample"]),
+        CellBarcode_fq = expand(CellBarcode_FASTQ_FILE, patient=samples["patient"], sample=samples["sample"]),
+        index = config["STARsolo"]["genome_index"],
+        gtf = config["ref"]["annotation"]
+    output:
+        join(config["STARsolo"]["output_dir"], "Aligned.sortedByCoord.out.bam").format(patient="Pt0", sample="infected"),
+        join(config["STARsolo"]["output_dir"], "Solo.out", "Gene", "filtered", "matrix.mtx").format(patient="Pt0", sample="infected")
+    params:
+        odir = join(config["STARsolo"]["output_dir"], "").format(patient="Pt0", sample="infected")
+    threads:
+        48
+    shell:
+        "STAR "
+        "--runThreadN {threads} "
+        "--genomeDir '{input.index}' "
+        "--genomeLoad NoSharedMemory "
+        "--outFileNamePrefix '{params.odir}' "
+        "--readFilesIn '{input.cDNA_fq[0]},{input.cDNA_fq[1]},{input.cDNA_fq[2]},{input.cDNA_fq[3]}' "
+        "'{input.CellBarcode_fq[0]},{input.CellBarcode_fq[1]},{input.CellBarcode_fq[2]},{input.CellBarcode_fq[3]}' "
+        "--soloType CB_UMI_Simple "
+        "--soloCBwhitelist {input.barcode_whitelist} "
+        "--soloFeatures Gene "
+        "--outSAMattrRGline ID:{wildcards.patient}.{wildcards.sample} "
+        "PL:illumina SM:{wildcards.patient}.{wildcards.sample} LB:RNA "
+        # CR/UR is raw (uncorrected) CellBarcode/UMI while CB/UB is corrected
+        "--outSAMattributes NH HI AS nM NM ch CR UR CB UB "
+        "--outSAMtype BAM SortedByCoordinate "  # required for CB/UB
+        "--outSAMunmapped Within "  # include the unmapped reads in the output file
+        "--readFilesCommand zcat "  # used for reading gz files
+        "--sjdbGTFfile '{input.gtf}' "
+        + config["params"]["STARsolo"]
+
 
 # create combined genome
 rule combine_genome:
@@ -76,8 +139,8 @@ rule download_SL1344_files:
     group:
         "reference"
     params:
-        FA_URL=join(BASE_SL1344_URL, "GCF_000210855.2_ASM21085v2_genomic.gtf.gz"),
-        GTF_URL=join(BASE_SL1344_URL, "GCF_000210855.2_ASM21085v2_genomic.fna.gz")
+        GTF_URL=join(BASE_SL1344_URL, "GCF_000210855.2_ASM21085v2_genomic.gtf.gz"),
+        FA_URL=join(BASE_SL1344_URL, "GCF_000210855.2_ASM21085v2_genomic.fna.gz")
     output:
         FA=SL1344_FA,
         GTF=SL1344_GTF,
