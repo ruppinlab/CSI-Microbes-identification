@@ -1,0 +1,16 @@
+{
+    "__default__" :
+    {
+        "time" : "08:00:00",
+        "mem": "16g",
+        "nthreads" : 4,
+        "gres": 10,
+        "partition": "norm,ccr"
+    },
+    "cellranger_count":
+    {
+      "mem": "64g",
+      "nthreads": 16,
+      "time": "12:00:00"
+    }
+}
