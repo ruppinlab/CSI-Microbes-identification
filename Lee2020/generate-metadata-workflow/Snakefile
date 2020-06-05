@@ -1,0 +1,10 @@
+
+
+rule extract_sample_metadata:
+    input:
+        "data/E-MTAB-8410.sdrf.txt"
+    output:
+        "output/patients.tsv",
+        "output/samples.tsv"
+    shell:
+        "python src/extract_sample_metadata.py"
