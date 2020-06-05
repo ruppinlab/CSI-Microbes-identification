@@ -14,8 +14,8 @@ samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patien
 # print(samples)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
 
-FASTQ_F1 = join("FASTQ", "raw", "{patient}-{sample}_1.fastq.gz")
-FASTQ_F2 = join("FASTQ", "raw", "{patient}-{sample}_2.fastq.gz")
+FASTQ1_FILE = join("FASTQ", "raw", "{patient}-{sample}_1.fastq.gz")
+FASTQ2_FILE = join("FASTQ", "raw", "{patient}-{sample}_2.fastq.gz")
 
 include: "../../RNA-snakemake-rules/rules/mouse-genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
@@ -33,8 +33,8 @@ rule get_FASTQ_files:
         "/data/Robinson-SB/Seq1_HFJLTBGXC_SS2_NoLaneSplit/{sample}_S*_R1_001.fastq.gz",
         "/data/Robinson-SB/Seq1_HFJLTBGXC_SS2_NoLaneSplit/{sample}_S*_R2_001.fastq.gz"
     output:
-        temp(FASTQ_F1),
-        temp(FASTQ_F2)
+        temp(FASTQ1_FILE),
+        temp(FASTQ2_FILE)
     shell:
         "cp {params[0]} {output[0]} && "
         "cp {params[1]} {output[1]}"
