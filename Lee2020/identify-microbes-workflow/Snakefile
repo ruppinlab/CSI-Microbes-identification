@@ -14,7 +14,7 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample", "lane"], drop=False)
 # print(samples)
 lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
-samples = lanes[["sample", "patient"]]
+samples = lanes[["sample", "patient"]].drop_duplicates().iloc[0]
 
 
 PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")
@@ -30,12 +30,22 @@ include: "../../RNA-snakemake-rules/cellranger.smk"
 rule all:
     expand(CR_BAM_FILE, zip, patient=sample["patient"], sample=sample["sample"])
 
+def get_FQ_urls(wildcards):
+    lane = lanes.loc[(wildcards.patient, wildcards.sample, wildcards.lane)]
+    print(lane)
+    R1 = lane["cell_barcode_fastq_url"]
+    R2 = lane["cDNA_fastq_url"]
+    I1 = lane["IDX_fastq_url"]
+    print(R1)
+    print(R2)
+    print(I1)
+    return {"R1": R1, "R2": R2, "I1": I1}
+
+
 # download each sample/lane
 rule download_FASTQ_files:
     params:
-        R1 = lambda wildcards: lanes.loc[(wildcards.patient, wildcards.sample, wildcards.lane), "cell_barcode_fastq_url"],
-        R2 = lambda wildcards: lanes.loc[(wildcards.patient, wildcards.sample, wildcards.lane), "cDNA_fastq_url"],
-        I1 = lambda wildcards: lanes.loc[(wildcards.patient, wildcards.sample, wildcards.lane), "IDX_fastq_url"],
+        unpack(get_FQ_urls)
     output:
         CB_FASTQ_FILE,
         cDNA_FASTQ_FILE,
