@@ -3,7 +3,6 @@ import pandas as pd
 from snakemake.utils import min_version
 ##### set minimum snakemake version #####
 min_version("5.1.2")
-patient = config["patient"]
 ##### load config and sample sheets #####
 configfile: join("config", "PathSeq-config.yaml")
 #validate(config, schema="schemas/config.schema.yaml")
@@ -14,7 +13,7 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample", "lane"], drop=False)
 # print(samples)
 lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
-samples = lanes[["sample", "patient"]].drop_duplicates().iloc[0]
+samples = lanes[["sample", "patient"]].drop_duplicates()
 
 
 PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")
@@ -25,32 +24,25 @@ cDNA_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_R2_001.fastq.gz")
 IDX_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_I1_001.fastq.gz")
 CR_BAM_FILE = join(CR_SAMPLE_ODIR, "outs", "possorted_genome_bam.bam")
 
-include: "../../RNA-snakemake-rules/cellranger.smk"
+include: "../../RNA-snakemake-rules/rules/cellranger.smk"
 
 rule all:
-    expand(CR_BAM_FILE, zip, patient=sample["patient"], sample=sample["sample"])
-
-def get_FQ_urls(wildcards):
-    lane = lanes.loc[(wildcards.patient, wildcards.sample, wildcards.lane)]
-    print(lane)
-    R1 = lane["cell_barcode_fastq_url"]
-    R2 = lane["cDNA_fastq_url"]
-    I1 = lane["IDX_fastq_url"]
-    print(R1)
-    print(R2)
-    print(I1)
-    return {"R1": R1, "R2": R2, "I1": I1}
+    input:
+        expand(CR_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"])
 
 
 # download each sample/lane
 rule download_FASTQ_files:
     params:
-        unpack(get_FQ_urls)
+        R1 = lambda wildcards: lanes.at[(wildcards.patient, wildcards.sample, wildcards.lane), "cell_barcode_fastq_url"],
+        R2 = lambda wildcards: lanes.at[(wildcards.patient, wildcards.sample, wildcards.lane), "cDNA_fastq_url"],
+        I1 = lambda wildcards: lanes.at[(wildcards.patient, wildcards.sample, wildcards.lane), "IDX_fastq_url"] 
     output:
         CB_FASTQ_FILE,
         cDNA_FASTQ_FILE,
         IDX_FASTQ_FILE
     shell:
+        "echo {params} && "
         "wget -O {output[0]} {params[R1]} && "
         "wget -O {output[1]} {params[R2]} && "
         "wget -O {output[2]} {params[I1]}"
