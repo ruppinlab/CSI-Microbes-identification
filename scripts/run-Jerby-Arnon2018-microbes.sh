@@ -1,4 +1,4 @@
-cd Jerby-Arnon2018/identify-microbes-workflow
+cd Jerby-Arnon2018
 sbatch \
 --time=7-00:00:00 \
 --cpus-per-task=2 \

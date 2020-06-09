@@ -1,9 +1,0 @@
-
-
-
-rule extract_metadata:
-    output:
-        "output/samples.tsv",
-        "output/patients.tsv"
-    script:
-        "src/extract_sample_metadata.py"
