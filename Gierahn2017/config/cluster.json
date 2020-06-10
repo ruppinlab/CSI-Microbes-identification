@@ -6,5 +6,11 @@
         "nthreads" : 4,
         "gres": 10,
         "partition": "norm,ccr"
-    }
+    },
+    "FASTQ":
+    {
+      "nthreads": 6,
+      "gres": 200,
+      "mem": "32g"
+    },
 }

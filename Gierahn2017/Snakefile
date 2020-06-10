@@ -28,6 +28,8 @@ rule download_DropSeq_tools:
         "wget {params} -O temp.zip && unzip temp.zip"
 
 rule add_cell_barcode:
+    group:
+        "FASTQ"
     input:
         UNALIGNED_BAM,
         TagBamWithReadSequenceExtended
@@ -41,6 +43,8 @@ rule add_cell_barcode:
         "TAG_NAME=XC NUM_BASES_BELOW_QUALITY=1"
 
 rule convert_fastq_to_bam:
+    group:
+        "FASTQ"
     input:
         SRA_FASTQ1_FILE,
         SRA_FASTQ2_FILE
