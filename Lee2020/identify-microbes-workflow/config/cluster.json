@@ -12,5 +12,12 @@
       "mem": "64g",
       "nthreads": 16,
       "time": "12:00:00"
+    },
+    "PathSeqPipelineSpark":
+    {
+      "time": "2-00:00:00",
+      "mem": "70g",
+      "nthreads": 10,
+      "gres": 300
     }
 }
