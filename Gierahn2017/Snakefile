@@ -16,13 +16,14 @@ TagBamWithReadSequenceExtended = join(DROP_SEQ_DIR, "TagBamWithReadSequenceExten
 # instructions taken from https://github.com/broadinstitute/Drop-seq/blob/master/doc/Drop-seq_Alignment_Cookbook.pdf
 
 rule all:
-    expand(UNALIGNED_TAGGED_CELL_BAM, patient="Pt0", sample="SRR5250853")
+    input:
+        expand(UNALIGNED_TAGGED_CELL_BAM, patient="Pt0", sample="SRR5250853")
 
 rule download_DropSeq_tools:
     params:
         DROPSEQ2_3_URL
     output:
-        temp(temp.zip),
+        temp("temp.zip"),
         TagBamWithReadSequenceExtended
     shell:
         "wget {params} -O temp.zip && unzip temp.zip"
