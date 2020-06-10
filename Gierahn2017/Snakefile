@@ -1,0 +1,68 @@
+from os.path import join
+
+DROPSEQ2_3_URL = "https://github.com/broadinstitute/Drop-seq/releases/download/v2.3.0/Drop-seq_tools-2.3.0.zip"
+# Directories
+FASTQ_DIR = "FASTQ"
+
+# Input Files
+SRA_FASTQ1_FILE = join(FASTQ_DIR, "{sample}_1.fastq")
+SRA_FASTQ2_FILE = join(FASTQ_DIR, "{sample}_2.fastq")
+UNALIGNED_BAM = join("output", "{patient}-{sample}", "unaligned.bam")
+UNALIGNED_TAGGED_CELL_BAM = join("output", "{patient}-{sample}", "unaligned_tagged_Cell.bam")
+UNALIGNED_TAGGED_CELL_SUMMARY = join("output", "{patient}-{sample}", "unaligned_tagged_Cell.bam_summary.txt")
+# drop-seq script files
+DROP_SEQ_DIR = "Drop-seq_tools-2.3.0"
+TagBamWithReadSequenceExtended = join(DROP_SEQ_DIR, "TagBamWithReadSequenceExtended")
+# instructions taken from https://github.com/broadinstitute/Drop-seq/blob/master/doc/Drop-seq_Alignment_Cookbook.pdf
+
+rule all:
+    expand(UNALIGNED_TAGGED_CELL_BAM, patient="Pt0", sample="SRR5250853")
+
+rule download_DropSeq_tools:
+    params:
+        DROPSEQ2_3_URL
+    output:
+        temp(temp.zip),
+        TagBamWithReadSequenceExtended
+    shell:
+        "wget {params} -O temp.zip && unzip temp.zip"
+
+rule add_cell_barcode:
+    input:
+        UNALIGNED_BAM,
+        TagBamWithReadSequenceExtended
+    output:
+        UNALIGNED_TAGGED_CELL_BAM,
+        UNALIGNED_TAGGED_CELL_SUMMARY
+    shell:
+        "{TagBamWithReadSequenceExtended} INPUT={input[0]} "
+        "OUTPUT={output[0]} SUMMARY={output[1]} BASE_RANGE=1-12 "
+        "BASE_QUALITY=20 BARCODED_READ=1 DISCARD_READ=False "
+        "TAG_NAME=XC NUM_BASES_BELOW_QUALITY=1"
+
+rule convert_fastq_to_bam:
+    input:
+        SRA_FASTQ1_FILE,
+        SRA_FASTQ2_FILE
+    output:
+        UNALIGNED_BAM
+    shell:
+        "module load picard && "
+        "java -jar $PICARDJARPATH/picard.jar FastqToSam "
+        "F1={input[0]} F2={input[1]} "
+        "O={output} "
+        "SM={wildcards.sample} "
+        "RG={wildcards.sample} "
+
+rule download_FASTQ_from_SRA:
+    group:
+        "FASTQ"
+    params:
+        FASTQ_DIR
+    output:
+        temp(SRA_FASTQ1_FILE),
+        temp(SRA_FASTQ2_FILE)
+    shell:
+        "module load sratoolkit && "
+        "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
+        "--include-technical --split-files {wildcards.sample}"
