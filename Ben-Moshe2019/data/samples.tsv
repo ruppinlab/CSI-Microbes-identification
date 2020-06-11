@@ -1,0 +1,9 @@
+sample	patient	infection	Run	lane
+GSM3454528	Pt0	control	SRR8146665	L001
+GSM3454528	Pt0	control	SRR8146666	L002
+GSM3454528	Pt0	control	SRR8146667	L003
+GSM3454528	Pt0	control	SRR8146668	L004
+GSM3454529	Pt0	Salmonella enterica serovar Typhimurium	SRR8146669	L001
+GSM3454529	Pt0	Salmonella enterica serovar Typhimurium	SRR8146670	L002
+GSM3454529	Pt0	Salmonella enterica serovar Typhimurium	SRR8146671	L003
+GSM3454529	Pt0	Salmonella enterica serovar Typhimurium	SRR8146672	L004
