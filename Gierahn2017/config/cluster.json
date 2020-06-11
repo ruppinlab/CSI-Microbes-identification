@@ -7,7 +7,7 @@
         "gres": 10,
         "partition": "norm,ccr"
     },
-    "FASTQ":
+    "download_FASTQ_from_SRA":
     {
       "nthreads": 6,
       "gres": 200,
