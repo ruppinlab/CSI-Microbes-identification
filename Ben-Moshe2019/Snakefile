@@ -54,7 +54,7 @@ CR_BAM_FILE = join(CR_SAMPLE_ODIR, "outs", "possorted_genome_bam.bam")
 # FILTERED_PATHSEQ_READS_FILE = join(SC_PATHSEQ_OUTPUT, "Filtered_PathSeq_reads.tsv")
 
 # Snakemake includes
-include: "../../RNA-snakemake-rules/rules/genome.smk"
+include: "../RNA-snakemake-rules/rules/genome.smk"
 # include: "../../RNA-snakemake-rules/rules/STARsolo.smk"
 # include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
 
