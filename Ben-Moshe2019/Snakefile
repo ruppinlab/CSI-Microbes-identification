@@ -11,11 +11,11 @@ configfile: "config/config.yaml"
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
 
-samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
+lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 # print(samples)
-samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
-# validate(units, schema="schemas/units.schema.yaml")
-samples = samples.loc[samples.infection == "Salmonella enterica serovar Typhimurium"]
+lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
+samples = lanes[["sample", "patient"]].drop_duplicates()
+# samples = samples.iloc[0:2]
 
 # urls
 BASE_SL1344_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/210/855/GCF_000210855.2_ASM21085v2"
@@ -28,8 +28,9 @@ ENV_DIR = join("..", "envs")
 STAR_ENV_FILE = join(ENV_DIR, "star.yml")
 
 # Input Files
-SRA_FASTQ1_FILE = join(FASTQ_DIR, "{sample}_1.fastq")
-SRA_FASTQ2_FILE = join(FASTQ_DIR, "{sample}_2.fastq")
+SRA_FASTQ1_FILE = join(FASTQ_DIR, "{run}_1.fastq")
+SRA_FASTQ2_FILE = join(FASTQ_DIR, "{run}_2.fastq")
+SRA_FASTQ3_FILE = join(FASTQ_DIR, "{run}_3.fastq")
 HUMAN_FA = "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
 HUMAN_GTF = "raw/genome/gencode.v22.annotation.gtf"
 
@@ -59,7 +60,7 @@ include: "../../RNA-snakemake-rules/rules/genome.smk"
 
 rule all:
     input:
-        expand(CB_FASTQ_FILE, zip, patient=samples["patient"], sample=samples["sample"], lane=samples["lane"])
+        expand(CB_FASTQ_FILE, zip, patient=lanes["patient"], sample=lanes["sample"], lane=lanes["lane"])
         # join(config["STARsolo"]["output_dir"], "Aligned.sortedByCoord.out.bam").format(patient="Pt0", sample="infected"),
 
 
@@ -164,25 +165,30 @@ rule download_FASTQ_from_SRA:
     group:
         "FASTQ"
     params:
-        run = lambda wildcards: samples.at[(wildcards.patient, wildcards.sample, wildcards.lane), "Run"],
-        dir = FASTQ_DIR
+        FASTQ_DIR
     output:
         temp(SRA_FASTQ1_FILE),
         temp(SRA_FASTQ2_FILE),
         temp(SRA_FASTQ3_FILE),
     shell:
         "module load sratoolkit && "
-        "fasterq-dump -O {params.dir} -t /lscratch/$SLURM_JOBID "
-        "--include-technical --split-files {params.run}"
+        "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
+        "--include-technical --split-files {wildcards.run}"
+
+def get_sra_fq_files(wildcards):
+    run_of_interest = lanes.at[(wildcards.patient, wildcards.sample, wildcards.lane), "Run"]
+    return {
+        "CellBarcode_fq": expand(SRA_FASTQ1_FILE, run=run_of_interest),
+        "cDNA_fq": expand(SRA_FASTQ2_FILE, run=run_of_interest),
+        "idx_fq": expand(SRA_FASTQ3_FILE, run=run_of_interest),
+    }
 
 # compress and rename
 rule compress_rename_SRA_FASTQ_files:
     group:
         "FASTQ"
     input:
-        CellBarcode_fq = SRA_FASTQ1_FILE,
-        cDNA_fq = SRA_FASTQ2_FILE,
-        idx_fq = SRA_FASTQ3_FILE
+        unpack(get_sra_fq_files)
     output:
         CellBarcode_fq = CB_FASTQ_FILE,
         cDNA_fq = cDNA_FASTQ_FILE,
