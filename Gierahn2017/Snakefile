@@ -1,12 +1,27 @@
-from os.path import join
+from os.path import join, basename
+import pandas as pd
+from snakemake.utils import min_version
+##### set minimum snakemake version #####
+min_version("5.1.2")
+##### load config and sample sheets #####
+configfile: join("config", "PathSeq-config.yaml")
+#validate(config, schema="schemas/config.schema.yaml")
+
+patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
+# validate(samples, schema="schemas/samples.schema.yaml")
+
+samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample", "lane"], drop=False)
+
 
 DROPSEQ2_3_URL = "https://github.com/broadinstitute/Drop-seq/releases/download/v2.3.0/Drop-seq_tools-2.3.0.zip"
 # Directories
 FASTQ_DIR = "FASTQ"
 
 # Input Files
-SRA_FASTQ1_FILE = join(FASTQ_DIR, "{sample}_1.fastq")
-SRA_FASTQ2_FILE = join(FASTQ_DIR, "{sample}_2.fastq")
+SRA_FASTQ1_FILE = join(FASTQ_DIR, "{run}_1.fastq")
+SRA_FASTQ2_FILE = join(FASTQ_DIR, "{run}_2.fastq")
+SAMPLE_FASTQ1_FILE = join("output", "{patient}-{sample}", "{sample}_1.fastq")
+SAMPLE_FASTQ2_FILE = join("output", "{patient}-{sample}", "{sample}_2.fastq")
 UNALIGNED_BAM = join("output", "{patient}-{sample}", "unaligned.bam")
 UNALIGNED_TAGGED_CELL_BAM = join("output", "{patient}-{sample}", "unaligned_tagged_Cell.bam")
 UNALIGNED_TAGGED_CELL_SUMMARY = join("output", "{patient}-{sample}", "unaligned_tagged_Cell.bam_summary.txt")
@@ -17,7 +32,7 @@ TagBamWithReadSequenceExtended = join(DROP_SEQ_DIR, "TagBamWithReadSequenceExten
 
 rule all:
     input:
-        expand(UNALIGNED_TAGGED_CELL_BAM, patient="Pt0", sample="SRR5250853")
+        expand(SAMPLE_FASTQ1_FILE, patient="Pt0", sample="GSM2486334")
 
 rule download_DropSeq_tools:
     params:
@@ -29,8 +44,6 @@ rule download_DropSeq_tools:
         "wget {params} -O temp.zip && unzip temp.zip"
 
 rule add_cell_barcode:
-    group:
-        "FASTQ"
     input:
         UNALIGNED_BAM,
         TagBamWithReadSequenceExtended
@@ -44,11 +57,9 @@ rule add_cell_barcode:
         "TAG_NAME=XC NUM_BASES_BELOW_QUALITY=1"
 
 rule convert_fastq_to_bam:
-    group:
-        "FASTQ"
     input:
-        SRA_FASTQ1_FILE,
-        SRA_FASTQ2_FILE
+        SAMPLE_FASTQ1_FILE,
+        SAMPLE_FASTQ2_FILE
     output:
         UNALIGNED_BAM
     shell:
@@ -59,9 +70,27 @@ rule convert_fastq_to_bam:
         "SM={wildcards.sample} "
         "RG={wildcards.sample} "
 
+def get_fqs_same_sample(wildcards):
+    runs = samples.at[(wildcards.patient, wildcards.sample), "Run"]
+    return {
+        "FQ1": expand(SRA_FASTQ1_FILE, run=runs),
+        "FQ2": expand(SRA_FASTQ2_FILE, run=runs),
+    }
+
+rule combine_FASTQs:
+    input:
+        unpack(get_fqs_same_sample)
+    output:
+        fq1 = SAMPLE_FASTQ1_FILE,
+        fq2 = SAMPLE_FASTQ2_FILE
+    run:
+        for fq1 in input.FQ1:
+            shell("cat {fq1} >> {output[0]}")
+        for fq2 in input.FQ2:
+            shell("cat {fq2} >> {output[1]}")
+
+
 rule download_FASTQ_from_SRA:
-    group:
-        "FASTQ"
     params:
         FASTQ_DIR
     output:
