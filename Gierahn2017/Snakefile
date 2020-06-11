@@ -10,7 +10,7 @@ configfile: join("config", "PathSeq-config.yaml")
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
 
-samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample", "lane"], drop=False)
+samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 
 
 DROPSEQ2_3_URL = "https://github.com/broadinstitute/Drop-seq/releases/download/v2.3.0/Drop-seq_tools-2.3.0.zip"
@@ -99,4 +99,4 @@ rule download_FASTQ_from_SRA:
     shell:
         "module load sratoolkit && "
         "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
-        "--include-technical --split-files {wildcards.sample}"
+        "--include-technical --split-files {wildcards.run}"
