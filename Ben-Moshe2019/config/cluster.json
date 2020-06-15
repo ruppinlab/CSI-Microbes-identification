@@ -36,5 +36,11 @@
       "nthreads": 10,
       "gres":"300",
       "time": "7-00:00:00"
+    },
+    "filter_bam_by_cell":
+    {
+      "mem": "4g",
+      "nthreads": 1,
+      "time": "2:00:00"
     }
 }
