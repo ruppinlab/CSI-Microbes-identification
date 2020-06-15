@@ -15,6 +15,8 @@ lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient"
 # print(samples)
 lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
 samples = lanes[["sample", "patient"]].drop_duplicates()
+
+cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
 # samples = samples.iloc[0:2]
 
 # urls
@@ -35,12 +37,13 @@ HUMAN_FA = "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
 HUMAN_GTF = "raw/genome/gencode.v22.annotation.gtf"
 
 PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")
-CR_SAMPLE_ODIR = join("output", "CellRanger", "{patient}-{sample}")
+CR_SAMPLE_ODIR = "{patient}-{sample}"
 
 CB_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_S1_{lane}_R1_001.fastq.gz")
 cDNA_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_S1_{lane}_R2_001.fastq.gz")
 IDX_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_S1_{lane}_I1_001.fastq.gz")
 CR_BAM_FILE = join(CR_SAMPLE_ODIR, "outs", "possorted_genome_bam.bam")
+CR_CELL_BAM = join("output", "{patient}-{sample}", "{cell}.bam")
 # Intermediate Files
 # cDNA_FASTQ_FILE = join(FASTQ_DIR, "{patient}-{sample}",
 #                        "cDNAfragmentSequence.fastq.gz")
@@ -60,9 +63,19 @@ include: "../RNA-snakemake-rules/rules/cellranger.smk"
 
 rule all:
     input:
-        expand(CR_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"])
+        expand(CR_CELL_BAM, patient="Pt0", sample="GSM3454528", cell="AAACCTGAGCTATGCT")
         # join(config["STARsolo"]["output_dir"], "Aligned.sortedByCoord.out.bam").format(patient="Pt0", sample="infected"),
 
+rule filter_bam_by_cell:
+    input:
+        CR_BAM_FILE
+    output:
+        CR_CELL_BAM
+    shell:
+        "module load picard && "
+        "java -jar $PICARDJARPATH/picard.jar FilterSamReads "
+        "I={input} O={output} TAG=CB TAG_VALUE={wildcards.cell} "
+        "FILTER=includeTagValues"
 
 
 # # special rules for STARsolo since we want to combine sequencing runs

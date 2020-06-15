@@ -2,6 +2,8 @@ patients: data/patients.tsv
 
 samples: data/samples.tsv
 
+units: data/units.tsv
+
 ref:
   annotation: "raw/genome/gencode.v22.SL1344.annotation.gtf"
   genome: "raw/genome/HG38-SL1344.fa"
