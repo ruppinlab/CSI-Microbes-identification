@@ -7,6 +7,12 @@
         "gres": 10,
         "partition": "norm,ccr"
     },
+    "cellranger_count":
+    {
+      "mem": "64g",
+      "nthreads": 16,
+      "time": "1-00:00:00"
+    },
     "create_star_index" :
     {
         "nthreads" : 16,
