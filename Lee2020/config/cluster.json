@@ -25,5 +25,11 @@
       "mem": "4g",
       "nthreads": 1,
       "time": "2:00:00"
+    },
+    "PathSeqScoreSpark":
+    {
+      "time": "20:00:00",
+      "mem": "32g",
+      "nthreads": 10
     }
 }

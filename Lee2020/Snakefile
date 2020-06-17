@@ -28,14 +28,40 @@ CR_BAM_FILE = join(CR_SAMPLE_ODIR, "outs", "possorted_genome_bam.bam")
 PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 PATHSEQ_TAG_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq_with_tags.bam")
 PATHSEQ_CELL_BAM = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq_with_tags.bam")
+PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq.txt")
 
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
 rule all:
     input:
-        expand(PATHSEQ_CELL_BAM, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
+        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
         # expand(join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq.bam"), zip, sample=cells["sample"], patient=cells["patient"], cell=cells["barcode"])
+
+
+rule PathSeqScoreSpark:
+    input:
+        bam_file = PATHSEQ_CELL_BAM,
+        taxonomy_db = config["PathSeq"]["taxonomy_db"]
+    params:
+        taxonomy_db = basename(config["PathSeq"]["taxonomy_db"])
+    output:
+        pathseq_output = PATHSEQ_CELL_SCORE
+    run:
+        shell("mkdir /lscratch/$SLURM_JOBID/tmp")
+        shell("cp {input.taxonomy_db} /lscratch/$SLURM_JOBID/")
+        shell(
+            "module load GATK/4.1.6.0 && "
+            "gatk PathSeqScoreSpark "
+            "--unpaired-input '{input.bam_file}' "
+            "--taxonomy-file /lscratch/$SLURM_JOBID/{params.taxonomy_db} "
+            "--scores-output '{output.pathseq_output}' "
+            '--java-options "-Xmx30g -Xms30G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" '
+            '--spark-master local[8] '
+            + config["params"]["PathSeq"]
+        )
+
+
 
 rule split_PathSeq_BAM_by_CB_UB:
     input:
