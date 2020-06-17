@@ -7,6 +7,9 @@ min_version("5.1.2")
 ##### load config and sample sheets #####
 configfile: "config/config.yaml"
 #validate(config, schema="schemas/config.schema.yaml")
+wildcard_constraints:
+    patient="Pt0",
+    sample="GSM345452[8-9]"
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
@@ -58,7 +61,7 @@ CR_BAM_FILE = join(CR_SAMPLE_ODIR, "outs", "possorted_genome_bam.bam")
 # Snakemake includes
 # include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
 
 rule all:
