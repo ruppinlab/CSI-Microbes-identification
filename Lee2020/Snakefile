@@ -37,17 +37,20 @@ rule all:
         expand(PATHSEQ_CELL_BAM, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
         # expand(join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq.bam"), zip, sample=cells["sample"], patient=cells["patient"], cell=cells["barcode"])
 
+rule split_PathSeq_BAM_by_CB_UB:
+    input:
+        PATHSEQ_TAG_BAM
+    output:
+        PATHSEQ_CELL_BAM
+    script:
+        "src/split_PathSeq_BAM_by_CB_UB.py"
 
-rule filter_PathSeq_by_CB_UMI:
-    params:
-        barcodes = lambda wildcards: units.loc[units["sample"] == wildcards.sample]["barcodes"]
+rule add_CB_UB_tags_to_PathSeq_BAM:
     input:
         CR_BAM_FILE,
-        PATHSEQ_BAM,
-        config["units"]
+        PATHSEQ_BAM
     output:
         PATHSEQ_TAG_BAM,
-        expand(PATHSEQ_CELL_BAM, cell=params.barcodes, sample="{sample}", patient="{patient}")
     script:
         "src/add_tags_to_PathSeq_bam.py"
 

@@ -12,7 +12,7 @@ pathseq_bam = pysam.AlignmentFile(pathseq.input[1], mode="rb")
 
 iter = pathseq_bam.fetch()
 output = []
-d = defaultdict(lambda: defaultdict(list))
+# d = defaultdict(lambda: defaultdict(list))
 # seg is an AlignedSegment object
 for seg in iter:
     # returns an IteratorRowSelection object, which contains one or more AlignedSegment object
@@ -39,24 +39,24 @@ all_pathseq_bam.close()
 # desired output is one BAM file per valid cell barcode with only one read per UMI
 # read in the units dataframe
 # subset by the sample wildcards
-df = pd.read_csv(snakemake.input[2], sep="\t")
-df = df.loc[(df["patient"] == snakemake.wildcards["patient"]) and (df["sample"] == snakemake.wildcards["sample"])]
-#barcodes = ["AAGGAGCGTGAGTATA-1", "ACATGGTAGCAGATCG-1", "ACGATACGTCTCTCGT-1", "ACGTCAAGTGTTGAGG-1"]
-barcodes = df["barcode"]
-# cell_iter = d["AAGGAGCGTGAGTATA-1"]
-out_file = "output/PathSeq/{}-{}-{}/pathseq_with_tags.bam".format(snakemake.wildcards["patient"], snakemake.wildcards["sample"], "{}")
-for barcode in barcodes:
-    UMI_dict = d[barcode]
-    barcode_bam = pysam.AlignmentFile(out_file.format(barcode), mode="wb", template=pathseq_bam)
-    for UMI in UMI_dict:
-        # keep one read per UMI - the read with the highest mapping quality
-        UMI_reads = UMI_dict[UMI]
-        UMI_read = UMI_reads[0]
-        for read in UMI_reads:
-            if read.mapping_quality > UMI_read.mapping_quality:
-                UMI_read = read
-        barcode_bam.write(UMI_read)
-    barcode_bam.close()
+# df = pd.read_csv(snakemake.input[2], sep="\t")
+# df = df.loc[(df["patient"] == snakemake.wildcards["patient"]) and (df["sample"] == snakemake.wildcards["sample"])]
+# #barcodes = ["AAGGAGCGTGAGTATA-1", "ACATGGTAGCAGATCG-1", "ACGATACGTCTCTCGT-1", "ACGTCAAGTGTTGAGG-1"]
+# barcodes = df["barcode"]
+# # cell_iter = d["AAGGAGCGTGAGTATA-1"]
+# out_file = "output/PathSeq/{}-{}-{}/pathseq_with_tags.bam".format(snakemake.wildcards["patient"], snakemake.wildcards["sample"], "{}")
+# for barcode in barcodes:
+#     UMI_dict = d[barcode]
+#     barcode_bam = pysam.AlignmentFile(out_file.format(barcode), mode="wb", template=pathseq_bam)
+#     for UMI in UMI_dict:
+#         # keep one read per UMI - the read with the highest mapping quality
+#         UMI_reads = UMI_dict[UMI]
+#         UMI_read = UMI_reads[0]
+#         for read in UMI_reads:
+#             if read.mapping_quality > UMI_read.mapping_quality:
+#                 UMI_read = read
+#         barcode_bam.write(UMI_read)
+#     barcode_bam.close()
 
 cr_bam.close()
 pathseq_bam.close()
