@@ -1,14 +1,13 @@
 import pysam
-import pandas as pd
 from collections import defaultdict
 
 # load and index the CellRanger BAM file
-cr_bam = pysam.AlignmentFile(pathseq.input[0], mode="rb")
+cr_bam = pysam.AlignmentFile(snakemake.input[0], mode="rb")
 cr_idx = pysam.IndexedReads(cr_bam)
 cr_idx.build()
 
 # load and iterate through the PathSeq BAM file
-pathseq_bam = pysam.AlignmentFile(pathseq.input[1], mode="rb")
+pathseq_bam = pysam.AlignmentFile(snakemake.input[1], mode="rb")
 
 iter = pathseq_bam.fetch()
 output = []

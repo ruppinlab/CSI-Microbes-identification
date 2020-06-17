@@ -20,16 +20,15 @@
       "nthreads": 10,
       "gres": 300
     },
-    "filter_bam_by_cell":
+    "split_PathSeq_BAM_by_CB_UB":
     {
-      "mem": "4g",
-      "nthreads": 1,
-      "time": "2:00:00"
+      "mem": "48g",
+      "time": "4:00:00"
     },
     "PathSeqScoreSpark":
     {
-      "time": "20:00:00",
-      "mem": "32g",
-      "nthreads": 10
+      "time": "08:00:00",
+      "nthreads": 10,
+      "mem": "48g"
     }
 }
