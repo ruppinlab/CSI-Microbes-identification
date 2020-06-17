@@ -24,7 +24,7 @@ for seg in iter:
         # using set_tags removes all other tags - use set_tag instead
         seg.set_tag("CB", CB, "Z")
         seg.set_tag("UB", UB, "Z")
-        d[CB][UB].append(seg)
+        # d[CB][UB].append(seg)
     # keep all PathSeq alignments
     output.append(seg)
 

@@ -3,7 +3,7 @@ from collections import defaultdict
 
 
 # load and iterate through the PathSeq BAM file
-pathseq_bam = pysam.AlignmentFile(pathseq.input[0], mode="rb")
+pathseq_bam = pysam.AlignmentFile(snakemake.input[0], mode="rb")
 
 iter = pathseq_bam.fetch()
 output = []
