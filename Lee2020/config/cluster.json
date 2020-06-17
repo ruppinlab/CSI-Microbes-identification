@@ -20,10 +20,9 @@
       "nthreads": 10,
       "gres": 300
     },
-    "filter_bam_by_cell":
+    "split_PathSeq_BAM_by_CB_UB":
     {
-      "mem": "4g",
-      "nthreads": 1,
-      "time": "2:00:00"
+      "time": "08:00:00",
+      "mem": "48g"
     }
 }

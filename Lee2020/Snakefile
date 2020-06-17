@@ -6,7 +6,9 @@ min_version("5.1.2")
 ##### load config and sample sheets #####
 configfile: join("config", "PathSeq-config.yaml")
 #validate(config, schema="schemas/config.schema.yaml")
-
+wildcard_constraints:
+    patient="SC0[0-2][0-9]",
+    sample="Sample[0-9][a-c]"
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
 
@@ -16,6 +18,7 @@ lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels]
 samples = lanes[["sample", "patient"]].drop_duplicates()
 cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
 cells = cells.loc[cells["sample"] == "Sample6a"]
+cells = cells.iloc[0:20]
 # samples = samples.iloc[0:2]
 
 PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")
@@ -38,6 +41,8 @@ rule all:
         # expand(join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq.bam"), zip, sample=cells["sample"], patient=cells["patient"], cell=cells["barcode"])
 
 rule split_PathSeq_BAM_by_CB_UB:
+    conda:
+        "../envs/pysam.yaml"
     input:
         PATHSEQ_TAG_BAM
     output:
@@ -46,6 +51,8 @@ rule split_PathSeq_BAM_by_CB_UB:
         "src/split_PathSeq_BAM_by_CB_UB.py"
 
 rule add_CB_UB_tags_to_PathSeq_BAM:
+    conda:
+        "../envs/pysam.yaml"
     input:
         CR_BAM_FILE,
         PATHSEQ_BAM
