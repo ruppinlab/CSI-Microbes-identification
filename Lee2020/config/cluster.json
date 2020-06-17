@@ -25,10 +25,11 @@
       "mem": "48g",
       "time": "4:00:00"
     },
-    "PathSeqScoreSpark":
+    "cell":
     {
-      "time": "08:00:00",
-      "nthreads": 10,
-      "mem": "48g"
+      "mem": "4g",
+      "nthreads": 1,
+      "time": "2:00:00",
+      "partition": "quick"
     }
 }

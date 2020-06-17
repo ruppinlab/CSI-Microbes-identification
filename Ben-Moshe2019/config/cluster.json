@@ -30,17 +30,23 @@
       "gres": 200,
       "mem": "32g"
     },
-    "PathSeqPipelineSpark_batch":
+    "PathSeqPipelineSpark":
     {
-      "mem":"70g",
+      "time": "2-00:00:00",
+      "mem": "70g",
       "nthreads": 10,
-      "gres":"300",
-      "time": "7-00:00:00"
+      "gres": 300
     },
-    "filter_bam_by_cell":
+    "add_CB_UB_tags_to_PathSeq_BAM":
+    {
+      "mem": "48g",
+      "time": "4:00:00"
+    },
+    "cell":
     {
       "mem": "4g",
       "nthreads": 1,
-      "time": "2:00:00"
+      "time": "2:00:00",
+      "partition": "quick"
     }
 }
