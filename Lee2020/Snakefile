@@ -25,78 +25,31 @@ CB_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_S1_{lane}_R1_001.fastq.gz")
 cDNA_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_S1_{lane}_R2_001.fastq.gz")
 IDX_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_S1_{lane}_I1_001.fastq.gz")
 CR_BAM_FILE = join(CR_SAMPLE_ODIR, "outs", "possorted_genome_bam.bam")
-CR_CELL_BAM = join("output", "{patient}-{sample}", "{cell}.bam")
+PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+PATHSEQ_TAG_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq_with_tags.bam")
+PATHSEQ_CELL_BAM = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq_with_tags.bam")
 
 include: "../../RNA-snakemake-rules/rules/cellranger.smk"
 include: "../../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
 rule all:
     input:
-        expand(CR_CELL_BAM, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
-        expand(join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq.bam"), zip, sample=cells["sample"], patient=cells["patient"], cell=cells["barcode"])
+        expand(PATHSEQ_CELL_BAM, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
+        # expand(join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq.bam"), zip, sample=cells["sample"], patient=cells["patient"], cell=cells["barcode"])
 
 
-GATK_VERSION = "4.1.6.0"
-
-rule PathSeqPipelineSpark:
-    input:
-        bam_file = expand(config["PathSeq"]["bam_file"], zip, sample=cells["sample"], patient=cells["patient"], cell=cells["barcode"]),
-        host_bwa_image = config["PathSeq"]["host_img"],
-        microbe_bwa_image = config["PathSeq"]["microbe_bwa_image"],
-        microbe_fasta_file = config["PathSeq"]["microbe_fasta"],
-        microbe_fai_file = config["PathSeq"]["microbe_fai"],
-        microbe_dict_file = config["PathSeq"]["microbe_dict"],
-        host_hss_file = config["PathSeq"]["host_bfi"],
-        taxonomy_db = config["PathSeq"]["taxonomy_db"]
+rule filter_PathSeq_by_CB_UMI:
     params:
-        host_bwa_image = basename(config["PathSeq"]["host_img"]),
-        microbe_bwa_image = basename(config["PathSeq"]["microbe_bwa_image"]),
-        microbe_fasta_file = basename(config["PathSeq"]["microbe_fasta"]),
-        microbe_fai_file = basename(config["PathSeq"]["microbe_fai"]),
-        microbe_dict_file = basename(config["PathSeq"]["microbe_dict"]),
-        host_hss_file = basename(config["PathSeq"]["host_bfi"]),
-        taxonomy_db = basename(config["PathSeq"]["taxonomy_db"])
-    output:
-        pathseq_bam = expand(join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq.bam"), zip, sample=cells["sample"], patient=cells["patient"], cell=cells["barcode"]),
-        pathseq_output = expand(join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq.txt"), zip, sample=cells["sample"], patient=cells["patient"], cell=cells["barcode"]),
-        filter_metrics = expand(join("output", "PathSeq", "{patient}-{sample}-{cell}", "filter-metrics.txt"), zip, sample=cells["sample"], patient=cells["patient"], cell=cells["barcode"])
-    run:
-        shell("mkdir /lscratch/$SLURM_JOBID/tmp")
-        shell("cp {input.host_bwa_image} /lscratch/$SLURM_JOBID/")
-        shell("cp {input.microbe_bwa_image} /lscratch/$SLURM_JOBID/")
-        shell("cp {input.microbe_fasta_file} /lscratch/$SLURM_JOBID/")
-        shell("cp {input.microbe_fai_file} /lscratch/$SLURM_JOBID/")
-        shell("cp {input.microbe_dict_file} /lscratch/$SLURM_JOBID/")
-        shell("cp {input.host_hss_file} /lscratch/$SLURM_JOBID/")
-        shell("cp {input.taxonomy_db} /lscratch/$SLURM_JOBID/")
-        for bam_file, pathseq_bam, pathseq_output, filter_metrics in zip(input.bam_file, output.pathseq_bam, output.pathseq_output, output.filter_metrics):
-            shell(
-                "module load GATK/4.1.6.0 && "
-                "gatk PathSeqPipelineSpark "
-                "--input '{bam_file}' "
-                "--filter-bwa-image /lscratch/$SLURM_JOBID/{params.host_bwa_image} "
-                "--kmer-file /lscratch/$SLURM_JOBID/{params.host_hss_file} "
-                "--microbe-fasta /lscratch/$SLURM_JOBID/{params.microbe_fasta_file} "
-                "--microbe-bwa-image /lscratch/$SLURM_JOBID/{params.microbe_bwa_image} "
-                "--taxonomy-file /lscratch/$SLURM_JOBID/{params.taxonomy_db} "
-                "--output '{pathseq_bam}' "
-                "--scores-output '{pathseq_output}' "
-                "--filter-metrics '{filter_metrics}' "
-                '--java-options "-Xmx64g -Xms64G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" '
-                '--spark-master local[8] '
-                + config["params"]["PathSeq"]
-            )
-
-rule filter_bam_by_cell:
+        barcodes = lambda wildcards: units.loc[units["sample"] == wildcards.sample]["barcodes"]
     input:
-        CR_BAM_FILE
+        CR_BAM_FILE,
+        PATHSEQ_BAM,
+        config["units"]
     output:
-        CR_CELL_BAM
-    shell:
-        "module load picard && "
-        "java -jar $PICARDJARPATH/picard.jar FilterSamReads "
-        "I={input} O={output} TAG=CB TAG_VALUE={wildcards.cell} "
-        "FILTER=includeTagValues"
+        PATHSEQ_TAG_BAM,
+        expand(PATHSEQ_CELL_BAM, cell=params.barcodes, sample="{sample}", patient="{patient}")
+    script:
+        "src/add_tags_to_PathSeq_bam.py"
 
 # download each sample/lane
 rule download_FASTQ_files:
