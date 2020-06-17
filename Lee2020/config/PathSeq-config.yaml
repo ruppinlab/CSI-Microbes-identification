@@ -7,7 +7,7 @@ trimming:
   skip: True
 
 PathSeq:
-  bam_file: "output/{patient}-{sample}/pathseq.bam"
+  bam_file: "{patient}-{sample}/outs/possorted_genome_bam.bam"
   microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
   microbe_fai: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.fai"
   microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
@@ -18,6 +18,7 @@ PathSeq:
 
 params:
   PathSeq: "--min-score-identity .7 --is-host-aligned true --filter-duplicates false "
+  PathSeqScore: "--min-score-identity .7"
 
 CellRanger:
   genome_dir: "$CELLRANGER_REF300/GRCh38"
