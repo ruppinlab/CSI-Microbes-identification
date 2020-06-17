@@ -29,8 +29,8 @@ PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 PATHSEQ_TAG_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq_with_tags.bam")
 PATHSEQ_CELL_BAM = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq_with_tags.bam")
 
-include: "../../RNA-snakemake-rules/rules/cellranger.smk"
-include: "../../pathogen-discovery-rules/rules/PathSeq-single.smk"
+include: "../RNA-snakemake-rules/rules/cellranger.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
 rule all:
     input:
