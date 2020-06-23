@@ -1,0 +1,33 @@
+{
+    "__default__" :
+    {
+        "time" : "08:00:00",
+        "mem": "16g",
+        "nthreads" : 4,
+        "gres": 10
+    },
+    "cellranger_count":
+    {
+      "mem": "64g",
+      "nthreads": 16,
+      "time": "1-00:00:00"
+    },
+    "FASTQ":
+    {
+      "nthreads": 6,
+      "gres": 200,
+      "mem": "32g"
+    },
+    "PathSeqPipelineSpark":
+    {
+      "time": "2-00:00:00",
+      "mem": "70g",
+      "nthreads": 10,
+      "gres": 300
+    },
+    "add_CB_UB_tags_to_PathSeq_BAM":
+    {
+      "mem": "48g",
+      "time": "4:00:00"
+    }
+}

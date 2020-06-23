@@ -1,0 +1,21 @@
+---
+patients: data/patients.tsv
+samples: data/samples.tsv
+
+params:
+  PathSeq: "--filter-duplicates false --is-host-aligned true --min-score-identity .7 "
+  PathSeqScore: "--min-score-identity .7 "
+
+PathSeq:
+  bam_file: "{patient}-{sample}/outs/possorted_genome_bam.bam"
+  microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
+  microbe_fai: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.fai"
+  microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
+  microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
+  taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
+  host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
+  host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
+
+CellRanger:
+  genome_dir: "$CELLRANGER_REF300/GRCh38"
+  chemistry: "auto"
