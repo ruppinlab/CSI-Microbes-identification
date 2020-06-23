@@ -1,4 +1,4 @@
-cd Yost2019/identify-microbes-workflow
+cd Yost2019
 sbatch \
 --time=7-00:00:00 \
 --cpus-per-task=16 \
