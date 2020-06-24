@@ -7,8 +7,8 @@ min_version("5.1.2")
 configfile: join("config", "PathSeq-config.yaml")
 #validate(config, schema="schemas/config.schema.yaml")
 wildcard_constraints:
-    patient="SC0[0-3][0-9]",
-    sample="Sample[0-9][a-c]"
+    patient="[3-5]",
+    sample="[3-5][a-d]"
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
