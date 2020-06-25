@@ -9,32 +9,16 @@ GSM3721458	su011	CD45+ CD3+	pre	SRR8890792	S1_L001	Squamous cell carcinoma tumor
 GSM3721460	su012	CD45+ CD3+	pre	SRR8890794	S1_L001	Basal cell carcinoma tumor
 GSM3721462	su013	CD45+ CD3+	pre	SRR8890796	S1_L001	Squamous cell carcinoma tumor
 GSM3721463	su014	CD45+ CD3+	post	SRR8890797	S1_L001	Squamous cell carcinoma tumor
-GSM3721465	su009	CD45+ CD3+	post	SRR8890799	S1_L001	Basal cell carcinoma tumor
-GSM3721466	su009	CD45+ CD3+	pre	SRR8890800	S1_L001	Basal cell carcinoma tumor
-GSM3721468	su010	CD45+ CD3+ CD8+ CD39+	post	SRR8890802	S1_L001	Squamous cell carcinoma tumor
-GSM3721469	su010	CD45+ CD3+	post	SRR8890803	S1_L001	Squamous cell carcinoma tumor
-GSM3721473	su011	CD45+ CD3+	post	SRR8890807	S1_L001	Squamous cell carcinoma tumor
-GSM3721475	su011	CD45+ CD3+	pre	SRR8890809	S1_L001	Squamous cell carcinoma tumor
-GSM3721478	su013	CD45+ CD3+	post	SRR8890812	S1_L001	Squamous cell carcinoma tumor
-GSM3721480	su014	CD45+ CD3+	post	SRR8890814	S1_L001	Squamous cell carcinoma tumor
-GSM3721481	su014	CD45+ CD3+	pre	SRR8890815	S1_L001	Squamous cell carcinoma tumor
 GSM3721445	su003	CD45+	post	SRR8890779	S1_L001	Basal cell carcinoma tumor
 GSM3721447	su008	CD45+ CD3+	post	SRR8890781	S1_L001	Basal cell carcinoma tumor
 GSM3721449	su009	CD45+ CD3+	pre	SRR8890783	S1_L001	Basal cell carcinoma tumor
 GSM3721451	su010	CD45+ CD3+ CD8+ CD39+	post	SRR8890785	S1_L001	Squamous cell carcinoma tumor
-GSM3721453	su010	CD45+ CD3+	pre	SRR8890787	S1_L001	Squamous cell carcinoma tumor
+GSM3721453	su010	CD45+ CD3+	pre	SRR8890787	S1_L001	Basal cell carcinoma tumor
 GSM3721455	su010	CD45+ CD3+	pre	SRR8890789	S1_L001	Squamous cell carcinoma tumor
 GSM3721457	su011	CD45+ CD3+	pre	SRR8890791	S1_L001	Squamous cell carcinoma tumor
 GSM3721459	su012	CD45+ CD3+	post	SRR8890793	S1_L001	Basal cell carcinoma tumor
 GSM3721461	su013	CD45+ CD3+	post	SRR8890795	S1_L001	Squamous cell carcinoma tumor
 GSM3721464	su014	CD45+ CD3+	pre	SRR8890798	S1_L001	Squamous cell carcinoma tumor
-GSM3721467	su010	CD45+ CD3+	post	SRR8890801	S1_L001	Basal cell carcinoma tumor
-GSM3721470	su010	CD45+ CD3+	pre	SRR8890804	S1_L001	Basal cell carcinoma tumor
-GSM3721472	su010	CD45+ CD3+	pre	SRR8890806	S1_L001	Squamous cell carcinoma tumor
-GSM3721474	su011	CD45+ CD3+	pre	SRR8890808	S1_L001	Squamous cell carcinoma tumor
-GSM3721476	su012	CD45+ CD3+	post	SRR8890810	S1_L001	Basal cell carcinoma tumor
-GSM3721477	su012	CD45+ CD3+	pre	SRR8890811	S1_L001	Basal cell carcinoma tumor
-GSM3721479	su013	CD45+ CD3+	pre	SRR8890813	S1_L001	Squamous cell carcinoma tumor
 GSM3511735	su001	CD45+ CD3+	pre	SRR8315733	S1_L001	Basal cell carcinoma tumor
 GSM3511736	su001	CD3-	pre	SRR8315734	S1_L001	Basal cell carcinoma tumor
 GSM3511737	su001	All	pre	SRR8315735	S1_L001	Basal cell carcinoma tumor
@@ -67,4 +51,3 @@ GSM3511765	su008	CD45+ CD3-	pre	SRR8315763	S1_L001	Basal cell carcinoma tumor
 GSM3511766	su008	CD45+ CD3+	pre	SRR8315764	S1_L001	Basal cell carcinoma tumor
 GSM3511767	su008	CD45- CD3-	pre	SRR8315765	S1_L001	Basal cell carcinoma tumor
 GSM3511768	su008	CD3-	post	SRR8315766	S1_L001	Basal cell carcinoma tumor
-GSM3721471	su010	CD45+ CD3+	pre	SRR8890805	S1_L001	Squamous cell carcinoma tumor
