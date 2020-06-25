@@ -20,7 +20,7 @@ lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels]
 # lanes = lanes.iloc[0:5]
 samples = lanes[["sample", "patient"]].drop_duplicates()
 
-#cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
+cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
 # samples = samples.iloc[0:2]
 
 # Directories
@@ -41,11 +41,12 @@ pathseq_output = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
 
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
-# include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
+include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
 
 rule all:
     input:
-        expand(pathseq_output, zip, patient=samples["patient"], sample=samples["sample"])
+        # expand(pathseq_output, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
         # join(config["STARsolo"]["output_dir"], "Aligned.sortedByCoord.out.bam").format(patient="Pt0", sample="infected"),
 
 # download files from SRA
