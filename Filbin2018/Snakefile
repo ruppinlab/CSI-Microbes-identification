@@ -15,7 +15,7 @@ samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patien
 # print(samples)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
 # validate(units, schema="schemas/units.schema.yaml")
-samples = samples.loc[samples.patient == "BCH1126"]
+samples = samples.loc[samples.patient == patient]
 #samples = samples.loc[samples.plate == plate]
 #samples = samples.sample(, random_state=0)
 #nrows = min(30, samples.shape[0])
@@ -52,8 +52,8 @@ rule convert_FASTQ_to_BAM:
 
 rule download_FASTQ_files:
     params:
-        fq1 = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq1"],
-        fq2 = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq2"],
+        fq1 = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastqR1-file-path"],
+        fq2 = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastqR2-file-path"],
     output:
         fq1=temp(FASTQ1_FILE),
         fq2=temp(FASTQ2_FILE)
