@@ -27,7 +27,7 @@
     },
     "add_CB_UB_tags_to_PathSeq_BAM":
     {
-      "mem": "48g",
+      "mem": "96g",
       "time": "4:00:00"
     }
 }

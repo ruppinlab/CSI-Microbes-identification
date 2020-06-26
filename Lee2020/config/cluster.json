@@ -24,12 +24,5 @@
     {
       "mem": "96g",
       "time": "4:00:00"
-    },
-    "cell":
-    {
-      "mem": "4g",
-      "nthreads": 1,
-      "time": "2:00:00",
-      "partition": "quick"
     }
 }
