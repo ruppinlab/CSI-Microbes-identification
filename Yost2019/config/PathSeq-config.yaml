@@ -1,6 +1,7 @@
 ---
 patients: data/patients.tsv
 samples: data/samples.tsv
+units: data/units.tsv
 
 params:
   PathSeq: "--filter-duplicates false --is-host-aligned true --min-score-identity .7 "
@@ -18,4 +19,4 @@ PathSeq:
 
 CellRanger:
   genome_dir: "$CELLRANGER_REF300/GRCh38"
-  chemistry: "auto"
+  chemistry: "fiveprime"
