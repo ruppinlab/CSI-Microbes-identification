@@ -3,6 +3,10 @@ import pandas as pd
 from snakemake.utils import min_version
 ##### set minimum snakemake version #####
 min_version("5.1.2")
+
+wildcard_constraints:
+    patient="[A-Z]{2,3}[0-9]{1,4}" 
+
 patient = config["patient"]
 start = config["start"]
 stop = config["stop"]
@@ -18,6 +22,7 @@ samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patien
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
 # validate(units, schema="schemas/units.schema.yaml")
 samples = samples.loc[samples.patient == patient]
+print(samples.shape)
 #samples = samples.loc[samples.plate == plate]
 #samples = samples.sample(, random_state=0)
 #nrows = min(30, samples.shape[0])
@@ -30,7 +35,7 @@ FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
 FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
 
 
-include: "../pathogen-discovery-rules/PathSeq-batch.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
 
 
 rule all:
