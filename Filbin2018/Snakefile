@@ -15,11 +15,11 @@ samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patien
 # print(samples)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
 # validate(units, schema="schemas/units.schema.yaml")
-samples = samples.loc[samples.patient == patient]
+samples = samples.loc[samples.patient == "BCH1126"]
 #samples = samples.loc[samples.plate == plate]
-samples = samples.sample(frac=1, random_state=0)
-nrows = min(30, samples.shape[0])
-samples = samples.iloc[0:nrows]
+#samples = samples.sample(, random_state=0)
+#nrows = min(30, samples.shape[0])
+# samples = samples.iloc[0:]
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
 
@@ -28,7 +28,7 @@ FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
 FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
 
 
-include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
+include: "../pathogen-discovery-rules/PathSeq-batch.smk"
 
 
 rule all:
