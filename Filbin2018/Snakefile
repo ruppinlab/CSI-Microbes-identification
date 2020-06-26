@@ -4,6 +4,8 @@ from snakemake.utils import min_version
 ##### set minimum snakemake version #####
 min_version("5.1.2")
 patient = config["patient"]
+start = config["start"]
+stop = config["stop"]
 ##### load config and sample sheets #####
 configfile: join("config", "PathSeq-config.yaml")
 #validate(config, schema="schemas/config.schema.yaml")
@@ -19,7 +21,7 @@ samples = samples.loc[samples.patient == patient]
 #samples = samples.loc[samples.plate == plate]
 #samples = samples.sample(, random_state=0)
 #nrows = min(30, samples.shape[0])
-# samples = samples.iloc[0:]
+samples = samples.iloc[start:stop]
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
 

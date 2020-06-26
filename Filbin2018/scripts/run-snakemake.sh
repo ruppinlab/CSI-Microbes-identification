@@ -10,5 +10,5 @@ snakemake \
 --jobs 100 \
 --latency-wait 60 \
 --keep-going \
---config patient=$1 \
+--config patient=$1 start=$2 stop=$3 \
 --local-cores 2 all
