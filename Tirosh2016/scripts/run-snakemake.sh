@@ -1,6 +1,6 @@
 #!/bin/bash
 
-module load snakemake
+module load snakemake/5.13.0
 snakemake \
 --use-conda \
 --nolock \
@@ -10,5 +10,4 @@ snakemake \
 --jobs 100 \
 --latency-wait 60 \
 --keep-going \
---config patient=$1 celltype=$2 start=$3 stop=$4 \
 --local-cores 2 all

@@ -1,0 +1,27 @@
+{
+    "__default__" :
+    {
+        "time" : "08:00:00",
+        "mem": "16g",
+        "nthreads" : 4,
+        "gres": "10",
+        "partition": "norm,ccr"
+    },
+    "create_star_index" :
+    {
+        "nthreads" : 16,
+        "mem": "64g"
+    },
+    "run_star_pe_pass1":
+    {
+        "time": "24:00:00",
+        "nthreads" : 48,
+        "mem": "64g"
+    },
+    "run_star_pe_pass2":
+    {
+        "time": "24:00:00",
+        "nthreads" : 48,
+        "mem": "64g"
+    },
+}

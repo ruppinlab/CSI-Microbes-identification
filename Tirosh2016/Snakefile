@@ -1,0 +1,60 @@
+from os.path import join, basename
+import pandas as pd
+from snakemake.utils import min_version
+##### set minimum snakemake version #####
+min_version("5.1.2")
+# patient = config["patient"]
+# malignant = config["celltype"]
+# start = config["start"]
+# stop = config["stop"]
+##### load config and sample sheets #####
+configfile: join("config", "PathSeq-config.yaml")
+#validate(config, schema="schemas/config.schema.yaml")
+
+patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
+# validate(samples, schema="schemas/samples.schema.yaml")
+
+samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
+# print(samples)
+samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
+# validate(units, schema="schemas/units.schema.yaml")
+# samples = samples.loc[samples.patient == patient]
+# samples = samples.loc[samples.malignant == malignant]
+# print(samples)
+# #samples = samples.loc[samples.plate == plate]
+# samples = samples.sample(frac=1, random_state=0)
+# start = min(start, samples.shape[0])
+# stop = min(stop, samples.shape[0])
+# samples = samples.iloc[start:stop]
+# print(samples)
+samples = samples.iloc[0:5]
+# directories
+FASTQ_DIR = join("FASTQ", "raw")
+STAR_OUTPUT_DIR = join("output", "star", "{patient}-{sample}")
+STAR_PASS2_OUTPUT_DIR = join(STAR_OUTPUT_DIR, "_STARpass2")
+
+# Intermediate Files
+FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
+FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
+STAR_PASS2_BAM_FILE = join(STAR_PASS2_OUTPUT_DIR, "Aligned.out.bam")
+
+include: "../RNA-snakemake-rules/rules/genome.smk"
+include: "../RNA-snakemake-rules/rules/STAR.smk"
+
+
+rule all:
+    input:
+        expand(STAR_PASS2_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"])
+
+
+rule download_FASTQ_files:
+    params:
+        fq1 = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq1"],
+        fq2 = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq2"],
+    output:
+        fq1=temp(FASTQ1_FILE),
+        fq2=temp(FASTQ2_FILE)
+    shell:
+        "module load google-cloud-sdk && "
+        "gsutil cp {params.fq1} {output.fq1}  && "
+        "gsutil cp {params.fq2} {output.fq2}"

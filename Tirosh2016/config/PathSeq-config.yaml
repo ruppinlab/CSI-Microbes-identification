@@ -4,7 +4,8 @@ samples: data/samples.tsv
 
 
 ref:
-  genome: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa"
+  genome: "raw/genome/GRCh38.primary_assembly.genome.fa"
+  annotation: "raw/genome/gencode.v34.annotation.gtf"
 
 
 PathSeq:
