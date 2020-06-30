@@ -28,7 +28,7 @@ RNA_SPIKE_GTF = join("data", "spike_in_sequences.gtf")
 # include rules
 include: "../../RNA-snakemake-rules/rules/genome.smk"
 include: "../../RNA-snakemake-rules/rules/STAR.smk"
-include: "../../pathogen-discovery-rules/rules/PathSeq.smk"
+include: "../../pathogen-discovery-rules/rules/PathSeq-batch.smk"
 
 
 rule all:

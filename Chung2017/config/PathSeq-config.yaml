@@ -4,15 +4,15 @@ samples: data/samples.tsv
 
 
 ref:
-  annotation: "raw/genome/gencodev21_ERCC92.gtf"
+  annotation: "raw/genome/gencodev34_ERCC92.gtf"
   genome: "raw/genome/Hg38_ERCC92.fasta"
 
 human_ref:
-  annotation: "raw/genome/gencode.v21.annotation.gtf"
-  genome: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa"
+  genome: "raw/genome/GRCh38.primary_assembly.genome.fa"
+  annotation: "raw/genome/gencode.v34.annotation.gtf"
 
 params:
-  PathSeq: "--is-host-aligned true "
+  PathSeq: "--min-score-identity .7 --is-host-aligned true --filter-duplicates true "
 trimming:
   skip: True
 
@@ -20,6 +20,8 @@ trimming:
 PathSeq:
   bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"
   microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
+  microbe_fai: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.fai"
+  microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
   microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
   taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
   host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
