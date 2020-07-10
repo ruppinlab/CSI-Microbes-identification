@@ -6,10 +6,13 @@ SL1344_CDS_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/210/855/GCF_000
 SL1344_CDS_FA = join("data", "SL1344_cds_from_genomic.fa")
 SL1344_PREFIX = join("output", "simulated_{patient}-{sample}")
 SL1344_FQ1 = join("output", "simulated_{patient}-{sample}_R1.fastq.gz")
+pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+
+include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
 rule all:
     input:
-        expand(config["PathSeq"]["bam_file"], patient="SL1344", sample=["1", "2"])
+        expand(pathseq_bam, patient="SL1344", sample=["1", "2"])
 
 
 rule convert_FASTA_to_BAM:
