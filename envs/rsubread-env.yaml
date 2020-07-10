@@ -1,0 +1,8 @@
+name: rsubread
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - bioconductor-rsubread
+  - bioconductor-biostrings

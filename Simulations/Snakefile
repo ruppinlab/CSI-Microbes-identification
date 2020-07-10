@@ -1,0 +1,46 @@
+from os.path import join
+
+configfile: join("config", "PathSeq-config.yaml")
+
+SL1344_CDS_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/210/855/GCF_000210855.2_ASM21085v2/GCF_000210855.2_ASM21085v2_cds_from_genomic.fna.gz"
+SL1344_CDS_FA = join("data", "SL1344_cds_from_genomic.fa")
+SL1344_PREFIX = join("output", "simulated_{patient}-{sample}")
+SL1344_FQ1 = join("output", "simulated_{patient}-{sample}_R1.fastq.gz")
+
+rule all:
+    input:
+        expand(config["PathSeq"]["bam_file"], patient="SL1344", sample=["1", "2"])
+
+
+rule convert_FASTA_to_BAM:
+    input:
+        fq1=SL1344_FQ1,
+    output:
+        config["PathSeq"]["bam_file"]
+    shell:
+        "module load picard && "
+        "java -Xmx8g -XX:ParallelGCThreads=5 -jar $PICARDJARPATH/picard.jar "
+        "FastqToSam F1={input.fq1} O={output} "
+        "SM={wildcards.sample} RG={wildcards.sample} "
+        "TMP_DIR=/lscratch/$SLURM_JOBID"
+
+rule simulate_RNAseq_reads:
+    conda:
+        "../envs/rsubread-env.yaml"
+    params:
+        SL1344_PREFIX
+    input:
+        SL1344_CDS_FA
+    output:
+        SL1344_FQ1
+    script:
+        "R/simulate_RNAseq.R"
+
+# download the cds_from_genomic fasta file
+rule download_cds_from_genomic:
+    params:
+        url=SL1344_CDS_URL
+    output:
+        SL1344_CDS_FA
+    shell:
+        "wget -O - {params.url} | gunzip -c > {output}"

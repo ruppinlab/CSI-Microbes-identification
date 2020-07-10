@@ -1,8 +1,0 @@
-name: pysam
-channels:
-  - conda-forge
-  - bioconda
-  - defaults
-dependencies:
-  - pysam
-
