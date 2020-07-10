@@ -2,22 +2,29 @@ from os.path import join
 
 configfile: join("config", "PathSeq-config.yaml")
 
+ATCC25586_CDS_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/007/325/GCF_000007325.1_ASM732v1/GCF_000007325.1_ASM732v1_cds_from_genomic.fna.gz"
 SL1344_CDS_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/210/855/GCF_000210855.2_ASM21085v2/GCF_000210855.2_ASM21085v2_cds_from_genomic.fna.gz"
-SL1344_CDS_FA = join("data", "SL1344_cds_from_genomic.fa")
-SL1344_PREFIX = join("output", "simulated_{patient}-{sample}")
-SL1344_FQ1 = join("output", "simulated_{patient}-{sample}_R1.fastq.gz")
+LT2_CDS_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_cds_from_genomic.fna.gz"
+
+
+CDS_FA = join("data", "{patient}_cds_from_genomic.fa")
+SL1344_CDS_FA = CDS_FA.format(patient="SL1344")
+ATCC25586_CDS_FA = CDS_FA.format(patient="ATCC25586")
+LT2_CDS_FA = CDS_FA.format(patient="LT2")
+FQ1_PREFIX = join("output", "simulated_{patient}-{sample}")
+FQ1 = join("output", "simulated_{patient}-{sample}_R1.fastq.gz")
 pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
-include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+#include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
 rule all:
     input:
-        expand(pathseq_bam, patient="SL1344", sample=["1", "2"])
+        expand(FQ1, patient=["ATCC25586", "SL1344", "LT2"], sample=["1", "2"])
 
 
 rule convert_FASTA_to_BAM:
     input:
-        fq1=SL1344_FQ1,
+        fq1=FQ1,
     output:
         config["PathSeq"]["bam_file"]
     shell:
@@ -31,19 +38,35 @@ rule simulate_RNAseq_reads:
     conda:
         "../envs/rsubread-env.yaml"
     params:
-        SL1344_PREFIX
+        FQ1_PREFIX
     input:
-        SL1344_CDS_FA
+        CDS_FA
     output:
-        SL1344_FQ1
+        FQ1
     script:
         "R/simulate_RNAseq.R"
 
 # download the cds_from_genomic fasta file
-rule download_cds_from_genomic:
+rule download_SL1344_cds_from_genomic:
     params:
         url=SL1344_CDS_URL
     output:
         SL1344_CDS_FA
+    shell:
+        "wget -O - {params.url} | gunzip -c > {output}"
+
+rule download_LT2_cds_from_genomic:
+    params:
+        url=LT2_CDS_URL
+    output:
+        LT2_CDS_FA
+    shell:
+        "wget -O - {params.url} | gunzip -c > {output}"
+
+rule download_ATCC25586_cds_from_genomic:
+    params:
+        url=ATCC25586_CDS_URL
+    output:
+        ATCC25586_CDS_FA
     shell:
         "wget -O - {params.url} | gunzip -c > {output}"
