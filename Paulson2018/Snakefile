@@ -59,7 +59,7 @@ rule download_FASTQ_from_SRA:
     output:
         temp(SRA_FASTQ1_FILE),
         temp(SRA_FASTQ2_FILE),
-        temp(SRA_FASTQ2_FILE),
+        temp(SRA_FASTQ3_FILE),
     shell:
         "module load sratoolkit && "
         "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
