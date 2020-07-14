@@ -9,6 +9,7 @@ configfile: "config/PathSeq-config.yaml"
 #validate(config, schema="schemas/config.schema.yaml")
 wildcard_constraints:
     patient="2586-4|9245-3",
+    lane="S1_L001|S1_L002"
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
