@@ -9,7 +9,8 @@ configfile: "config/PathSeq-config.yaml"
 #validate(config, schema="schemas/config.schema.yaml")
 wildcard_constraints:
     patient="2586-4|9245-3",
-    lane="S1_L001|S1_L002"
+    lane="S1_L001|S1_L002",
+    sample="PreRxTumor|Day615Tumor|PreRxPBMC|Day27PBMC|Day376PBMC|Day614PBMC|RelapseD559PBMC|RelapseD565Tumor"
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
@@ -19,7 +20,7 @@ lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels]
 samples = lanes[["sample", "patient"]].drop_duplicates()
 
 cells = pd.read_csv(config["units"], sep="\t", usecols=["sample", "patient", "Run", "lane", "barcode"]).set_index(["sample", "barcode", "patient"], drop=False).sort_index()
-cells = cells.sample(n=500, random_seed=0)
+cells = cells.sample(n=500, random_state=0)
 # Directories
 FASTQ_DIR = "FASTQ"
 PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")
