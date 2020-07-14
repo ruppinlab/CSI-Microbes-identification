@@ -28,6 +28,7 @@ CR_SAMPLE_ODIR = "{patient}-{sample}"
 # Input Files
 SRA_FASTQ1_FILE = join(FASTQ_DIR, "{run}_1.fastq")
 SRA_FASTQ2_FILE = join(FASTQ_DIR, "{run}_2.fastq")
+SRA_FASTQ3_FILE = join(FASTQ_DIR, "{run}_3.fastq")
 
 CB_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_R1_001.fastq.gz")
 cDNA_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_R2_001.fastq.gz")
@@ -58,6 +59,7 @@ rule download_FASTQ_from_SRA:
     output:
         temp(SRA_FASTQ1_FILE),
         temp(SRA_FASTQ2_FILE),
+        temp(SRA_FASTQ2_FILE),
     shell:
         "module load sratoolkit && "
         "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
@@ -66,8 +68,8 @@ rule download_FASTQ_from_SRA:
 def get_sra_fq_files(wildcards):
     run_of_interest = lanes.at[(wildcards.patient, wildcards.sample, wildcards.lane), "Run"]
     return {
-        "CellBarcode_fq": expand(SRA_FASTQ1_FILE, run=run_of_interest),
-        "cDNA_fq": expand(SRA_FASTQ2_FILE, run=run_of_interest),
+        "CellBarcode_fq": expand(SRA_FASTQ2_FILE, run=run_of_interest),
+        "cDNA_fq": expand(SRA_FASTQ3_FILE, run=run_of_interest),
     }
 
 # compress and rename
