@@ -18,8 +18,8 @@ lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient"
 lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
 samples = lanes[["sample", "patient"]].drop_duplicates()
 
-#cells = pd.read_csv(config["units"], sep="\t", usecols=["sample", "patient", "Run", "lane", "barcode"]).set_index(["sample", "barcode", "patient"], drop=False).sort_index()
-
+cells = pd.read_csv(config["units"], sep="\t", usecols=["sample", "patient", "Run", "lane", "barcode"]).set_index(["sample", "barcode", "patient"], drop=False).sort_index()
+cells = cells.sample(n=500, random_seed=0)
 # Directories
 FASTQ_DIR = "FASTQ"
 PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")
@@ -38,14 +38,14 @@ pathseq_output = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
 # Snakemake includes
 
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
-#include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
-#include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
 
 rule all:
     input:
-        expand(CR_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
+        # expand(CR_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
         # expand(pathseq_output, zip, patient=samples["patient"], sample=samples["sample"]),
-        # expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
+        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
 
 
 # download files from SRA
