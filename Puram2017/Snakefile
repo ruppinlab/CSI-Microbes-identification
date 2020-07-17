@@ -37,6 +37,8 @@ FQ2_L4_FILE = join(FASTQ_DIR,  "{patient}-{sample}_L004_R2.fastq.gz")
 # Output Files
 PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
+include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
+
 rule all:
     input:
         expand(PATHSEQ_BAM, zip, patient=samples["patient"], sample=samples["sample"])
