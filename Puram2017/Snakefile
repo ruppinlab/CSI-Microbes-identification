@@ -13,16 +13,7 @@ wildcard_constraints:
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False).sort_index()
-#samples = samples.loc[samples["sample"] == "HNSCC25_P4_G05_S269"]
 
-#samples = samples.sample(frac=1, random_state=0).groupby("batch").head(1)
-permission_errors = [
-    "HN26_P5", "HN25_P5", "HNSCC26_P12", "HN25_P23", "HN28_P5", "HN23_P11",
-    "HN28_P15", "HN26_P13", "HNSCC26_P24", "HN26_P26", "HN26_P6", "HN26_P25",
-    "HN28_P14", "HN25_P24", "HN28_P6", "HN28_P3P4", "HN26_P14", "HN25_P25"
-]
-# these samples give permissions errors
-samples = samples.loc[~samples["batch"].isin(permission_errors)]
 # this sample has something weird with pri
 samples = samples.loc[~samples["batch"].isin(["HNSCC22_P2"])]
 samples = samples.loc[samples["batch"] == batch]
@@ -45,7 +36,7 @@ FQ2_L4_FILE = join(FASTQ_DIR,  "{patient}-{sample}_L004_R2.fastq.gz")
 
 rule all:
     input:
-        expand(config["PathSeq"]["bam_file"], zip, patient=samples["patient"], sample=samples["sample"])
+        expand(FASTQ1_FILE, zip, patient=samples["patient"], sample=samples["sample"])
 
 rule convert_FASTQ_to_BAM:
     group:
@@ -77,7 +68,7 @@ rule download_FQ1_files:
         L4=temp(FQ1_L4_FILE),
         fq1=FASTQ1_FILE
     shell:
-        "module load google-cloud-sdk && "
+        #"module load google-cloud-sdk && "
         "gsutil cp {params.fq}_L001_R1_001.fastq.gz {output.L1}  && "
         "gsutil cp {params.fq}_L002_R1_001.fastq.gz {output.L2} && "
         "gsutil cp {params.fq}_L003_R1_001.fastq.gz {output.L3} && "
