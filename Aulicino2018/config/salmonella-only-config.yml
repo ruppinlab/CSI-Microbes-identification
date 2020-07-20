@@ -1,0 +1,20 @@
+---
+patients: data/patients.tsv
+samples: data/samples.tsv
+
+ref:
+  annotation: "raw/genome/gencodev22_ERCC92.gtf"
+  genome: "raw/genome/Hg38_ERCC92.fasta"
+
+params:
+  PathSeq: "--filter-duplicates true --min-clipped-read-length 31"
+trimming:
+  skip: True
+
+PathSeq:
+  bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"
+  microbe_fasta: "data/LT2_D23580.fa"
+  microbe_bwa_image: "data/LT2_D23580.fa.img"
+  taxonomy_db: "data/LT2_D23580_taxonomy.db"
+  genome: "/fdb/GATK_resource_bundle/hg38bundle/Homo_sapiens_assembly38.fasta"
+  annotation: "raw/genome/gencode.v22.annotation.gtf"
