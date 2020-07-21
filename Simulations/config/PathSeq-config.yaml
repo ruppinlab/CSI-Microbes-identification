@@ -1,4 +1,12 @@
 ---
+
+ref:
+  genome: "raw/genome/GRCh38.primary_assembly.genome.fa"
+  annotation: "raw/genome/gencode.v34.annotation.gtf"
+
+trimming:
+  skip: True
+
 PathSeq:
   bam_file: "output/Puram2017/{patient}-{sample}/unaligned_simulated_bam.bam"
   microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"

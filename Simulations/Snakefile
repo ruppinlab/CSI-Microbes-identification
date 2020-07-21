@@ -6,36 +6,40 @@ configfile: join("config", "PathSeq-config.yaml")
 ATCC25586_CDS_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/007/325/GCF_000007325.1_ASM732v1/GCF_000007325.1_ASM732v1_cds_from_genomic.fna.gz"
 SL1344_CDS_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/210/855/GCF_000210855.2_ASM21085v2/GCF_000210855.2_ASM21085v2_cds_from_genomic.fna.gz"
 LT2_CDS_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_cds_from_genomic.fna.gz"
+HUMAN_TRANSCRIPT_URL = "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_34/gencode.v34.transcripts.fa.gz"
 
 
 CDS_FA = join("data", "{patient}_cds_from_genomic.fa")
 SL1344_CDS_FA = CDS_FA.format(patient="SL1344")
 ATCC25586_CDS_FA = CDS_FA.format(patient="ATCC25586")
 LT2_CDS_FA = CDS_FA.format(patient="LT2")
-FQ1_PREFIX = join("output", "Puram2017", "simulated_{patient}-{sample}")
-FQ1 = join("output", "Puram2017", "simulated_{patient}-{sample}_R1.fastq.gz")
-FQ2 = join("output", "Puram2017", "simulated_{patient}-{sample}_R2.fastq.gz")
+HUMAN_CDS_FA = CDS_FA.format(patient="Human")
+FQ1_PREFIX = join("FASTQ", "raw", "{patient}-{sample}")
+FASTQ1_FILE = join("FASTQ", "raw", "{patient}-{sample}_1.fastq.gz")
+FASTQ2_FILE = join("FASTQ", "raw", "{patient}-{sample}_2.fastq.gz")
 pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 #REF_FQ_FILE = join("..", "Puram", "FASTQ", "raw", "MEEI28-HNSCC28_P2_H11_S95_R2.fastq.gz")
 REF_FQ_FILE = join("..", "Puram2017", "FASTQ", "raw", "MEEI16-HNSCC16_P2_C12_S36_R1.fastq.gz")
 REF_QS_FILE = join("output", "MEEI16-HNSCC16_P2_C12_S36_quality_score.txt")
 
-samples = pd.DataFrame.from_dict({"patient": ["ATCC25586", "SL1344", "LT2", "ATCC25586", "SL1344", "LT2"], "sample": ["1", "1", "1", "2", "2", "2"]})
+samples = pd.DataFrame.from_dict({"patient": ["ATCC25586", "SL1344", "LT2", "Human", "ATCC25586", "SL1344", "LT2", "Human"], "sample": ["1", "1", "1", "1", "2", "2", "2", "2"]})
 
-include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+include: "../RNA-snakemake-rules/rules/genome.smk"
+include: "../RNA-snakemake-rules/rules/STAR.smk"
 
-localrules: simulate_RNAseq_paired_reads, download_ATCC25586_cds_from_genomic, download_LT2_cds_from_genomic, download_SL1344_cds_from_genomic
+localrules: move_FASTQ_files, extract_quality_score_from_fastq, simulate_RNAseq_paired_reads, download_ATCC25586_cds_from_genomic, download_LT2_cds_from_genomic, download_SL1344_cds_from_genomic
 
 rule all:
     input:
-        expand(pathseq_bam, zip, patient=samples["patient"], sample=samples["sample"]),
-
-
+        expand(FASTQ2_FILE, patient=samples["patient"], sample=samples["sample"]),
+        expand(STAR_PASS2_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"])
+        # expand(pathseq_bam, zip, patient=samples["patient"], sample=samples["sample"]),
 
 rule convert_paired_FASTQ_to_BAM:
     input:
-        fq1=FQ1,
-        fq2=FQ2
+        fq1=FASTQ1_FILE,
+        fq2=FASTQ2_FILE
     output:
         config["PathSeq"]["bam_file"]
     shell:
@@ -44,6 +48,17 @@ rule convert_paired_FASTQ_to_BAM:
         "FastqToSam F1={input.fq1} F2={input.fq2} O={output} "
         "SM={wildcards.sample} RG={wildcards.sample} "
         "TMP_DIR=/lscratch/$SLURM_JOBID"
+
+rule move_FASTQ_files:
+    input:
+        join("FASTQ", "raw", "{patient}-{sample}_R1.fastq.gz"),
+        join("FASTQ", "raw", "{patient}-{sample}_R2.fastq.gz")
+    output:
+        FASTQ1_FILE,
+        FASTQ2_FILE
+    shell:
+        "mv {input[0]} {output[0]} && "
+        "mv {input[1]} {output[1]}"
 
 rule simulate_RNAseq_paired_reads:
     conda:
@@ -54,8 +69,8 @@ rule simulate_RNAseq_paired_reads:
         CDS_FA,
         REF_QS_FILE
     output:
-        FQ1,
-        FQ2
+        join("FASTQ", "raw", "{patient}-{sample}_R1.fastq.gz"),
+        join("FASTQ", "raw", "{patient}-{sample}_R2.fastq.gz")
     script:
         "R/simulate_RNAseq.R"
 
@@ -89,5 +104,13 @@ rule download_ATCC25586_cds_from_genomic:
         url=ATCC25586_CDS_URL
     output:
         ATCC25586_CDS_FA
+    shell:
+        "wget -O - {params.url} | gunzip -c > {output}"
+
+rule download_human_transcript_sequences:
+    params:
+        url=HUMAN_TRANSCRIPT_URL
+    output:
+        HUMAN_CDS_FA
     shell:
         "wget -O - {params.url} | gunzip -c > {output}"
