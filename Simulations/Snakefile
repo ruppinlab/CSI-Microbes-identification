@@ -14,6 +14,7 @@ ATCC25586_CDS_FA = CDS_FA.format(patient="ATCC25586")
 LT2_CDS_FA = CDS_FA.format(patient="LT2")
 FQ1_PREFIX = join("output", "Puram2017", "simulated_{patient}-{sample}")
 FQ1 = join("output", "Puram2017", "simulated_{patient}-{sample}_R1.fastq.gz")
+FQ2 = join("output", "Puram2017", "simulated_{patient}-{sample}_R2.fastq.gz")
 pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 #REF_FQ_FILE = join("..", "Puram", "FASTQ", "raw", "MEEI28-HNSCC28_P2_H11_S95_R2.fastq.gz")
 REF_FQ_FILE = join("..", "Puram2017", "FASTQ", "raw", "MEEI16-HNSCC16_P2_C12_S36_R1.fastq.gz")
@@ -28,7 +29,7 @@ localrules: simulate_RNAseq_paired_reads, download_ATCC25586_cds_from_genomic, d
 rule all:
     input:
         expand(pathseq_bam, zip, patient=samples["patient"], sample=samples["sample"]),
-        
+
 
 
 rule convert_paired_FASTQ_to_BAM:
