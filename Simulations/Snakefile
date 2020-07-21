@@ -33,7 +33,7 @@ localrules: move_FASTQ_files, extract_quality_score_from_fastq, simulate_RNAseq_
 rule all:
     input:
         expand(FASTQ2_FILE, patient=samples["patient"], sample=samples["sample"]),
-        expand(STAR_PASS2_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"])
+        expand(STAR_PASS2_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
         expand(pathseq_bam, zip, patient=samples["patient"], sample=samples["sample"]),
 
 rule convert_paired_FASTQ_to_BAM:
