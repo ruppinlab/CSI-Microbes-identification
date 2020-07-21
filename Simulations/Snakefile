@@ -11,40 +11,55 @@ CDS_FA = join("data", "{patient}_cds_from_genomic.fa")
 SL1344_CDS_FA = CDS_FA.format(patient="SL1344")
 ATCC25586_CDS_FA = CDS_FA.format(patient="ATCC25586")
 LT2_CDS_FA = CDS_FA.format(patient="LT2")
-FQ1_PREFIX = join("output", "simulated_{patient}-{sample}")
-FQ1 = join("output", "simulated_{patient}-{sample}_R1.fastq.gz")
+FQ1_PREFIX = join("output", "Puram2017", "simulated_{patient}-{sample}")
+FQ1 = join("output", "Puram2017", "simulated_{patient}-{sample}_R1.fastq.gz")
 pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
-
-#include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+#REF_FQ_FILE = join("..", "Puram", "FASTQ", "raw", "MEEI28-HNSCC28_P2_H11_S95_R2.fastq.gz")
+REF_FQ_FILE = join("..", "Puram2017", "FASTQ", "raw", "MEEI16-HNSCC16_P2_C12_S36_R1.fastq.gz")
+REF_QS_FILE = join("output", "MEEI16-HNSCC16_P2_C12_S36_quality_score.txt")
+include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
 rule all:
     input:
-        expand(FQ1, patient=["ATCC25586", "SL1344", "LT2"], sample=["1", "2"])
+        # expand(FQ1, patient=["ATCC25586"], sample=["1", "2"]),
+        expand(pathseq_bam, patient=["ATCC25586", "SL1344", "LT2"], sample=["1", "2"]),
+        # expand(FQ1, patient=["ATCC25586", "SL1344", "LT2"], sample=["1", "2"])
 
 
-rule convert_FASTA_to_BAM:
+rule convert_paired_FASTQ_to_BAM:
     input:
         fq1=FQ1,
+        fq2=FQ2
     output:
         config["PathSeq"]["bam_file"]
     shell:
         "module load picard && "
         "java -Xmx8g -XX:ParallelGCThreads=5 -jar $PICARDJARPATH/picard.jar "
-        "FastqToSam F1={input.fq1} O={output} "
+        "FastqToSam F1={input.fq1} F2={input.fq2} O={output} "
         "SM={wildcards.sample} RG={wildcards.sample} "
         "TMP_DIR=/lscratch/$SLURM_JOBID"
 
-rule simulate_RNAseq_reads:
+rule simulate_RNAseq_paired_reads:
     conda:
         "../envs/rsubread-env.yaml"
     params:
         FQ1_PREFIX
     input:
-        CDS_FA
+        CDS_FA,
+        REF_QS_FILE
     output:
-        FQ1
+        FQ1,
+        FQ2
     script:
         "R/simulate_RNAseq.R"
+
+rule extract_quality_score_from_fastq:
+    input:
+        REF_FQ_FILE
+    output:
+        REF_QS_FILE
+    shell:
+        "zcat < {input} | awk 'NR % 4 == 0' > {output}"
 
 # download the cds_from_genomic fasta file
 rule download_SL1344_cds_from_genomic:
