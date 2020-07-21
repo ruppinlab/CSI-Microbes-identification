@@ -1,4 +1,5 @@
 from os.path import join
+import pandas as pd
 
 configfile: join("config", "PathSeq-config.yaml")
 
@@ -17,13 +18,17 @@ pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 #REF_FQ_FILE = join("..", "Puram", "FASTQ", "raw", "MEEI28-HNSCC28_P2_H11_S95_R2.fastq.gz")
 REF_FQ_FILE = join("..", "Puram2017", "FASTQ", "raw", "MEEI16-HNSCC16_P2_C12_S36_R1.fastq.gz")
 REF_QS_FILE = join("output", "MEEI16-HNSCC16_P2_C12_S36_quality_score.txt")
-include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+
+samples = pd.DataFrame.from_dict({"patient": ["ATCC25586", "SL1344", "LT2", "ATCC25586", "SL1344", "LT2"], "sample": ["1", "1", "1", "2", "2", "2"]})
+
+include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
+
+localrules: simulate_RNAseq_paired_reads, download_ATCC25586_cds_from_genomic, download_LT2_cds_from_genomic, download_SL1344_cds_from_genomic
 
 rule all:
     input:
-        # expand(FQ1, patient=["ATCC25586"], sample=["1", "2"]),
-        expand(pathseq_bam, patient=["ATCC25586", "SL1344", "LT2"], sample=["1", "2"]),
-        # expand(FQ1, patient=["ATCC25586", "SL1344", "LT2"], sample=["1", "2"])
+        expand(pathseq_bam, zip, patient=samples["patient"], sample=samples["sample"]),
+        
 
 
 rule convert_paired_FASTQ_to_BAM:
