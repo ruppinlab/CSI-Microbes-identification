@@ -18,5 +18,5 @@ PathSeq:
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true "
+  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true --skip-quality-filters true "
   STAR: " --outFilterScoreMinOverLread 0.5 --outFilterMatchNminOverLread 0.5"

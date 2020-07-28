@@ -18,13 +18,14 @@ FQ1_PREFIX = join("FASTQ", "raw", "{patient}-{sample}")
 FASTQ1_FILE = join("FASTQ", "raw", "{patient}-{sample}_1.fastq.gz")
 FASTQ2_FILE = join("FASTQ", "raw", "{patient}-{sample}_2.fastq.gz")
 pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
-#REF_FQ_FILE = join("..", "Puram", "FASTQ", "raw", "MEEI28-HNSCC28_P2_H11_S95_R2.fastq.gz")
-REF_FQ_FILE = join("..", "Puram2017", "FASTQ", "raw", "MEEI16-HNSCC16_P2_C12_S36_R1.fastq.gz")
-REF_QS_FILE = join("output", "MEEI16-HNSCC16_P2_C12_S36_quality_score.txt")
+#REF_FQ_FILE = join("..", "Puram2017", "FASTQ", "raw", "MEEI16-HNSCC16_P2_C12_S36_R1.fastq.gz")
+#REF_QS_FILE = join("output", "MEEI16-HNSCC16_P2_C12_S36_quality_score.txt")
+REF_FQ_FILE = join("..", "Puram2017", "FASTQ", "raw", "MEEI17-HNSCC17_P2_A02_S2_R1.fastq.gz")
+REF_QS_FILE = join("output", "MEEI17-HNSCC17_P2_A02_S2_R1_quality_score.txt")
 
 samples = pd.DataFrame.from_dict({"patient": ["ATCC25586", "SL1344", "LT2", "Human", "ATCC25586", "SL1344", "LT2", "Human"], "sample": ["1", "1", "1", "1", "2", "2", "2", "2"]})
 
-include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 
