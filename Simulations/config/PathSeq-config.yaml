@@ -1,14 +1,14 @@
 ---
 
 ref:
-  genome: "raw/genome/GRCh38.primary_assembly.genome.fa"
-  annotation: "raw/genome/gencode.v34.annotation.gtf"
+  genome: "raw/genome/GRCh38.p13.genome.fa"
+  annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
 
 trimming:
   skip: True
 
 PathSeq:
-  bam_file: "output/Puram2017/{patient}-{sample}/unaligned_simulated_bam.bam"
+  bam_file: "output/star/{patient}-{sample}/_STARpass2/host.reads.filtered.bam"
   microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
   microbe_fai: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.fai"
   microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
@@ -19,3 +19,4 @@ PathSeq:
 
 params:
   PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true "
+  STAR: " --outFilterScoreMinOverLread 0.5 --outFilterMatchNminOverLread 0.5"

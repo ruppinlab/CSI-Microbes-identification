@@ -26,28 +26,27 @@ samples = pd.DataFrame.from_dict({"patient": ["ATCC25586", "SL1344", "LT2", "Hum
 
 include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 include: "../RNA-snakemake-rules/rules/genome.smk"
-include: "../RNA-snakemake-rules/rules/STAR.smk"
+include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 
 localrules: move_FASTQ_files, extract_quality_score_from_fastq, simulate_RNAseq_paired_reads, download_ATCC25586_cds_from_genomic, download_LT2_cds_from_genomic, download_SL1344_cds_from_genomic
 
 rule all:
     input:
-        expand(FASTQ2_FILE, patient=samples["patient"], sample=samples["sample"]),
         expand(STAR_PASS2_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
         expand(pathseq_bam, zip, patient=samples["patient"], sample=samples["sample"]),
 
-rule convert_paired_FASTQ_to_BAM:
-    input:
-        fq1=FASTQ1_FILE,
-        fq2=FASTQ2_FILE
-    output:
-        config["PathSeq"]["bam_file"]
-    shell:
-        "module load picard && "
-        "java -Xmx8g -XX:ParallelGCThreads=5 -jar $PICARDJARPATH/picard.jar "
-        "FastqToSam F1={input.fq1} F2={input.fq2} O={output} "
-        "SM={wildcards.sample} RG={wildcards.sample} "
-        "TMP_DIR=/lscratch/$SLURM_JOBID"
+# rule convert_paired_FASTQ_to_BAM:
+#     input:
+#         fq1=FASTQ1_FILE,
+#         fq2=FASTQ2_FILE
+#     output:
+#         config["PathSeq"]["bam_file"]
+#     shell:
+#         "module load picard && "
+#         "java -Xmx8g -XX:ParallelGCThreads=5 -jar $PICARDJARPATH/picard.jar "
+#         "FastqToSam F1={input.fq1} F2={input.fq2} O={output} "
+#         "SM={wildcards.sample} RG={wildcards.sample} "
+#         "TMP_DIR=/lscratch/$SLURM_JOBID"
 
 rule move_FASTQ_files:
     input:
