@@ -7,17 +7,34 @@
         "gres": 10,
         "partition": "norm,ccr"
     },
-    "PathSeqPipelineSpark_lscratch8":
+    "create_star_index" :
     {
-      "mem":"64g",
-      "nthreads": 12,
-      "gres":"300",
-      "time": "3-00:00:00"
+        "nthreads" : 16,
+        "mem": "64g"
     },
-    "convert_FASTQ_to_BAM":
+    "run_star_pe_pass1":
     {
-        "time": "1:00:00",
-        "mem": "8g",
-        "nthreads": 6
+        "time": "24:00:00",
+        "nthreads" : 48,
+        "mem": "64g"
+    },
+    "run_star_pe_pass2":
+    {
+        "time": "24:00:00",
+        "nthreads" : 48,
+        "mem": "64g"
+    },
+    "FASTQ":
+    {
+      "nthreads": 6,
+      "gres": 200,
+      "mem": "32g"
+    },
+    "PathSeqPipelineSpark":
+    {
+      "mem":"80g",
+      "nthreads": 12,
+      "gres":"200",
+      "time": "7-00:00:00"
     }
 }

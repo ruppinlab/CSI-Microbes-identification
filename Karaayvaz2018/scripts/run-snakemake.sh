@@ -9,5 +9,5 @@ snakemake \
 --jobs 100 \
 --latency-wait 60 \
 --keep-going \
---config plate=$1 \
+--config patient=$1 plate=$2 \
 --local-cores 4 all
