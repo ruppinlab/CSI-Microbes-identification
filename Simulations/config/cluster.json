@@ -9,9 +9,9 @@
     },
     "PathSeqPipelineSpark":
     {
-      "mem":"64g",
+      "mem":"80g",
       "nthreads": 12,
-      "gres":"300",
+      "gres":"200",
       "time": "3-00:00:00"
     },
     "convert_FASTQ_to_BAM":

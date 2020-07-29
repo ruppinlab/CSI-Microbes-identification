@@ -43,9 +43,9 @@
     },
     "PathSeqPipelineSpark_batch":
     {
-      "mem":"70g",
+      "mem":"80g",
       "nthreads": 10,
-      "gres":"300",
+      "gres":"200",
       "time": "7-00:00:00"
     },
     "build_BWA_image":

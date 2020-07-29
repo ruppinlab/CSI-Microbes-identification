@@ -5,7 +5,8 @@ from snakemake.utils import min_version
 min_version("5.1.2")
 
 ##### load config and sample sheets #####
-configfile: "config/CAMMiQ-comparison-config.yaml"
+# configfile: "config/CAMMiQ-comparison-config.yaml"
+configfile: "config/PathSeq-config.yaml"
 #validate(config, schema="schemas/config.schema.yaml")
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
@@ -37,9 +38,8 @@ PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"
 # include rules
 include: "../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../RNA-snakemake-rules/rules/genome.smk"
-include: "../RNA-snakemake-rules/rules/STAR.smk"
-include: "../pathogen-discovery-rules/rules/makes-PathSeq-files.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq.smk"
+include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
 
 
 rule all:
