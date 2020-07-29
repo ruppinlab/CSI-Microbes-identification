@@ -44,8 +44,7 @@ include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
 
 rule all:
     input:
-        config["PathSeq"]["microbe_fasta"],
-        # expand(PathSeq_BAM_File, zip, sample=samples["sample"], patient=samples["patient"])
+        expand(PathSeq_BAM_File, zip, sample=samples["sample"], patient=samples["patient"])
 
 
 # rules for downloading microbe genomes
