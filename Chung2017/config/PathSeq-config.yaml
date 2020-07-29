@@ -4,23 +4,23 @@ samples: data/samples.tsv
 
 
 ref:
-  annotation: "raw/genome/gencodev34_ERCC92.gtf"
-  genome: "raw/genome/Hg38_ERCC92.fasta"
+  annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff_RNAspike.gtf"
+  genome: "raw/genome/GRCh38.p13_RNAspike.fasta"
 
 human_ref:
-  genome: "raw/genome/GRCh38.primary_assembly.genome.fa"
-  annotation: "raw/genome/gencode.v34.annotation.gtf"
+  genome: "raw/genome/GRCh38.p13.genome.fa"
+  annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned true --filter-duplicates true "
+  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true --skip-quality-filters true "
+  STAR: " --outFilterScoreMinOverLread 0.5 --outFilterMatchNminOverLread 0.5"
+
 trimming:
   skip: True
 
 
 PathSeq:
-  bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"
-  microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
-  microbe_fai: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.fai"
+  bam_file: "output/star/{patient}-{sample}/_STARpass2/host.reads.filtered.bam"
   microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
   microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
   taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"

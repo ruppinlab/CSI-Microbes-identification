@@ -1,4 +1,4 @@
-sample	patient	sample_name	site	celltype1	celltype2	celltype3	plate
+sample	patient	sample_name	site	Tumor	celltype1	celltype2	plate
 SRR2973279	BC01	BC01_02	primary breast cancer	Tumor	Tumor	Tumor	BC01
 SRR2973280	BC01	BC01_03	primary breast cancer	Tumor	Tumor	Tumor	BC01
 SRR2973281	BC01	BC01_04	primary breast cancer	Tumor	Tumor	Tumor	BC01
