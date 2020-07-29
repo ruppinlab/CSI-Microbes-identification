@@ -41,11 +41,11 @@
         "mem": "80g",
         "nthreads": 16
     },
-    "PathSeqPipelineSpark_batch":
+    "PathSeqPipelineSpark":
     {
-      "mem":"70g",
-      "nthreads": 10,
-      "gres":"300",
+      "mem":"80g",
+      "nthreads": 12,
+      "gres":"200",
       "time": "7-00:00:00"
     }
 }
