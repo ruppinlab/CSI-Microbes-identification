@@ -5,8 +5,8 @@ from snakemake.utils import min_version
 min_version("5.1.2")
 
 ##### load config and sample sheets #####
-# configfile: "config/CAMMiQ-comparison-config.yaml"
-configfile: "config/PathSeq-config.yaml"
+configfile: "config/CAMMiQ-subspecies-comparison-config.yaml"
+# configfile: "config/PathSeq-config.yaml"
 #validate(config, schema="schemas/config.schema.yaml")
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
@@ -44,33 +44,24 @@ include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
 
 rule all:
     input:
-        expand(PathSeq_BAM_File, zip, sample=samples["sample"], patient=samples["patient"])
-
+        config["PathSeq"]["microbe_bwa_image"],
+        config["PathSeq"]["microbe_dict"],
+        config["PathSeq"]["microbe_fai"],
+        #expand(PathSeq_BAM_File, zip, sample=samples["sample"], patient=samples["patient"])
 
 # rules for downloading microbe genomes
-rule download_combine_all_genomes:
+rule download_combine_subspe_genomes:
     input:
-        join("output", "complete_genome_assembly_summary.tsv")
+        join("data", "genome_map_subsp.tsv")
     output:
-        join("output", "select-complete-genomes.fa")
+        join("output", "subspecies_genome.fa")
     run:
         df = pd.read_csv(input[0], sep="\t")
         shell("touch {output}")
         for index, row in df.iterrows():
-            file_prefix = row["ftp_path"].split("/")[-1]
-            file = "{}_genomic.fna.gz".format(file_prefix)
             url = join(row["ftp_path"], file)
             shell("wget -O - {url} | gunzip -c >> {output}")
 
-
-# start with the assembly summart report file, which we got from Kaiyuan
-rule subset_assembly_summary:
-    input:
-        join("data", "assembly_summary.txt")
-    output:
-        join("output", "selected-complete-genome-assembly-summary.tsv")
-    script:
-        "src/subset_complete_genomes.py"
 
 # rules for downloading sequencing data
 rule compress_FASTQ_File:
