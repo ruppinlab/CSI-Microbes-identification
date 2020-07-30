@@ -41,6 +41,11 @@
         "mem": "80g",
         "nthreads": 16
     },
+    "build_host_BWA_image":
+    {
+        "mem": "80g",
+        "nthreads": 16
+    },
     "PathSeqPipelineSpark":
     {
       "mem":"80g",

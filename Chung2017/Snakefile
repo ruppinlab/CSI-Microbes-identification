@@ -6,7 +6,7 @@ min_version("5.1.2")
 
 patient = config["patient"]
 ##### load config and sample sheets #####
-configfile: join("config", "PathSeq-config.yaml")
+configfile: join("config", "original-config.yaml")
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
@@ -24,18 +24,17 @@ RNA_SPIKE_SEQUENCES = join("data", "spike_in_sequences.fa")
 # handcrafted TODO generate from fasta file
 RNA_SPIKE_GTF = join("data", "spike_in_sequences.gtf")
 
+pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
 # include rules
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
 
 rule all:
     input:
-        pathseq_bam = expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"), zip, sample=samples["sample"], patient=samples["patient"]),
-        pathseq_output = expand(join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt"), zip, sample=samples["sample"], patient=samples["patient"])
-
+        expand(pathseq_bam, zip, sample=samples["sample"], patient=samples["patient"])
 
 
 rule combine_human_spikein_fasta:
@@ -67,6 +66,30 @@ rule combine_human_spikein_GTF:
 #         temp(join("data", "E-MTAB-5466_spike_in_concentration.txt"))
 #     shell:
 #         "wget {params.url} -O temp.zip && unzip temp.zip -d {params.dir}"
+
+rule build_host_kmer_file:
+    input:
+        config["human_ref"]["genome"]
+    output:
+        config["PathSeq"]["host_bfi"]
+    shell:
+        "module load GATK/4.1.6.0 && "
+        "gatk PathSeqBuildKmers "
+        "--java-options '-Xmx80g' "
+        "--reference '{input}' "
+        "-O '{output}'"
+
+  host_img: "output/PathSeq/host.fasta.img"
+  host_bfi
+
+rule build_host_BWA_image:
+    input:
+        config["human_ref"]["genome"]
+    output:
+        config["PathSeq"]["host_img"]
+    shell:
+        "module load GATK/4.1.6.0 && "
+        "gatk BwaMemIndexImageCreator -I {input} -O {output}"
 
 rule compress_FASTQ_File:
     group:
