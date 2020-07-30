@@ -18,10 +18,10 @@ trimming:
 
 PathSeq:
   bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"
-  microbe_fasta: "/data/Robinson-SB/PathSeq-data/select-complete-genomes.fa"
-  microbe_fai: "/data/Robinson-SB/PathSeq-data/select-complete-genomes.fa.fai"
-  microbe_dict: "/data/Robinson-SB/PathSeq-data/select-complete-genomes.dict"
-  microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/select-complete-genomes.fa.img"
+  microbe_fasta: "/data/Robinson-SB/PathSeq-data/subspecies_genome.fa"
+  microbe_fai: "/data/Robinson-SB/PathSeq-data/subspecies_genome.fa.fai"
+  microbe_dict: "/data/Robinson-SB/PathSeq-data/subspecies_genome.fa.dict"
+  microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/subspecies_genome.fa.img"
   taxonomy_db: "/data/Robinson-SB/PathSeq-data/select-complete-genomes.db"
   host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
