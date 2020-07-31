@@ -1,0 +1,136 @@
+from os.path import join
+import pandas as pd
+
+# urls
+LT2_genome_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.fna.gz"
+human_genome_URL = "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_34/GRCh38.p13.genome.fa.gz"
+streptomyces_specialis_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/493/375/GCF_001493375.1_Streptomyces_specialis/GCF_001493375.1_Streptomyces_specialis_genomic.fna.gz"
+streptomyces_xylophagus_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/716/435/GCF_000716435.1_ASM71643v1/GCF_000716435.1_ASM71643v1_genomic.fna.gz"
+# files
+FA = join("raw", "genomes.fa")
+SRPRISM_DB_DIR = join("output", "genomes_db")
+SRPRISM_DB_PREFIX = join("output", "genomes_db", "genomes")
+SRPRISM_DB_FILE = join("output", "genomes_db", "genomes.idx")
+
+Input_BAM = join("..", "output", "star", "{patient}-{sample}", "_STARpass2", "host.reads.filtered.bam")
+PathSeq_FQ1 = join("output", "{patient}-{sample}", "host.reads.filtered_1.fq")
+PathSeq_FQ2 = join("output", "{patient}-{sample}", "host.reads.filtered_2.fq")
+PathSeq_FQ3 = join("output", "{patient}-{sample}", "host.reads.filtered_3.fq")
+SRPRISM_PAIRED_SAM = join("output", "SRPRISM", "{patient}-{sample}", "paired.sam")
+SRPRISM_UNPAIRED_SAM = join("output", "SRPRISM", "{patient}-{sample}", "unpaired.sam")
+SRPRISM_PAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "paired.bam")
+SRPRISM_UNPAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "unpaired.bam")
+SRPRISM_SORTED_PAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "sorted_paired.bam")
+SRPRISM_SORTED_UNPAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "sorted_unpaired.bam")
+SRPRISM_BAM = join("output", "SRPRISM", "{patient}-{sample}", "merged.bam")
+SRPRISM_BAI = join("output", "SRPRISM", "{patient}-{sample}", "merged.bai")
+
+samples = pd.read_csv("../data/samples.tsv", dtype=str, sep="\t")
+samples = samples.loc[samples.patient == "BC06"]
+
+
+rule all:
+    input:
+        expand(SRPRISM_BAI, zip, patient=samples["patient"], sample=samples["sample"]),
+        # expand(SRPRISM_UNPAIRED_BAM, patient="Pt0", sample="SRR6815816")
+
+rule create_BAM_index:
+    input:
+        SRPRISM_BAM
+    output:
+        SRPRISM_BAI
+    shell:
+        "module load samtools && "
+        "samtools index {input} {output}"
+
+rule merged_BAM_files:
+    input:
+        SRPRISM_SORTED_PAIRED_BAM,
+        SRPRISM_SORTED_UNPAIRED_BAM
+    output:
+        SRPRISM_BAM
+    shell:
+        "module load samtools && "
+        "samtools merge {output} {input[0]} {input[1]}"
+
+rule convert_unpaired_SAM_to_sorted_BAM:
+    input:
+        SRPRISM_UNPAIRED_SAM
+    output:
+        SRPRISM_UNPAIRED_BAM,
+        SRPRISM_SORTED_UNPAIRED_BAM
+    shell:
+        "module load samtools && "
+        "samtools view -bS {input} > {output[0]} && "
+        "samtools sort -o {output[1]} {output[0]}"
+
+rule convert_paired_SAM_to_sorted_BAM:
+    input:
+        SRPRISM_PAIRED_SAM
+    output:
+        SRPRISM_PAIRED_BAM,
+        SRPRISM_SORTED_PAIRED_BAM
+    shell:
+        "module load samtools && "
+        "samtools view -bS {input} > {output[0]} && "
+        "samtools sort -o {output[1]} {output[0]}"
+
+rule map_SRPRISM_genome_unpaired:
+    params:
+        SRPRISM_DB_PREFIX
+    input:
+        Input_FQ3,
+        SRPRISM_DB_FILE
+    output:
+        SRPRISM_UNPAIRED_SAM
+    shell:
+        "srprism search -I {params} -i {input[0]} -F fastq -p false -o {output} --sam-header true"
+
+rule map_SRPRISM_genome_paired:
+    params:
+        SRPRISM_DB_PREFIX
+    input:
+        Input_FQ1,
+        Input_FQ2,
+        SRPRISM_DB_FILE
+    output:
+        SRPRISM_PAIRED_SAM
+    shell:
+        "srprism search -I {params} -i {input[0]},{input[1]} -F fastq -p true -o {output} --sam-header true"
+
+rule convert_BAM_to_paired_FASTQ:
+    input:
+        Input_BAM
+    output:
+        Input_FQ1,
+        Input_FQ2,
+        Input_FQ3
+    shell:
+        "module load picard && "
+        "java -jar $PICARDJARPATH/picard.jar SamToFastq I={input} "
+        "F={output[0]} F2={output[1]} FU={output[2]}"
+
+rule make_SRPRISM_DB:
+    params:
+        SRPRISM_DB_PREFIX,
+        SRPRISM_DB_DIR
+    input:
+        FA
+    output:
+        SRPRISM_DB_FILE
+    shell:
+        #"mkdir {params[1]} && "
+        "srprism mkindex -i {input} -o {params[0]}"
+
+rule download_relevant_genomes:
+    params:
+        human_genome_URL,
+        streptomyces_specialis_URL
+    output:
+        FA
+    shell:
+        "touch {output} && "
+        "wget -O - {params[0]} | gunzip -c >> {output} && "
+        "wget -O - {params[1]} | gunzip -c >> {output}"
+
+# wget -O - {params.FA_URL} | gunzip -c > {output.FA}
