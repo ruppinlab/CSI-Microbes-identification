@@ -7,23 +7,23 @@ human_genome_URL = "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/rele
 streptomyces_specialis_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/493/375/GCF_001493375.1_Streptomyces_specialis/GCF_001493375.1_Streptomyces_specialis_genomic.fna.gz"
 streptomyces_xylophagus_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/716/435/GCF_000716435.1_ASM71643v1/GCF_000716435.1_ASM71643v1_genomic.fna.gz"
 # files
-FA = join("raw", "genomes.fa")
+GENOME_FA = join("raw", "{genome}.fa")
 SRPRISM_DB_DIR = join("output", "genomes_db")
-SRPRISM_DB_PREFIX = join("output", "genomes_db", "genomes")
-SRPRISM_DB_FILE = join("output", "genomes_db", "genomes.idx")
+GENOME_DB_PREFIX = join(SRPRISM_DB_DIR, "{genome}")
+GENOME_DB_FILE = join(SRPRISM_DB_DIR, "{genome}.idx")
 
-Input_BAM = join("..", "output", "star", "{patient}-{sample}", "_STARpass2", "host.reads.filtered.bam")
+Input_BAM = join("..", "output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 PathSeq_FQ1 = join("output", "{patient}-{sample}", "host.reads.filtered_1.fq")
 PathSeq_FQ2 = join("output", "{patient}-{sample}", "host.reads.filtered_2.fq")
 PathSeq_FQ3 = join("output", "{patient}-{sample}", "host.reads.filtered_3.fq")
-SRPRISM_PAIRED_SAM = join("output", "SRPRISM", "{patient}-{sample}", "paired.sam")
-SRPRISM_UNPAIRED_SAM = join("output", "SRPRISM", "{patient}-{sample}", "unpaired.sam")
-SRPRISM_PAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "paired.bam")
-SRPRISM_UNPAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "unpaired.bam")
-SRPRISM_SORTED_PAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "sorted_paired.bam")
-SRPRISM_SORTED_UNPAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "sorted_unpaired.bam")
-SRPRISM_BAM = join("output", "SRPRISM", "{patient}-{sample}", "merged.bam")
-SRPRISM_BAI = join("output", "SRPRISM", "{patient}-{sample}", "merged.bai")
+SRPRISM_PAIRED_SAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-paired.sam")
+SRPRISM_UNPAIRED_SAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-unpaired.sam")
+SRPRISM_PAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-paired.bam")
+SRPRISM_UNPAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-unpaired.bam")
+SRPRISM_SORTED_PAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-sorted_paired.bam")
+SRPRISM_SORTED_UNPAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-sorted_unpaired.bam")
+SRPRISM_BAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-merged.bam")
+SRPRISM_BAI = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-merged.bai")
 
 samples = pd.read_csv("../data/samples.tsv", dtype=str, sep="\t")
 samples = samples.loc[samples.patient == "BC06"]
@@ -31,7 +31,7 @@ samples = samples.loc[samples.patient == "BC06"]
 
 rule all:
     input:
-        expand(SRPRISM_BAI, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(SRPRISM_BAI, zip, patient=samples["patient"], sample=samples["sample"], genome="xylophagus"),
         # expand(SRPRISM_UNPAIRED_BAM, patient="Pt0", sample="SRR6815816")
 
 rule create_BAM_index:
@@ -110,27 +110,25 @@ rule convert_BAM_to_paired_FASTQ:
         "java -jar $PICARDJARPATH/picard.jar SamToFastq I={input} "
         "F={output[0]} F2={output[1]} FU={output[2]}"
 
-rule make_SRPRISM_DB:
+rule make_DB:
     params:
-        SRPRISM_DB_PREFIX,
+        GENOME_DB_PREFIX,
         SRPRISM_DB_DIR
     input:
-        FA
+        GENOME_FA
     output:
         SRPRISM_DB_FILE
     shell:
-        #"mkdir {params[1]} && "
         "srprism mkindex -i {input} -o {params[0]}"
 
 rule download_relevant_genomes:
+    wildcard_constraints:
+        genome="xylophagus"
     params:
-        human_genome_URL,
-        streptomyces_specialis_URL
+        streptomyces_xylophagus_URL
     output:
-        FA
+        GENOME_FA
     shell:
-        "touch {output} && "
-        "wget -O - {params[0]} | gunzip -c >> {output} && "
-        "wget -O - {params[1]} | gunzip -c >> {output}"
+        "wget -O - {params[0]} | gunzip -c > {output}"
 
 # wget -O - {params.FA_URL} | gunzip -c > {output.FA}
