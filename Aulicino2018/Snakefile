@@ -76,8 +76,6 @@ rule build_host_kmer_file:
         "--reference '{input}' "
         "-O '{output}'"
 
-  host_img: "output/PathSeq/host.fasta.img"
-  host_bfi
 
 rule build_host_BWA_image:
     input:
