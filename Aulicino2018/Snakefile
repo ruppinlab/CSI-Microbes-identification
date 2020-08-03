@@ -40,6 +40,7 @@ include: "../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
+include: "../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
 
 
 rule all:
@@ -54,13 +55,38 @@ rule download_combine_subspe_genomes:
     input:
         join("data", "genome_map_subsp.tsv")
     output:
-        join("output", "subspecies_genome.fa")
+        join("data", "subspecies_genome.fa")
     run:
         df = pd.read_csv(input[0], sep="\t")
         shell("touch {output}")
         for index, row in df.iterrows():
-            url = join(row["ftp_path"], file)
+            url = row["url"]
             shell("wget -O - {url} | gunzip -c >> {output}")
+
+
+rule build_host_kmer_file:
+    input:
+        config["human_ref"]["genome"]
+    output:
+        config["PathSeq"]["host_bfi"]
+    shell:
+        "module load GATK/4.1.8.1 && "
+        "gatk PathSeqBuildKmers "
+        "--java-options '-Xmx80g' "
+        "--reference '{input}' "
+        "-O '{output}'"
+
+  host_img: "output/PathSeq/host.fasta.img"
+  host_bfi
+
+rule build_host_BWA_image:
+    input:
+        config["human_ref"]["genome"]
+    output:
+        config["PathSeq"]["host_img"]
+    shell:
+        "module load GATK/4.1.8.1 && "
+        "gatk BwaMemIndexImageCreator -I {input} -O {output}"
 
 
 # rules for downloading sequencing data

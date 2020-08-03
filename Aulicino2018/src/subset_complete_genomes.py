@@ -9,7 +9,7 @@ column_names = [
     "relation_to_type_material"
     ]
 
-df = pd.read_csv("data/assembly_summary.txt", sep="\t", skiprows=2, names=column_names)
+df = pd.read_csv(snakemake.input[0], sep="\t", skiprows=2, names=column_names)
 
 # only use complete genomes
 df = df.loc[df["assembly_level"] == "Complete Genome"]
@@ -21,5 +21,5 @@ df = df.loc[df["assembly_level"] == "Complete Genome"]
 df = df.drop_duplicates(subset="species_taxid")
 
 # write the entire file
-df.to_csv("output/complete-genome-assembly-summary.tsv", sep="\t", index=False)
+df.to_csv(snakemake.output[0], sep="\t", index=False)
 # write the ftp_path's to file so we can use for rsync command
