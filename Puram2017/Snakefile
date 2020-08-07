@@ -57,6 +57,7 @@ rule download_FQ1_files:
     output:
         fq1=FASTQ1_FILE
     shell:
+        "module load google-cloud-sdk && "
         "gsutil cp {params.fq}_R1.fastq.gz {output.fq1}"
 
 rule download_FQ2_files:
@@ -65,6 +66,7 @@ rule download_FQ2_files:
     output:
         fq2=FASTQ2_FILE
     shell:
+        "module load google-cloud-sdk && "
         "gsutil cp {params.fq}_R2.fastq.gz {output.fq2}"
 
 # each paired-end sample actually consists of 8 files
