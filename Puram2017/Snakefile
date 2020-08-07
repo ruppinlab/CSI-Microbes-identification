@@ -43,6 +43,8 @@ include: "../pathogen-discovery-rules/rules/build-PathSeq-host-files.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
 
+localrules: download_FQ1_files, download_FQ2_files, download_FQ1_files_comb, download_FQ2_files_comb
+
 rule all:
     input:
         expand(PATHSEQ_BAM, zip, patient=samples["patient"], sample=samples["sample"])
@@ -80,7 +82,7 @@ rule download_FQ1_files_comb:
         L4=temp(FQ1_L4_FILE),
         fq1=FASTQ1_FILE
     shell:
-        #"module load google-cloud-sdk && "
+        "module load google-cloud-sdk && "
         "gsutil cp {params.fq}_L001_R1_001.fastq.gz {output.L1}  && "
         "gsutil cp {params.fq}_L002_R1_001.fastq.gz {output.L2} && "
         "gsutil cp {params.fq}_L003_R1_001.fastq.gz {output.L3} && "
