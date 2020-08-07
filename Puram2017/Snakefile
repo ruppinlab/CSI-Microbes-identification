@@ -22,8 +22,8 @@ samples = samples.loc[samples["batch"] == batch]
 FASTQ_DIR = join("FASTQ", "raw")
 
 # Intermediate Files
-FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_R1.fastq.gz")
-FASTQ2_FILE = join(FASTQ_DIR,  "{patient}-{sample}_R2.fastq.gz")
+FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
+FASTQ2_FILE = join(FASTQ_DIR,  "{patient}-{sample}_2.fastq.gz")
 
 # Temporary Files
 FQ1_L1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_L001_R1.fastq.gz")
@@ -41,7 +41,7 @@ PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../pathogen-discovery-rules/rules/build-PathSeq-host-files.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
 localrules: download_FQ1_files, download_FQ2_files, download_FQ1_files_comb, download_FQ2_files_comb
 
@@ -89,7 +89,7 @@ rule download_FQ1_files_comb:
         "gsutil cp {params.fq}_L004_R1_001.fastq.gz {output.L4} && "
         "cat {output.L1} {output.L2} {output.L3} {output.L4} > {output.fq1}"
 
-rule download_FQ2_files:
+rule download_FQ2_files_comb:
     wildcard_constraints:
         sample=".+_comb"
     params:

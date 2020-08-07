@@ -18,3 +18,7 @@ PathSeq:
 
 params:
   PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true "
+  STAR: ""
+
+trimming:
+  skip: True
