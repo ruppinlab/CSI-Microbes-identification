@@ -3,19 +3,20 @@ import pandas as pd
 from snakemake.utils import min_version
 ##### set minimum snakemake version #####
 min_version("5.1.2")
+
+ruleorder: download_FQ1_files_comb > download_FQ1_files
+ruleorder: download_FQ2_files_comb > download_FQ2_files
 batch = config["batch"]
 ##### load config and sample sheets #####
 configfile: "config/PathSeq-config.yaml"
 #validate(config, schema="schemas/config.schema.yaml")
 wildcard_constraints:
-    patient="MEEI[1-2][0-9]"
+    patient="MEEI[0-9]{1,2}"
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False).sort_index()
-
-# this sample has something weird with pri
-samples = samples.loc[~samples["batch"].isin(["HNSCC22_P2"])]
+# samples = samples.groupby("batch").sample(1, random_state=0)
 samples = samples.loc[samples["batch"] == batch]
 #print(samples)
 FASTQ_DIR = join("FASTQ", "raw")
@@ -37,6 +38,9 @@ FQ2_L4_FILE = join(FASTQ_DIR,  "{patient}-{sample}_L004_R2.fastq.gz")
 # Output Files
 PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
+include: "../RNA-snakemake-rules/rules/genome.smk"
+include: "../pathogen-discovery-rules/rules/build-PathSeq-host-files.smk"
+include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
 
 rule all:
@@ -44,27 +48,29 @@ rule all:
         expand(PATHSEQ_BAM, zip, patient=samples["patient"], sample=samples["sample"])
         # expand(config["PathSeq"]["bam_file"], zip, patient=samples["patient"], sample=samples["sample"])
 
-rule convert_FASTQ_to_BAM:
-    group:
-        "FASTQ"
-    input:
-        fq1=FASTQ1_FILE,
-        fq2=FASTQ2_FILE
+
+rule download_FQ1_files:
+    params:
+        fq = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq_prefix"],
     output:
-        config["PathSeq"]["bam_file"]
+        fq1=FASTQ1_FILE
     shell:
-        "module load picard && "
-        "java -Xmx8g -XX:ParallelGCThreads=5 -jar $PICARDJARPATH/picard.jar "
-        "FastqToSam F1={input.fq1} F2={input.fq2} O={output} "
-        "SM={wildcards.sample} RG={wildcards.sample} "
-        "TMP_DIR=/lscratch/$SLURM_JOBID"
+        "gsutil cp {params.fq}_R1.fastq.gz {output.fq1}"
+
+rule download_FQ2_files:
+    params:
+        fq = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq_prefix"],
+    output:
+        fq2=FASTQ2_FILE
+    shell:
+        "gsutil cp {params.fq}_R2.fastq.gz {output.fq2}"
 
 # each paired-end sample actually consists of 8 files
 # {sample}-{well}_{sample_number}_{lane}_{end}_001.fastq.gz
 # we need to download all four fastq files per end and combine them
-rule download_FQ1_files:
-    group:
-        "FASTQ"
+rule download_FQ1_files_comb:
+    wildcard_constraints:
+        sample=".+_comb"
     params:
         fq = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq_prefix"],
     output:
@@ -74,7 +80,7 @@ rule download_FQ1_files:
         L4=temp(FQ1_L4_FILE),
         fq1=FASTQ1_FILE
     shell:
-        "module load google-cloud-sdk && "
+        #"module load google-cloud-sdk && "
         "gsutil cp {params.fq}_L001_R1_001.fastq.gz {output.L1}  && "
         "gsutil cp {params.fq}_L002_R1_001.fastq.gz {output.L2} && "
         "gsutil cp {params.fq}_L003_R1_001.fastq.gz {output.L3} && "
@@ -82,8 +88,8 @@ rule download_FQ1_files:
         "cat {output.L1} {output.L2} {output.L3} {output.L4} > {output.fq1}"
 
 rule download_FQ2_files:
-    group:
-        "FASTQ"
+    wildcard_constraints:
+        sample=".+_comb"
     params:
         fq = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq_prefix"],
     output:

@@ -1,23 +1,50 @@
 {
-    "__default__" :
-    {
-        "time" : "08:00:00",
-        "mem": "16g",
-        "nthreads" : 4,
-        "gres": "10",
-        "partition": "norm,ccr"
-    },
-    "PathSeqPipelineSpark":
-    {
-      "mem":"96g",
-      "nthreads": 12,
-      "gres":"300",
-      "time": "5-00:00:00"
-    },
-    "FASTQ":
-    {
-        "time": "1:00:00",
-        "mem": "8g",
-        "nthreads": 6
-    }
+  "__default__" :
+  {
+    "time" : "08:00:00",
+    "mem": "16g",
+    "nthreads" : 4,
+    "gres": 10,
+    "partition": "norm,ccr"
+  },
+  "create_star_index" :
+  {
+    "nthreads" : 16,
+    "mem": "64g"
+  },
+  "run_star_pe":
+  {
+    "time": "24:00:00",
+    "nthreads" : 48,
+    "mem": "64g"
+  },
+  "run_star_pe_pass1":
+  {
+    "time": "24:00:00",
+    "nthreads" : 48,
+    "mem": "64g"
+  },
+  "run_star_pe_pass2":
+  {
+    "time": "24:00:00",
+    "nthreads" : 48,
+    "mem": "64g"
+  },
+  "build_host_kmer_file":
+  {
+    "mem": "80g",
+    "nthreads": 16
+  },
+  "build_host_BWA_image":
+  {
+    "mem": "80g",
+    "nthreads": 16
+  },
+  "PathSeqPipelineSpark":
+  {
+    "mem":"100g",
+    "nthreads": 12,
+    "gres":"200",
+    "time": "7-00:00:00"
+  }
 }
