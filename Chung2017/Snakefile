@@ -6,7 +6,7 @@ min_version("5.1.2")
 
 patient = config["patient"]
 ##### load config and sample sheets #####
-configfile: join("config", "original-config.yaml")
+configfile: join("config", "PathSeq-config.yaml")
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
@@ -78,9 +78,6 @@ rule build_host_kmer_file:
         "--java-options '-Xmx80g' "
         "--reference '{input}' "
         "-O '{output}'"
-
-  host_img: "output/PathSeq/host.fasta.img"
-  host_bfi
 
 rule build_host_BWA_image:
     input:

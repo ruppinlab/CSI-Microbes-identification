@@ -12,8 +12,8 @@ human_ref:
   annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true --skip-quality-filters true "
-  STAR: " --outFilterScoreMinOverLread 0.5 --outFilterMatchNminOverLread 0.5"
+  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true --skip-quality-filters false "
+  STAR: "" 
 
 trimming:
   skip: True
@@ -24,5 +24,5 @@ PathSeq:
   microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
   microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
   taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
-  host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
-  host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
+  host_img: "data/GRCh38.p13_RNAspike.img"
+  host_bfi: "data/GRCh38.p13_RNAspike.hss"
