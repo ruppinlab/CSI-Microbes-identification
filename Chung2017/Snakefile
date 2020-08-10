@@ -19,6 +19,11 @@ SRA_FASTQ1_FILE = join(FASTQ_DIR,  "{sample}_1.fastq")
 SRA_FASTQ2_FILE = join(FASTQ_DIR, "{sample}_2.fastq")
 FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
 FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
+TRIMMED_FASTQ1_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_1.fastq.gz")
+TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_2.fastq.gz")
+TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_3.fastq.gz")
+FAILED_READS_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_failed.fastq.gz")
+HTML_REPORT = join("FASTQ", "trimmed", "{patient}-{sample}_report.html")
 # file containing sequences for RNA Spike In sequences
 RNA_SPIKE_SEQUENCES = join("data", "spike_in_sequences.fa")
 # handcrafted TODO generate from fasta file
@@ -34,7 +39,24 @@ include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
 rule all:
     input:
-        expand(pathseq_bam, zip, sample=samples["sample"], patient=samples["patient"])
+        expand(HTML_REPORT, zip, sample=samples["sample"], patient=samples["patient"])
+
+rule run_fastp:
+    conda:
+        "../envs/fastp-env.yaml"
+    input:
+        FASTQ1_FILE,
+        FASTQ2_FILE
+    output:
+        TRIMMED_FASTQ1_FILE,
+        TRIMMED_FASTQ2_FILE,
+        TRIMMED_UNPAIRED_FILE,
+        FAILED_READS_FILE,
+        HTML_REPORT
+    shell:
+        "fastp -i {input[0]} -I {input[1]} -o {output[1]} -O {output[2]} "
+        "--unpaired1 {output[2]} --unpaired2 {output[2]} --failed_out {output[3]} "
+        "-h {input[4]}"
 
 
 rule combine_human_spikein_fasta:
