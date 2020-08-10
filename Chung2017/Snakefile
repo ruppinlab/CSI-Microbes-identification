@@ -36,10 +36,11 @@ include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
+samples = samples.iloc[0]
 
 rule all:
     input:
-        expand(HTML_REPORT, zip, sample=samples["sample"], patient=samples["patient"])
+        expand(STAR_SE_PASS2_BAM_FILE, zip, sample=samples["sample"], patient=samples["patient"])
 
 rule run_fastp:
     conda:
