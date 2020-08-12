@@ -23,4 +23,4 @@ PathSeq:
   microbe_fai: "data/subspecies_genome.fa.fai"
   microbe_dict: "data/subspecies_genome.dict"
   microbe_bwa_image: "data/subspecies_genome.fa.img"
-  taxonomy_db: "data/subspecies_genome.db"
+  taxonomy_db: "data/subspecies_genome_taxonomy.db"
