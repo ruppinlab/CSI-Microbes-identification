@@ -90,27 +90,6 @@ rule combine_human_spikein_GTF:
 #     shell:
 #         "wget {params.url} -O temp.zip && unzip temp.zip -d {params.dir}"
 
-rule build_host_kmer_file:
-    input:
-        config["human_ref"]["genome"]
-    output:
-        config["PathSeq"]["host_bfi"]
-    shell:
-        "module load GATK/4.1.6.0 && "
-        "gatk PathSeqBuildKmers "
-        "--java-options '-Xmx80g' "
-        "--reference '{input}' "
-        "-O '{output}'"
-
-rule build_host_BWA_image:
-    input:
-        config["human_ref"]["genome"]
-    output:
-        config["PathSeq"]["host_img"]
-    shell:
-        "module load GATK/4.1.6.0 && "
-        "gatk BwaMemIndexImageCreator -I {input} -O {output}"
-
 rule compress_FASTQ_File:
     group:
         "FASTA"
