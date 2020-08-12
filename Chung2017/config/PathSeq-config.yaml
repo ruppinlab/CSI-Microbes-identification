@@ -13,16 +13,14 @@ human_ref:
 
 params:
   PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true --skip-quality-filters false "
-  STAR: "" 
+  STAR: ""
 
 trimming:
   skip: True
 
 
 PathSeq:
-  bam_file: "output/star/{patient}-{sample}/_STARpass2/host.reads.filtered.bam"
+  bam_file: "output/star/{patient}-{sample}/host.reads.filtered.bam"
   microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
   microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
   taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
-  host_img: "data/GRCh38.p13_RNAspike.img"
-  host_bfi: "data/GRCh38.p13_RNAspike.hss"
