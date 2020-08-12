@@ -11,10 +11,10 @@ human_ref:
   annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true "
+  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true --skip-quality-filters false "
   STAR: ""
 trimming:
-  skip: True
+  skip: False
 
 
 PathSeq:
@@ -24,5 +24,3 @@ PathSeq:
   microbe_dict: "data/subspecies_genome.dict"
   microbe_bwa_image: "data/subspecies_genome.fa.img"
   taxonomy_db: "data/subspecies_genome.db"
-  host_img: "data/GRCh38.p13_ERCC92.img"
-  host_bfi: "data/GRCh38.p13_ERCC92.hss"

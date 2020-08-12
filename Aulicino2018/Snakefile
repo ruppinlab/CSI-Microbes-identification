@@ -5,7 +5,7 @@ from snakemake.utils import min_version
 min_version("5.1.2")
 
 ##### load config and sample sheets #####
-configfile: "config/PathSeq-config.yaml"
+configfile: "config/CAMMiQ-subspecies-comparison-config.yaml"
 # configfile: "config/PathSeq-config.yaml"
 #validate(config, schema="schemas/config.schema.yaml")
 
@@ -43,15 +43,17 @@ PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"
 include: "../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
-include: "../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+#include: "../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
 
 
 rule all:
     input:
-        expand(HTML_REPORT, zip, sample=samples["sample"], patient=samples["patient"])
+        expand(PathSeq_BAM_File, zip, sample=samples["sample"], patient=samples["patient"])
 
 rule run_fastp:
+    group:
+        "FASTQ"
     conda:
         "../envs/fastp-env.yaml"
     input:
@@ -82,27 +84,27 @@ rule download_combine_subspe_genomes:
             shell("wget -O - {url} | gunzip -c >> {output}")
 
 
-rule build_host_kmer_file:
-    input:
-        config["human_ref"]["genome"]
-    output:
-        config["PathSeq"]["host_bfi"]
-    shell:
-        "module load GATK/4.1.8.1 && "
-        "gatk PathSeqBuildKmers "
-        "--java-options '-Xmx80g' "
-        "--reference '{input}' "
-        "-O '{output}'"
-
-
-rule build_host_BWA_image:
-    input:
-        config["human_ref"]["genome"]
-    output:
-        config["PathSeq"]["host_img"]
-    shell:
-        "module load GATK/4.1.8.1 && "
-        "gatk BwaMemIndexImageCreator -I {input} -O {output}"
+# rule build_host_kmer_file:
+#     input:
+#         config["human_ref"]["genome"]
+#     output:
+#         config["PathSeq"]["host_bfi"]
+#     shell:
+#         "module load GATK/4.1.8.1 && "
+#         "gatk PathSeqBuildKmers "
+#         "--java-options '-Xmx80g' "
+#         "--reference '{input}' "
+#         "-O '{output}'"
+#
+#
+# rule build_host_BWA_image:
+#     input:
+#         config["human_ref"]["genome"]
+#     output:
+#         config["PathSeq"]["host_img"]
+#     shell:
+#         "module load GATK/4.1.8.1 && "
+#         "gatk BwaMemIndexImageCreator -I {input} -O {output}"
 
 
 # rules for downloading sequencing data
