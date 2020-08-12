@@ -12,11 +12,11 @@ human_ref:
   annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true --skip-quality-filters false "
+  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true --skip-quality-filters true "
   STAR: ""
 
 trimming:
-  skip: True
+  skip: False
 
 
 PathSeq:
