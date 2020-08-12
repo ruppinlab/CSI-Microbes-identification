@@ -12,12 +12,6 @@
     "nthreads" : 16,
     "mem": "64g"
   },
-  "run_star_pe":
-  {
-    "time": "24:00:00",
-    "nthreads" : 48,
-    "mem": "64g"
-  },
   "run_star_pe_pass1":
   {
     "time": "24:00:00",
@@ -25,6 +19,18 @@
     "mem": "64g"
   },
   "run_star_pe_pass2":
+  {
+    "time": "24:00:00",
+    "nthreads" : 48,
+    "mem": "64g"
+  },
+  "run_star_se_pass1":
+  {
+    "time": "24:00:00",
+    "nthreads" : 48,
+    "mem": "64g"
+  },
+  "run_star_se_pass2":
   {
     "time": "24:00:00",
     "nthreads" : 48,
