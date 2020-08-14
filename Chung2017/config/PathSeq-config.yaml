@@ -13,7 +13,7 @@ human_ref:
 
 params:
   PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true --skip-quality-filters true "
-  STAR: ""
+  STAR: "--outFilterMatchNmin .4 --outFilterScoreMinOverLread .4 "
 
 trimming:
   skip: False
