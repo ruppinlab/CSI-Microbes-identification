@@ -8,7 +8,7 @@ trimming:
   skip: True
 
 PathSeq:
-  bam_file: "output/star/{patient}-{sample}/_STARpass2/host.reads.filtered.bam"
+  bam_file: "output/star/{patient}-{sample}/_STARpass2/Aligned.out.bam"
   microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
   microbe_fai: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.fai"
   microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
@@ -18,5 +18,5 @@ PathSeq:
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true --skip-quality-filters true "
-  STAR: " --outFilterScoreMinOverLread 0.5 --outFilterMatchNminOverLread 0.5"
+  PathSeq: "--min-score-identity .7 --is-host-aligned true --filter-duplicates false --skip-quality-filters false "
+  STAR: " --outFilterScoreMinOverLread 0.66 --outFilterMatchNminOverLread 0.66"

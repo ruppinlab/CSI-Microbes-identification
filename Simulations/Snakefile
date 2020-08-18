@@ -1,4 +1,4 @@
-from os.path import join
+from os.path import join, basename
 import pandas as pd
 
 configfile: join("config", "PathSeq-config.yaml")
@@ -7,12 +7,13 @@ ATCC25586_CDS_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/007/325/GCF_
 SL1344_CDS_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/210/855/GCF_000210855.2_ASM21085v2/GCF_000210855.2_ASM21085v2_cds_from_genomic.fna.gz"
 LT2_CDS_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_cds_from_genomic.fna.gz"
 HUMAN_TRANSCRIPT_URL = "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_34/gencode.v34.transcripts.fa.gz"
-
+SPECIALIS_CDS_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/493/375/GCF_001493375.1_Streptomyces_specialis/GCF_001493375.1_Streptomyces_specialis_cds_from_genomic.fna.gz"
 
 CDS_FA = join("data", "{patient}_cds_from_genomic.fa")
 SL1344_CDS_FA = CDS_FA.format(patient="SL1344")
 ATCC25586_CDS_FA = CDS_FA.format(patient="ATCC25586")
 LT2_CDS_FA = CDS_FA.format(patient="LT2")
+SPECIALIS_CDS_FA = CDS_FA.format(patient="Specialis")
 HUMAN_CDS_FA = CDS_FA.format(patient="Human")
 FQ1_PREFIX = join("FASTQ", "raw", "{patient}-{sample}")
 FASTQ1_FILE = join("FASTQ", "raw", "{patient}-{sample}_1.fastq.gz")
@@ -25,7 +26,7 @@ REF_QS_FILE = join("output", "MEEI17-HNSCC17_P2_A02_S2_R1_quality_score.txt")
 
 samples = pd.DataFrame.from_dict({"patient": ["ATCC25586", "SL1344", "LT2", "Human", "ATCC25586", "SL1344", "LT2", "Human"], "sample": ["1", "1", "1", "1", "2", "2", "2", "2"]})
 
-include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
+#include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 
@@ -33,8 +34,9 @@ localrules: move_FASTQ_files, extract_quality_score_from_fastq, simulate_RNAseq_
 
 rule all:
     input:
-        expand(STAR_PASS2_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
-        expand(pathseq_bam, zip, patient=samples["patient"], sample=samples["sample"]),
+        #SPECIALIS_CDS_FA
+        #expand(STAR_PASS2_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(pathseq_bam, zip, patient="Specialis", sample="1"),
 
 # rule convert_paired_FASTQ_to_BAM:
 #     input:
@@ -48,6 +50,56 @@ rule all:
 #         "FastqToSam F1={input.fq1} F2={input.fq2} O={output} "
 #         "SM={wildcards.sample} RG={wildcards.sample} "
 #         "TMP_DIR=/lscratch/$SLURM_JOBID"
+
+
+
+
+# params
+GATK_VERSION = "4.1.8.1"
+
+rule PathSeqPipelineSpark:
+    input:
+        bam_file = config["PathSeq"]["bam_file"],
+        host_bwa_image = config["PathSeq"]["host_img"],
+        microbe_bwa_image = config["PathSeq"]["microbe_bwa_image"],
+        microbe_dict_file = config["PathSeq"]["microbe_dict"],
+        host_hss_file = config["PathSeq"]["host_bfi"],
+        taxonomy_db = config["PathSeq"]["taxonomy_db"]
+    params:
+        host_bwa_image = basename(config["PathSeq"]["host_img"]),
+        microbe_bwa_image = basename(config["PathSeq"]["microbe_bwa_image"]),
+        microbe_dict_file = basename(config["PathSeq"]["microbe_dict"]),
+        host_hss_file = basename(config["PathSeq"]["host_bfi"]),
+        taxonomy_db = basename(config["PathSeq"]["taxonomy_db"])
+    output:
+        pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"),
+        pathseq_output = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt"),
+        filter_metrics = join("output", "PathSeq", "{patient}-{sample}", "filter-metrics.txt"),
+        score_metrics = join("output", "PathSeq", "{patient}-{sample}", "score-metrics.txt"),
+    run:
+        shell("mkdir /lscratch/$SLURM_JOBID/tmp")
+        shell("cp {input.host_bwa_image} /lscratch/$SLURM_JOBID/")
+        shell("cp {input.microbe_bwa_image} /lscratch/$SLURM_JOBID/")
+        shell("cp {input.microbe_dict_file} /lscratch/$SLURM_JOBID/")
+        shell("cp {input.host_hss_file} /lscratch/$SLURM_JOBID/")
+        shell("cp {input.taxonomy_db} /lscratch/$SLURM_JOBID/")
+        shell(
+            "module load GATK/4.1.8.1 && "
+            "gatk PathSeqPipelineSpark "
+            "--input '{input.bam_file}' "
+            "--filter-bwa-image /lscratch/$SLURM_JOBID/{params.host_bwa_image} "
+            "--kmer-file /lscratch/$SLURM_JOBID/{params.host_hss_file} "
+            "--microbe-bwa-image /lscratch/$SLURM_JOBID/{params.microbe_bwa_image} "
+            "--microbe-dict /lscratch/$SLURM_JOBID/{params.microbe_dict_file} "
+            "--taxonomy-file /lscratch/$SLURM_JOBID/{params.taxonomy_db} "
+            "--output '{output.pathseq_bam}' "
+            "--scores-output '{output.pathseq_output}' "
+            "--filter-metrics '{output.filter_metrics}' "
+            "--score-metrics '{output.score_metrics}' "
+            '--java-options "-Xmx64g -Xms64G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" '
+            '--spark-master local[8] '
+            + config["params"]["PathSeq"]
+        )
 
 rule move_FASTQ_files:
     input:
@@ -104,6 +156,14 @@ rule download_ATCC25586_cds_from_genomic:
         url=ATCC25586_CDS_URL
     output:
         ATCC25586_CDS_FA
+    shell:
+        "wget -O - {params.url} | gunzip -c > {output}"
+
+rule download_Specialis_cds_from_genomic:
+    params:
+        url=SPECIALIS_CDS_URL
+    output:
+        SPECIALIS_CDS_FA
     shell:
         "wget -O - {params.url} | gunzip -c > {output}"
 
