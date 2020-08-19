@@ -7,16 +7,14 @@ ref:
   annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
 
 trimming:
-  skip: True
+  skip: False
 
 PathSeq:
-  bam_file: "output/star/{patient}-{sample}/_STARpass2/host.reads.filtered.bam"
+  bam_file: "output/star/{patient}-{sample}/host.reads.filtered.bam"
   microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
   microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
   taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
-  host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
-  host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true --skip-quality-filters true "
-  STAR: " --outFilterScoreMinOverLread 0.5 --outFilterMatchNminOverLread 0.5"
+  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates false --skip-quality-filters true "
+  STAR: " --outFilterScoreMinOverLread 0.4 --outFilterMatchNminOverLread 0.4"

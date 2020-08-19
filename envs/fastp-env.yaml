@@ -1,7 +1,0 @@
-name: fastp-yaml
-channels:
-  - conda-forge
-  - bioconda
-  - defaults
-dependencies:
-  - fastp

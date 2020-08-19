@@ -35,8 +35,9 @@ samples = samples.loc[samples.plate == plate]
 
 # include rules
 include: "../RNA-snakemake-rules/rules/genome.smk"
+include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
 PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 PATHSEQ_FILE = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
