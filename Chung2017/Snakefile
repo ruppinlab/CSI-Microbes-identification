@@ -4,13 +4,13 @@ from snakemake.utils import min_version
 ##### set minimum snakemake version #####
 min_version("5.1.2")
 
-patient = config["patient"]
+#patient = config["patient"]
 ##### load config and sample sheets #####
 configfile: join("config", "PathSeq-config.yaml")
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
-samples = samples.loc[samples["patient"] == patient]
+samples = samples.loc[samples["patient"].isin(["BC03", "BC04", "BC06", "BC07", "BC08"])]
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
 
