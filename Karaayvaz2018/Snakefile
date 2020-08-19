@@ -32,8 +32,8 @@ TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_3.fastq.gz"
 samples = samples.loc[~samples["sample"].isin(["SRR7667879"])]
 # SRR7667876 has issues with the pairing of the reads - may be corrupted
 samples = samples.loc[~samples["sample"].isin(["SRR7667876"])]
-samples = samples.loc[samples.patient == patient]
-samples = samples.loc[samples.plate == plate]
+samples = samples.loc[samples.patient == "PT039"]
+samples = samples.loc[samples.plate == "B1-P1"]
 
 # include rules
 include: "../RNA-snakemake-rules/rules/genome.smk"
