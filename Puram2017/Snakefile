@@ -18,7 +18,8 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False).sort_index()
 # samples = samples.groupby("batch").sample(1, random_state=0)
 samples = samples.loc[samples["batch"] == "HNSCC6_P15_LN"]
-#print(samples)
+
+# Directories
 FASTQ_DIR = join("FASTQ", "raw")
 
 # Temporary Files
@@ -37,8 +38,6 @@ FASTQ2_FILE = join(FASTQ_DIR,  "{patient}-{sample}_2.fastq.gz")
 TRIMMED_FASTQ1_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_1.fastq.gz")
 TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_2.fastq.gz")
 TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_3.fastq.gz")
-
-
 
 # Output Files
 PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
