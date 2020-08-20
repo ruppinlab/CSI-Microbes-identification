@@ -4,47 +4,31 @@
     "time" : "08:00:00",
     "mem": "16g",
     "nthreads" : 4,
-    "gres": 10,
+    "gres": "10",
     "partition": "norm,ccr"
+  },
+  "PathSeqPipelineSpark":
+  {
+    "mem":"64g",
+    "nthreads": 12,
+    "gres":"300",
+    "time": "3-00:00:00"
   },
   "create_star_index" :
   {
     "nthreads" : 16,
     "mem": "64g"
   },
-  "run_star_pe":
+  "STAR_2pass":
   {
     "time": "24:00:00",
     "nthreads" : 48,
     "mem": "64g"
   },
-  "run_star_pe_pass1":
+  "FASTQ":
   {
-    "time": "24:00:00",
-    "nthreads" : 48,
-    "mem": "64g"
+    "nthreads": 6,
+    "gres": 200,
+    "mem": "32g"
   },
-  "run_star_pe_pass2":
-  {
-    "time": "24:00:00",
-    "nthreads" : 48,
-    "mem": "64g"
-  },
-  "build_host_kmer_file":
-  {
-    "mem": "80g",
-    "nthreads": 16
-  },
-  "build_host_BWA_image":
-  {
-    "mem": "80g",
-    "nthreads": 16
-  },
-  "PathSeqPipelineSpark":
-  {
-    "mem":"100g",
-    "nthreads": 12,
-    "gres":"200",
-    "time": "7-00:00:00"
-  }
 }
