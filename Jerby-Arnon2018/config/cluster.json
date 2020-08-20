@@ -14,10 +14,21 @@
       "gres":"300",
       "time": "3-00:00:00"
     },
-    "convert_FASTQ_to_BAM":
+    "create_star_index" :
     {
-        "time": "1:00:00",
-        "mem": "8g",
-        "nthreads": 6
-    }
+      "nthreads" : 16,
+      "mem": "64g"
+    },
+    "STAR_2pass":
+    {
+      "time": "24:00:00",
+      "nthreads" : 48,
+      "mem": "64g"
+    },
+    "FASTQ":
+    {
+      "nthreads": 6,
+      "gres": 200,
+      "mem": "32g"
+    },
 }
