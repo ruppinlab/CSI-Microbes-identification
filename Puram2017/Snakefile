@@ -6,7 +6,7 @@ min_version("5.1.2")
 
 ruleorder: download_FQ1_files_comb > download_FQ1_files
 ruleorder: download_FQ2_files_comb > download_FQ2_files
-batch = config["batch"]
+# batch = config["batch"]
 ##### load config and sample sheets #####
 configfile: "config/PathSeq-config.yaml"
 #validate(config, schema="schemas/config.schema.yaml")
@@ -17,13 +17,9 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 # validate(samples, schema="schemas/samples.schema.yaml")
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False).sort_index()
 # samples = samples.groupby("batch").sample(1, random_state=0)
-samples = samples.loc[samples["batch"] == batch]
+samples = samples.loc[samples["batch"] == "HNSCC6_P15_LN"]
 #print(samples)
 FASTQ_DIR = join("FASTQ", "raw")
-
-# Intermediate Files
-FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
-FASTQ2_FILE = join(FASTQ_DIR,  "{patient}-{sample}_2.fastq.gz")
 
 # Temporary Files
 FQ1_L1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_L001_R1.fastq.gz")
@@ -35,32 +31,44 @@ FQ2_L2_FILE = join(FASTQ_DIR,  "{patient}-{sample}_L002_R2.fastq.gz")
 FQ2_L3_FILE = join(FASTQ_DIR,  "{patient}-{sample}_L003_R2.fastq.gz")
 FQ2_L4_FILE = join(FASTQ_DIR,  "{patient}-{sample}_L004_R2.fastq.gz")
 
+# Intermediate Files
+FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
+FASTQ2_FILE = join(FASTQ_DIR,  "{patient}-{sample}_2.fastq.gz")
+TRIMMED_FASTQ1_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_1.fastq.gz")
+TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_2.fastq.gz")
+TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_3.fastq.gz")
+
+
+
 # Output Files
 PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
 include: "../RNA-snakemake-rules/rules/genome.smk"
-include: "../pathogen-discovery-rules/rules/build-PathSeq-host-files.smk"
+include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
-localrules: download_FQ1_files, download_FQ2_files, download_FQ1_files_comb, download_FQ2_files_comb
 
 rule all:
     input:
-        expand(PATHSEQ_BAM, zip, patient=samples["patient"], sample=samples["sample"])
+        expand(TRIMMED_UNPAIRED_FILE, zip, patient=samples["patient"], sample=samples["sample"])
         # expand(config["PathSeq"]["bam_file"], zip, patient=samples["patient"], sample=samples["sample"])
 
 
 rule download_FQ1_files:
+    group:
+        "FASTQ"
     params:
         fq = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq_prefix"],
     output:
         fq1=FASTQ1_FILE
     shell:
-        "module load google-cloud-sdk && "
+        #"module load google-cloud-sdk && "
         "gsutil cp {params.fq}_R1.fastq.gz {output.fq1}"
 
 rule download_FQ2_files:
+    group:
+        "FASTQ"
     params:
         fq = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq_prefix"],
     output:
@@ -73,6 +81,8 @@ rule download_FQ2_files:
 # {sample}-{well}_{sample_number}_{lane}_{end}_001.fastq.gz
 # we need to download all four fastq files per end and combine them
 rule download_FQ1_files_comb:
+    group:
+        "FASTQ"
     wildcard_constraints:
         sample=".+_comb"
     params:
@@ -84,7 +94,7 @@ rule download_FQ1_files_comb:
         L4=temp(FQ1_L4_FILE),
         fq1=FASTQ1_FILE
     shell:
-        "module load google-cloud-sdk && "
+        #"module load google-cloud-sdk && "
         "gsutil cp {params.fq}_L001_R1_001.fastq.gz {output.L1}  && "
         "gsutil cp {params.fq}_L002_R1_001.fastq.gz {output.L2} && "
         "gsutil cp {params.fq}_L003_R1_001.fastq.gz {output.L3} && "
@@ -92,6 +102,8 @@ rule download_FQ1_files_comb:
         "cat {output.L1} {output.L2} {output.L3} {output.L4} > {output.fq1}"
 
 rule download_FQ2_files_comb:
+    group:
+        "FASTQ"
     wildcard_constraints:
         sample=".+_comb"
     params:

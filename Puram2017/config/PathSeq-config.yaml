@@ -6,19 +6,15 @@ ref:
   genome: "raw/genome/GRCh38.p13.genome.fa"
   annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
 
+trimming:
+  skip: False
+
 PathSeq:
-  bam_file: "output/star/{patient}-{sample}/_STARpass2/host.reads.filtered.bam"
-  microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
-  microbe_fai: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.fai"
+  bam_file: "output/star/{patient}-{sample}/host.reads.filtered.bam"
   microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
   microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
   taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
-  host_img: "data/GRCh38.p13.img"
-  host_bfi: "data/GRCh38.p13.hss"
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true "
-  STAR: ""
-
-trimming:
-  skip: True
+  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates false --skip-quality-filters true "
+  STAR: " --outFilterScoreMinOverLread 0.4 --outFilterMatchNminOverLread 0.4"
