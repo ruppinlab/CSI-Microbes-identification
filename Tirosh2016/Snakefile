@@ -45,6 +45,8 @@ rule all:
 
 
 rule download_FASTQ_files:
+    group:
+        "FASTQ"
     params:
         fq1 = lambda wildcards: samples.at[(wildcards.patient, wildcards.sample), "fq1_url"],
         fq2 = lambda wildcards: samples.at[(wildcards.patient, wildcards.sample), "fq2_url"],
