@@ -38,14 +38,16 @@ PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"
 include: "../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
+include: "../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-batch.smk"
-#include: "../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
+
 
 
 rule all:
     input:
-        join("data", "subspecies_genome.fa")
+        expand(PathSeq_Output_File, zip, patient=samples["patient"], sample=samples["sample"])
+
 
 rule remove_plasmid_sequences:
     conda:
@@ -56,7 +58,6 @@ rule remove_plasmid_sequences:
         join("data", "subspecies_genome.fa")
     script:
         "src/remove_plasmids_from_fasta.py"
-
 
 
 # rules for downloading microbe genomes
