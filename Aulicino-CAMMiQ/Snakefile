@@ -5,7 +5,8 @@ from snakemake.utils import min_version
 min_version("5.1.2")
 
 wildcard_constraints:
-    patient="Pt0"
+    patient="Pt0",
+    samples="SRR[0-9]{7}"
 
 ##### load config and sample sheets #####
 configfile: "config/CAMMiQ-subspecies-comparison-config.yaml"
