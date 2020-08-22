@@ -1,0 +1,7 @@
+name: biopython-env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - biopython

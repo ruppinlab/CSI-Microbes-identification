@@ -11,16 +11,18 @@ human_ref:
   annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates true --skip-quality-filters true "
+  PathSeq: "--min-score-identity .7 --is-host-aligned true --filter-duplicates true --skip-quality-filters false "
   STAR: ""
 trimming:
   skip: False
 
 
 PathSeq:
-  bam_file: "output/star/{patient}-{sample}/host.reads.filtered.bam"
+  bam_file: "output/star/{patient}-{sample}/Aligned.out.bam"
   microbe_fasta: "data/subspecies_genome.fa"
   microbe_fai: "data/subspecies_genome.fa.fai"
   microbe_dict: "data/subspecies_genome.dict"
   microbe_bwa_image: "data/subspecies_genome.fa.img"
   taxonomy_db: "data/subspecies_genome_taxonomy.db"
+  host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
+  host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
