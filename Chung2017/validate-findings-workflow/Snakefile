@@ -1,6 +1,8 @@
 from os.path import join
 import pandas as pd
 
+ruleorder: make_pathseq_host_DB > make_reference_DB
+
 # urls
 LT2_genome_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.fna.gz"
 human_genome_URL = "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_34/GRCh38.p13.genome.fa.gz"
@@ -31,7 +33,8 @@ samples = samples.loc[samples.patient == "BC06"]
 
 rule all:
     input:
-        expand(SRPRISM_BAI, zip, patient=samples["patient"], sample=samples["sample"], genome="xylophagus"),
+        join("output", "genomes_db", "pathseq_host_fa.idx")
+        #expand(SRPRISM_BAI, zip, patient=samples["patient"], sample=samples["sample"], genome="xylophagus"),
         # expand(SRPRISM_UNPAIRED_BAM, patient="Pt0", sample="SRR6815816")
 
 rule create_BAM_index:
@@ -110,16 +113,25 @@ rule convert_BAM_to_paired_FASTQ:
         "java -jar $PICARDJARPATH/picard.jar SamToFastq I={input} "
         "F={output[0]} F2={output[1]} FU={output[2]}"
 
-rule make_DB:
+rule make_reference_DB:
     params:
-        GENOME_DB_PREFIX,
-        SRPRISM_DB_DIR
+        GENOME_DB_PREFIX
     input:
         GENOME_FA
     output:
         SRPRISM_DB_FILE
     shell:
-        "srprism mkindex -i {input} -o {params[0]}"
+        "srprism mkindex -i {input} -o {params}"
+
+rule make_pathseq_host_DB:
+    params:
+        join("output", "genomes_db", "pathseq_host_fa")
+    input:
+        "/data/Robinson-SB/PathSeq-data/pathseq_host.fa"
+    output:
+        join("output", "genomes_db", "pathseq_host_fa.idx")
+    shell:
+        "srprism mkindex -M 20000 -i {input} -o {params}"
 
 rule download_relevant_genomes:
     wildcard_constraints:
