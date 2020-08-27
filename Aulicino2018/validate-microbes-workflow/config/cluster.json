@@ -1,0 +1,18 @@
+{
+  "__default__" :
+  {
+    "time" : "02:00:00",
+    "mem": "16g",
+    "nthreads" : 4,
+    "gres": 0,
+    "partition": "quick"
+  },
+  "make_pathseq_host_DB":
+  {
+    "time" : "2-00:00:00",
+    "mem": "48g",
+    "nthreads" : 16,
+    "gres": 10,
+    "partition": "norm,ccr"
+  }
+}

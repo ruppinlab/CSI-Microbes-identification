@@ -3,60 +3,62 @@ import pandas as pd
 
 # urls
 LT2_genome_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.fna.gz"
-
+D23580_genome_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/900/538/085/GCF_900538085.1_D23580_liv/GCF_900538085.1_D23580_liv_genomic.fna.gz"
 # files
-LT2_FA = join("raw", "Salmonella-LT2.fa")
-LT2_SRPRISM_DB_DIR = join("output", "LT2_db")
-LT2_SRPRISM_DB_PREFIX = join("output", "LT2_db", "LT2")
-LT2_SRPRISM_DB_FILE = join("output", "LT2_db", "LT2.idx")
+GENOME_FA = join("raw", "{genome}.fa")
+SRPRISM_DB_DIR = join("output", "genome_db")
+GENOME_DB_PREFIX = join(SRPRISM_DB_DIR, "{genome}")
+GENOME_DB_FILE = join(SRPRISM_DB_DIR, "{genome}.idx")
 
-PathSeq_BAM = join("..", "identify-microbes-workflow", "output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
-PathSeq_FQ1 = join("output", "{patient}-{sample}", "pathseq_1.fq")
-PathSeq_FQ2 = join("output", "{patient}-{sample}", "pathseq_2.fq")
-PathSeq_FQ3 = join("output", "{patient}-{sample}", "pathseq_3.fq")
-SRPRISM_LT2_PAIRED_SAM = join("output", "SRPRISM", "{patient}-{sample}", "LT2_paired.sam")
-SRPRISM_LT2_UNPAIRED_SAM = join("output", "SRPRISM", "{patient}-{sample}", "LT2_unpaired.sam")
-SRPRISM_LT2_PAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "LT2_paired.bam")
-SRPRISM_LT2_UNPAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "LT2_unpaired.bam")
-SRPRISM_LT2_SORTED_PAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "LT2_sorted_paired.bam")
-SRPRISM_LT2_SORTED_UNPAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "LT2_sorted_unpaired.bam")
-SRPRISM_LT2_BAM = join("output", "SRPRISM", "{patient}-{sample}", "LT2_merged.bam")
-SRPRISM_LT2_BAI = join("output", "SRPRISM", "{patient}-{sample}", "LT2_merged.bai")
+Input_BAM = join("..", "output", "STAR", "{patient}-{sample}", "host.reads.filtered.bam")
+Input_FQ1 = join("output", "{patient}-{sample}", "host.reads.filtered_1.fq")
+Input_FQ2 = join("output", "{patient}-{sample}", "host.reads.filtered_2.fq")
+Input_FQ3 = join("output", "{patient}-{sample}", "host.reads.filtered_3.fq")
+SRPRISM_PAIRED_SAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-paired.sam")
+SRPRISM_UNPAIRED_SAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-unpaired.sam")
+SRPRISM_PAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-paired.bam")
+SRPRISM_UNPAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-unpaired.bam")
+SRPRISM_SORTED_PAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-sorted_paired.bam")
+SRPRISM_SORTED_UNPAIRED_BAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-sorted_unpaired.bam")
+SRPRISM_BAM = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-merged.bam")
+SRPRISM_BAI = join("output", "SRPRISM", "{patient}-{sample}", "{genome}-merged.bai")
 
-samples = pd.read_csv("../identify-microbes-workflow/data/samples.tsv", dtype=str, sep="\t")
-samples = samples.loc[samples.infection == "LT2"]
-samples = samples.loc[samples.status == "infected"]
+
+samples = pd.read_csv("../data/samples.tsv", dtype=str, sep="\t")
+LT2_infected_samples = samples.loc[(samples.infection == "LT2") & (samples.status == "infected")]
+D23580_infected_samples = samples.loc[(samples.infection == "D23580") & (samples.status == "infected")]
+LT2_infected_samples = LT2_infected_samples.iloc[0:5]
 
 rule all:
     input:
-        expand(SRPRISM_LT2_BAI, patient="Pt0", sample="SRR6815816"),
-        expand(SRPRISM_LT2_UNPAIRED_BAM, patient="Pt0", sample="SRR6815816")
+        expand(SRPRISM_BAI, zip, patient=LT2_infected_samples["patient"], sample=LT2_infected_samples["sample"], genome=LT2_infected_samples["infection"]),
+        #expand(SRPRISM_BAI, zip, patient=D23580_infected_samples["patient"], sample=D23580_infected_samples["sample"], genome=D23580_infected_samples["infection"]),
 
 rule create_BAM_index:
     input:
-        SRPRISM_LT2_BAM
+        SRPRISM_BAM
     output:
-        SRPRISM_LT2_BAI
+        SRPRISM_BAI
     shell:
         "module load samtools && "
         "samtools index {input} {output}"
 
 rule merged_BAM_files:
     input:
-        SRPRISM_LT2_SORTED_PAIRED_BAM,
-        SRPRISM_LT2_SORTED_UNPAIRED_BAM
+        SRPRISM_SORTED_PAIRED_BAM,
+        SRPRISM_SORTED_UNPAIRED_BAM
     output:
-        SRPRISM_LT2_BAM
+        SRPRISM_BAM
     shell:
         "module load samtools && "
         "samtools merge {output} {input[0]} {input[1]}"
 
 rule convert_unpaired_SAM_to_sorted_BAM:
     input:
-        SRPRISM_LT2_UNPAIRED_SAM
+        SRPRISM_UNPAIRED_SAM
     output:
-        SRPRISM_LT2_UNPAIRED_BAM,
-        SRPRISM_LT2_SORTED_UNPAIRED_BAM
+        SRPRISM_UNPAIRED_BAM,
+        SRPRISM_SORTED_UNPAIRED_BAM
     shell:
         "module load samtools && "
         "samtools view -bS {input} > {output[0]} && "
@@ -64,45 +66,45 @@ rule convert_unpaired_SAM_to_sorted_BAM:
 
 rule convert_paired_SAM_to_sorted_BAM:
     input:
-        SRPRISM_LT2_PAIRED_SAM
+        SRPRISM_PAIRED_SAM
     output:
-        SRPRISM_LT2_PAIRED_BAM,
-        SRPRISM_LT2_SORTED_PAIRED_BAM
+        SRPRISM_PAIRED_BAM,
+        SRPRISM_SORTED_PAIRED_BAM
     shell:
         "module load samtools && "
         "samtools view -bS {input} > {output[0]} && "
         "samtools sort -o {output[1]} {output[0]}"
 
-rule map_SRPRISM_LT2_genome_unpaired:
+rule map_SRPRISM_genome_unpaired:
     params:
-        LT2_SRPRISM_DB_PREFIX
+        GENOME_DB_PREFIX
     input:
-        PathSeq_FQ3,
-        LT2_SRPRISM_DB_FILE
+        Input_FQ3,
+        GENOME_DB_FILE
     output:
-        SRPRISM_LT2_UNPAIRED_SAM
+        SRPRISM_UNPAIRED_SAM
     shell:
         "srprism search -I {params} -i {input[0]} -F fastq -p false -o {output} --sam-header true"
 
-rule map_SRPRISM_LT2_genome_paired:
+rule map_SRPRISM_genome_paired:
     params:
-        LT2_SRPRISM_DB_PREFIX
+        GENOME_DB_PREFIX
     input:
-        PathSeq_FQ1,
-        PathSeq_FQ2,
-        LT2_SRPRISM_DB_FILE
+        Input_FQ1,
+        Input_FQ2,
+        GENOME_DB_FILE
     output:
-        SRPRISM_LT2_PAIRED_SAM
+        SRPRISM_PAIRED_SAM
     shell:
         "srprism search -I {params} -i {input[0]},{input[1]} -F fastq -p true -o {output} --sam-header true"
 
 rule convert_BAM_to_paired_FASTQ:
     input:
-        PathSeq_BAM
+        Input_BAM
     output:
-        PathSeq_FQ1,
-        PathSeq_FQ2,
-        PathSeq_FQ3
+        Input_FQ1,
+        Input_FQ2,
+        Input_FQ3
     shell:
         "module load picard && "
         "java -jar $PICARDJARPATH/picard.jar SamToFastq I={input} "
@@ -110,21 +112,33 @@ rule convert_BAM_to_paired_FASTQ:
 
 rule make_SRPRISM_DB:
     params:
-        LT2_SRPRISM_DB_PREFIX,
-        LT2_SRPRISM_DB_DIR
+        GENOME_DB_PREFIX,
+        GENOME_DB_DIR
     input:
-        LT2_FA
+        GENOME_FA
     output:
-        LT2_SRPRISM_DB_FILE
+        GENOME_DB_FILE
     shell:
         #"mkdir {params[1]} && "
         "srprism mkindex -i {input} -o {params[0]}"
 
+rule download_D23580_genome:
+    wildcard_constraints:
+        genome="D23580"
+    params:
+        D23580_genome_URL
+    output:
+        GENOME_FA
+    shell:
+        "wget -O - {params} | gunzip -c > {output} "
+
 rule download_LT2_genome:
+    wildcard_constraints:
+        genome="LT2"
     params:
         LT2_genome_URL
     output:
-        LT2_FA
+        GENOME_FA
     shell:
         "wget -O - {params} | gunzip -c > {output} "
 
