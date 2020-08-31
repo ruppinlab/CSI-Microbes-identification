@@ -44,12 +44,25 @@ include: "../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
-#include: "../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
+include: "../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
 
 
 rule all:
     input:
-        expand(PathSeq_BAM_File, zip, sample=samples["sample"], patient=samples["patient"])
+        config["PathSeq"]["microbe_bwa_image"]
+        #expand(PathSeq_BAM_File, zip, sample=samples["sample"], patient=samples["patient"])
+
+rule download_combine_subspe_genomes:
+    input:
+        join("data", "microbe_subset_assembly_summary.txt")
+    output:
+        join("data", "microbev1.fa")
+    run:
+        df = pd.read_csv(input[0], sep="\t")
+        shell("touch {output}")
+        for index, row in df.iterrows():
+            url = row["ftp_path"]
+            shell("wget -O - {url} | gunzip -c >> {output}")
 
 rule run_fastp:
     group:
