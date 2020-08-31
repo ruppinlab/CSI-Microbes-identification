@@ -5,8 +5,7 @@ from snakemake.utils import min_version
 min_version("5.1.2")
 
 ##### load config and sample sheets #####
-configfile: "config/CAMMiQ-subspecies-comparison-config.yaml"
-# configfile: "config/PathSeq-config.yaml"
+configfile: "config/PathSeq-config.yaml"
 #validate(config, schema="schemas/config.schema.yaml")
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
@@ -42,8 +41,8 @@ PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"
 # include rules
 include: "../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../RNA-snakemake-rules/rules/genome.smk"
-include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+#include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
+#include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 include: "../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
 
 
@@ -61,7 +60,7 @@ rule download_combine_subspe_genomes:
         df = pd.read_csv(input[0], sep="\t")
         shell("touch {output}")
         for index, row in df.iterrows():
-            url = row["ftp_path"]
+            url = row["url"]
             shell("wget -O - {url} | gunzip -c >> {output}")
 
 rule run_fastp:
@@ -83,18 +82,6 @@ rule run_fastp:
         "--unpaired1 {output[2]} --unpaired2 {output[2]} --failed_out {output[3]} "
         "-h {output[4]}"
 
-# rules for downloading microbe genomes
-rule download_combine_subspe_genomes:
-    input:
-        join("data", "genome_map_subsp.tsv")
-    output:
-        join("data", "subspecies_genome.fa")
-    run:
-        df = pd.read_csv(input[0], sep="\t")
-        shell("touch {output}")
-        for index, row in df.iterrows():
-            url = row["url"]
-            shell("wget -O - {url} | gunzip -c >> {output}")
 
 
 # rule build_host_kmer_file:
