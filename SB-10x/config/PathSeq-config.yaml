@@ -12,6 +12,8 @@ PathSeq:
   microbe_fai: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.fai"
   microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
   microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
+  host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
+  host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
   taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
 
 params:
@@ -20,4 +22,4 @@ params:
 
 CellRanger:
   genome_dir: "$CELLRANGER_REF300/GRCh38"
-  chemistry: "SC3Pv2"
+  chemistry: "auto"
