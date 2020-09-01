@@ -11,42 +11,18 @@
     {
       "mem": "64g",
       "nthreads": 16,
-      "time": "1-00:00:00"
-    },
-    "create_star_index" :
-    {
-        "nthreads" : 16,
-        "mem": "64g"
-    },
-    "run_STARsolo_10x":
-    {
-        "time": "24:00:00",
-        "nthreads" : 48,
-        "mem": "64g"
-    },
-    "FASTQ":
-    {
-      "nthreads": 6,
-      "gres": 200,
-      "mem": "32g"
+      "time": "12:00:00"
     },
     "PathSeqPipelineSpark":
     {
       "time": "2-00:00:00",
-      "mem": "70g",
+      "mem": "96g",
       "nthreads": 10,
-      "gres": 300
+      "gres": 200
     },
     "add_CB_UB_tags_to_PathSeq_BAM":
     {
-      "mem": "48g",
+      "mem": "96g",
       "time": "4:00:00"
-    },
-    "cell":
-    {
-      "mem": "4g",
-      "nthreads": 1,
-      "time": "2:00:00",
-      "partition": "quick"
     }
 }

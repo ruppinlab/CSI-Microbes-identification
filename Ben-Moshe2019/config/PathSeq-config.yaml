@@ -3,19 +3,8 @@ patients: data/patients.tsv
 samples: data/samples.tsv
 units: data/units.tsv
 
-ref:
-  annotation: "raw/genome/gencode.v22.SL1344.annotation.gtf"
-  genome: "raw/genome/HG38-SL1344.fa"
-  barcode_whitelist: "/data/Robinson-SB/CellRanger-data/737K-august-2016.txt"
-
-STARsolo:
-  genome_index: "output/HG38-SL1344/star-index"
-  output_dir: "output/HG38-SL1344/STARsolo/{patient}-{sample}"
-
-params:
-  STARsolo: ""
-  PathSeq: "--filter-duplicates false --is-host-aligned true --min-score-identity .7 "
-  PathSeqScore: "--min-score-identity .7 "
+trimming:
+  skip: True
 
 PathSeq:
   bam_file: "{patient}-{sample}/outs/possorted_genome_bam.bam"
@@ -23,10 +12,14 @@ PathSeq:
   microbe_fai: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.fai"
   microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
   microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
-  taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
   host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
+  taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
+
+params:
+  PathSeq: "--min-score-identity .7 --is-host-aligned true --filter-duplicates false --skip-quality-filters true "
+  PathSeqScore: "--min-score-identity .7"
 
 CellRanger:
   genome_dir: "$CELLRANGER_REF300/GRCh38"
-  chemistry: "SC3Pv2"
+  chemistry: "auto"
