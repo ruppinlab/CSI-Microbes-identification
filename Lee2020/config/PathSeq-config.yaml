@@ -22,4 +22,4 @@ params:
 
 CellRanger:
   genome_dir: "$CELLRANGER_REF300/GRCh38"
-  chemistry: "SC3Pv2"
+  chemistry: "auto"
