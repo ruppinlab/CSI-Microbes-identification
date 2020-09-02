@@ -11,9 +11,18 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
 samples = samples.loc[samples["patient"] == "P0104"]
-# directories
 
-
+# files
+IN_BAM = join("BAM", "{patient}-{sample}_filter.bam")
+QNAME_SORTED_BAM = join("BAM", "{patient}-{sample}_qname_sorted.bam")
+FASTQ1_FILE = join("FASTQ", "unmapped", "{patient}-{sample}_1.fastq.gz")
+FASTQ2_FILE = join("FASTQ", "unmapped", "{patient}-{sample}_2.fastq.gz")
+TRIMMED_FASTQ1_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_1.fastq.gz")
+TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_2.fastq.gz")
+TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_3.fastq.gz")
+FAILED_READS_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_failed.fastq.gz")
+FASTP_JSON_REPORT = join("FASTQ", "trimmed", "{patient}-{sample}_report.json")
+FASTP_HTML_REPORT = join("FASTQ", "trimmed", "{patient}-{sample}_report.html")
 pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
 # include rules
@@ -23,29 +32,54 @@ include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
 rule all:
     input:
-        expand(pathseq_bam, zip, sample=samples["sample"], patient=samples["patient"])
+        expand(TRIMMED_FASTQ1_FILE, zip, sample=samples["sample"], patient=samples["patient"])
 
-
-rule build_host_kmer_file:
+rule sort_BAM:
+    group:
+        "clean_BAM"
     input:
-        config["human_ref"]["genome"]
+        IN_BAM
     output:
-        config["PathSeq"]["host_bfi"]
+        QNAME_SORTED_BAM
     shell:
-        "module load GATK/4.1.8.1 && "
-        "gatk PathSeqBuildKmers "
-        "--java-options '-Xmx80g' "
-        "--reference '{input}' "
-        "-O '{output}'"
+        "module load samtools && "
+        "samtools sort -n -o {output} {input}"
 
-  host_img: "output/PathSeq/host.fasta.img"
-  host_bfi
-
-rule build_host_BWA_image:
+rule convert_BAM_to_FASTQ:
+    group:
+        "clean_BAM"
     input:
-        config["human_ref"]["genome"]
+        QNAME_SORTED_BAM
     output:
-        config["PathSeq"]["host_img"]
+        FASTQ1_FILE,
+        FASTQ2_FILE
     shell:
-        "module load GATK/4.1.8.1 && "
-        "gatk BwaMemIndexImageCreator -I {input} -O {output}"
+        "module load bedtools && "
+        "bamToFastq -i {input} -fq {output[0]} -fq2 {output[1]}"
+
+rule run_fastp:
+    group:
+        "clean_BAM"
+    conda:
+        join(ENV_DIR, "fastp.yml")
+    input:
+        FASTQ1_FILE,
+        FASTQ2_FILE
+    output:
+        TRIMMED_FASTQ1_FILE,
+        TRIMMED_FASTQ2_FILE,
+        TRIMMED_UNPAIRED_FILE,
+        FAILED_READS_FILE,
+        FASTP_JSON_REPORT,
+        FASTP_HTML_REPORT
+    threads:
+        6
+    shell:
+        "fastp -w {threads} "
+        "--unqualified_percent_limit 40 " # filter reads where 40% of bases have phred quality < 15
+        "--cut_tail " # use defaults --cut_window_size 4 --cut_mean_quality 20
+        "--low_complexity_filter " # filter reads with less than 30% complexity (30% of the bases are different from the preceeding base)
+        "--length_required 25 "
+        "-i {input[0]} -I {input[1]} -o {output[0]} -O {output[1]} "
+        "--unpaired1 {output[2]} --unpaired2 {output[2]} --failed_out {output[3]} "
+        "-j {output[4]} -h {output[5]}"
