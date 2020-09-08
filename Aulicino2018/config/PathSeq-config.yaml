@@ -19,7 +19,7 @@ PathSeq:
   microbe_fai: "data/microbev1.fa.fai"
   microbe_dict: "data/microbev1.dict"
   microbe_bwa_image: "data/microbev1.fa.img"
-  taxonomy_db: "data/microbev1_release200_taxonomy.db"
+  taxonomy_db: "data/microbev1_release201_taxonomy.db"
   host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
 
