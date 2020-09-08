@@ -48,7 +48,7 @@ include: "../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
 
 rule all:
     input:
-        config["PathSeq"]["microbe_bwa_image"]
+        config["PathSeq"]["taxonomy_db"]
         #expand(PathSeq_BAM_File, zip, sample=samples["sample"], patient=samples["patient"])
 
 rule download_combine_subspe_genomes:
