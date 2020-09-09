@@ -16,7 +16,7 @@ samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patien
 # print(samples)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
 # validate(units, schema="schemas/units.schema.yaml")
-samples = samples
+samples = samples.loc[samples.plate == plate]
 # URLs
 #D23580_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/027/025/GCF_000027025.1_ASM2702v1/GCF_000027025.1_ASM2702v1_genomic.fna.gz"
 #LT2_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.fna.gz"
