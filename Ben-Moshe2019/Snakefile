@@ -46,11 +46,11 @@ PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 # Snakemake includes
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
-#include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
+include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
 
 rule all:
     input:
-        expand(CR_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"])
+        expand(PATHSEQ_TAG_BAI, zip, patient=samples["patient"], sample=samples["sample"])
 
 # download files from SRA
 # need to --include-technical to get the 10x UMI and CB reads
