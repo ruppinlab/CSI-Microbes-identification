@@ -14,6 +14,9 @@ samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.l
 samples = samples.loc[samples["patient"] == patient]
 samples = samples.loc[samples["celltype1"] == celltype]
 
+# directories
+ENV_DIR = join("..", "envs")
+
 # input files
 IN_BAM = join("BAM", "{patient}-{sample}_filter.bam")
 
