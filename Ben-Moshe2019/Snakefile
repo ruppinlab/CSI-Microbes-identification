@@ -20,7 +20,7 @@ lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels]
 samples = lanes[["sample", "patient"]].drop_duplicates()
 
 cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
-cells = cells.loc[cells.barcode.isin(["ATGCGATGTGCCTGGT-1", "GGCCGATGTCCGCTGA-1"])]
+# cells = cells.loc[cells.barcode.isin(["ATGCGATGTGCCTGGT-1", "GGCCGATGTCCGCTGA-1"])]
 # Directories
 FASTQ_DIR = "FASTQ"
 ENV_DIR = join("..", "envs")
@@ -50,7 +50,7 @@ include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
 
 rule all:
     input:
-        expand(PATHSEQ_CELL_BAM, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"])
+        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"])
 
 # download files from SRA
 # need to --include-technical to get the 10x UMI and CB reads
