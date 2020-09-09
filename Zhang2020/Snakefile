@@ -35,7 +35,7 @@ TRIMMED_UNPAIRED_BAM = join("BAM", "trimmed", "{patient}-{sample}_unpaired.bam")
 TRIMMED_MERGED_BAM = join("BAM", "trimmed", "{patient}-{sample}_merged.bam")
 
 # output files
-pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
 # include rules
 
