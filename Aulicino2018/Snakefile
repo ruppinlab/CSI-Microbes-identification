@@ -4,6 +4,7 @@ from snakemake.utils import min_version
 ##### set minimum snakemake version #####
 min_version("5.1.2")
 
+plate = config["plate"]
 ##### load config and sample sheets #####
 configfile: "config/PathSeq-config.yaml"
 #validate(config, schema="schemas/config.schema.yaml")
@@ -15,7 +16,7 @@ samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patien
 # print(samples)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
 # validate(units, schema="schemas/units.schema.yaml")
-
+samples = samples
 # URLs
 #D23580_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/027/025/GCF_000027025.1_ASM2702v1/GCF_000027025.1_ASM2702v1_genomic.fna.gz"
 #LT2_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.fna.gz"
@@ -41,15 +42,14 @@ PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam"
 # include rules
 include: "../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../RNA-snakemake-rules/rules/genome.smk"
-#include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-#include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-batch.smk"
 include: "../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
 
 
 rule all:
     input:
-        config["PathSeq"]["taxonomy_db"]
-        #expand(PathSeq_BAM_File, zip, sample=samples["sample"], patient=samples["patient"])
+        expand(PathSeq_BAM_File, zip, sample=samples["sample"], patient=samples["patient"])
 
 rule download_combine_subspe_genomes:
     input:
