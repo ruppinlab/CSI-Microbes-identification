@@ -4,7 +4,7 @@ samples: data/samples.tsv
 units: data/units.tsv
 
 PathSeq:
-  bam_file: "{patient}-{sample}/outs/possorted_genome_bam.bam"
+  bam_file: "output/BAM/{patient}-{sample}-unaligned.bam"
   microbe_fasta: "../Aulicino2018/data/microbev1.fa"
   microbe_fai: "../Aulicino2018/data/microbev1.fa.fai"
   microbe_dict: "../Aulicino2018/data/microbev1.dict"
@@ -14,7 +14,7 @@ PathSeq:
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned true --filter-duplicates false --skip-quality-filters true "
+  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates false --skip-quality-filters true "
   PathSeqScore: "--min-score-identity .7"
 
 CellRanger:
