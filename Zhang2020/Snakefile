@@ -39,7 +39,7 @@ pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
 # include rules
 
-include: "../pathogen-discovery-rules/rules/PathSeq-filter-host-batch.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-batch.smk"
 
 
 rule all:
