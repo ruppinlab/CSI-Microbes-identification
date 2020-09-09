@@ -4,4 +4,4 @@ sbatch \
 --cpus-per-task=2 \
 --mem=4g \
 --partition=norm,ccr \
-scripts/run-snakemake.sh
+scripts/run-many-snakejobs.sh

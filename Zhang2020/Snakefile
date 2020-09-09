@@ -4,16 +4,20 @@ from snakemake.utils import min_version
 ##### set minimum snakemake version #####
 min_version("5.1.2")
 
-#patient = config["patient"]
+patient = config["patient"]
+celltype = config["celltype"]
 ##### load config and sample sheets #####
 configfile: join("config", "PathSeq-config.yaml")
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
-samples = samples.loc[samples["patient"] == "P0104"]
+samples = samples.loc[samples["patient"] == patient]
+samples = samples.loc[samples["celltype1"] == celltype]
 
-# files
+# input files
 IN_BAM = join("BAM", "{patient}-{sample}_filter.bam")
+
+# intermediate files
 QNAME_SORTED_BAM = join("BAM", "{patient}-{sample}_qname_sorted.bam")
 FASTQ1_FILE = join("FASTQ", "unmapped", "{patient}-{sample}_1.fastq.gz")
 FASTQ2_FILE = join("FASTQ", "unmapped", "{patient}-{sample}_2.fastq.gz")
@@ -23,16 +27,21 @@ TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_3.fastq.gz"
 FAILED_READS_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_failed.fastq.gz")
 FASTP_JSON_REPORT = join("FASTQ", "trimmed", "{patient}-{sample}_report.json")
 FASTP_HTML_REPORT = join("FASTQ", "trimmed", "{patient}-{sample}_report.html")
+TRIMMED_PAIRED_BAM = join("BAM", "trimmed", "{patient}-{sample}_paired.bam")
+TRIMMED_UNPAIRED_BAM = join("BAM", "trimmed", "{patient}-{sample}_unpaired.bam")
+TRIMMED_MERGED_BAM = join("BAM", "trimmed", "{patient}-{sample}_merged.bam")
+
+# output files
 pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
 # include rules
 
-include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-filter-host-batch.smk"
 
 
 rule all:
     input:
-        expand(TRIMMED_FASTQ1_FILE, zip, sample=samples["sample"], patient=samples["patient"])
+        expand(TRIMMED_MERGED_BAM, zip, sample=samples["sample"], patient=samples["patient"])
 
 rule sort_BAM:
     group:
@@ -83,3 +92,45 @@ rule run_fastp:
         "-i {input[0]} -I {input[1]} -o {output[0]} -O {output[1]} "
         "--unpaired1 {output[2]} --unpaired2 {output[2]} --failed_out {output[3]} "
         "-j {output[4]} -h {output[5]}"
+
+rule convert_paired_fastq_to_bam:
+    group:
+        "clean_BAM"
+    input:
+        TRIMMED_FASTQ1_FILE,
+        TRIMMED_FASTQ2_FILE,
+    output:
+        TRIMMED_PAIRED_BAM
+    shell:
+        "module load picard && "
+        "java -jar $PICARDJARPATH/picard.jar FastqToSam "
+        "F1={input[0]} F2={input[1]} O={output} "
+        "SM={wildcards.patient}.{wildcards.sample} "
+        "RG={wildcards.patient}.{wildcards.sample}"
+
+rule convert_unpaired_fastq_to_bam:
+    group:
+        "clean_BAM"
+    input:
+        TRIMMED_UNPAIRED_FILE,
+    output:
+        TRIMMED_UNPAIRED_BAM
+    shell:
+        "module load picard && "
+        "java -jar $PICARDJARPATH/picard.jar FastqToSam "
+        "F1={input[0]} O={output} "
+        "SM={wildcards.patient}.{wildcards.sample} "
+        "RG={wildcards.patient}.{wildcards.sample}"
+
+rule merge_paired_unpaired_bams:
+    group:
+        "clean_BAM"
+    input:
+        TRIMMED_PAIRED_BAM,
+        TRIMMED_UNPAIRED_BAM
+    output:
+        TRIMMED_MERGED_BAM
+    shell:
+        "module load picard && "
+        "java -jar $PICARDJARPATH/picard.jar MergeSamFiles "
+        "I={input[0]} I={input[1]} O={output[0]}"
