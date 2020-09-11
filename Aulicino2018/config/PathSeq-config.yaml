@@ -11,12 +11,12 @@ human_ref:
   annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
 
 PathSeq:
-  bam_file: "output/star/{patient}-{sample}/_STARpass2/host.reads.filtered.bam"
-  microbe_fasta: "data/microbev1.fa"
-  microbe_fai: "data/microbev1.fa.fai"
-  microbe_dict: "data/microbev1.dict"
-  microbe_bwa_image: "data/microbev1.fa.img"
-  taxonomy_db: "data/microbev1_release201_taxonomy.db"
+  bam_file: "output/star/{patient}-{sample}/Aligned.combined.bam"
+  microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
+  microbe_fai: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.fai"
+  microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
+  microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
+  taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
   host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
 
@@ -24,5 +24,5 @@ STAR:
   FASTQ_dir: "FASTQ/trimmed"
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates false --skip-quality-filters true "
+  PathSeq: "--min-score-identity .7 --is-host-aligned true --filter-duplicates false --skip-quality-filters true "
   STAR: ""
