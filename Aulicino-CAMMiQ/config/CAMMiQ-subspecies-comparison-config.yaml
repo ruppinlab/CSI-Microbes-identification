@@ -18,7 +18,7 @@ trimming:
 
 
 PathSeq:
-  bam_file: "output/star/{patient}-{sample}/Aligned.out.bam"
+  bam_file: "output/star/{patient}-{sample}/Aligned.combined.bam"
   microbe_fasta: "data/subspecies_genome.fa"
   microbe_fai: "data/subspecies_genome.fa.fai"
   microbe_dict: "data/subspecies_genome.dict"

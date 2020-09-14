@@ -11,6 +11,7 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
 samples = samples.loc[samples["patient"].isin(["BC03", "BC04", "BC06", "BC07", "BC08"])]
+samples = samples.loc[samples["sample"] == "SRR5023537"]
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
 
@@ -39,7 +40,7 @@ include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 
 rule all:
     input:
-        expand(pathseq_bam, zip, sample=samples["sample"], patient=samples["patient"])
+        expand(TRIMMED_FASTQ1_FILE, zip, sample=samples["sample"], patient=samples["patient"])
 
 
 rule combine_human_spikein_fasta:
@@ -90,10 +91,12 @@ rule download_FASTQ_from_SRA:
         "FASTQ"
     params:
         FASTQ_DIR
+    conda:
+        "../envs/sra.yml"
     output:
         temp(SRA_FASTQ1_FILE),
         temp(SRA_FASTQ2_FILE)
     shell:
-        "module load sratoolkit && "
-        "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
+        #"module load sratoolkit && "
+        "fasterq-dump -O {params} "#"-t /lscratch/$SLURM_JOBID "
         "--split-files {wildcards.sample}"

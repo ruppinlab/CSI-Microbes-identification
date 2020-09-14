@@ -13,11 +13,13 @@ human_ref:
 
 params:
   PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates false --skip-quality-filters true "
-  STAR: "--outFilterMatchNmin .4 --outFilterScoreMinOverLread .4 "
+  STAR: "--outFilterMatchNmin .33 --outFilterScoreMinOverLread .33 "
 
 trimming:
   skip: False
 
+STAR:
+  FASTQ_dir: "FASTQ/trimmed"
 
 PathSeq:
   bam_file: "output/star/{patient}-{sample}/host.reads.filtered.bam"
