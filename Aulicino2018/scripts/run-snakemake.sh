@@ -10,5 +10,4 @@ snakemake \
 --jobs 10 \
 --latency-wait 60 \
 --keep-going \
---config plate=$1 \
---local-cores 16 all
+--local-cores 4 all
