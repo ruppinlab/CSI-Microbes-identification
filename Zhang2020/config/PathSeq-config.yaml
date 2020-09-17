@@ -4,7 +4,7 @@ samples: data/samples.tsv
 
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned false --filter-duplicates false --skip-quality-filters true "
+  PathSeq: ""
   STAR: ""
 
 PathSeq:

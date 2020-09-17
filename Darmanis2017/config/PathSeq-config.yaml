@@ -12,10 +12,7 @@ ref:
 
 params:
   PathSeq:
-    filter: '--java-options "-Xmx60g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" --spark-master local[1]'
-    BWA: '--java-options "-Xms80g -Xmx110g -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2 -Djava.io.tmpdir=/lscratch/$SLURM_JOBID" --spark-master local[8]'
-    pipeline: '--spark-master local[16] --java-options "-Xmx115g -Djava.io.tmpdir=/lscratch/$SLURM_JOBID -XX:ParallelGCThreads=13"'
-  Kraken: "--threads 16 "
+
 trimming:
   skip: True
 

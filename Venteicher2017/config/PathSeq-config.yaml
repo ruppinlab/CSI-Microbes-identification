@@ -8,11 +8,7 @@ ref:
 
 
 params:
-  PathSeq:
-    filter: '--java-options "-Xmx48g -Xms48G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" --spark-master local[4]'
-    BWA: '--java-options "-Xmx48g -Xms48G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" --spark-master local[4]'
-    pipeline: '--java-options "-Xmx48g -Xms48G -Djava.io.tmpdir=/lscratch/$SLURM_JOBID/tmp -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" --spark-master local[4]'
-  Kraken: '--threads 16 '
+  PathSeq: ""
 trimming:
   skip: True
 

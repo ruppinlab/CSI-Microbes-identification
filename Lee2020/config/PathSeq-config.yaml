@@ -17,8 +17,8 @@ PathSeq:
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned true --filter-duplicates false --skip-quality-filters true "
-  PathSeqScore: "--min-score-identity .7"
+  PathSeq: ""
+  PathSeqScore: ""
 
 CellRanger:
   genome_dir: "$CELLRANGER_REF300/GRCh38"

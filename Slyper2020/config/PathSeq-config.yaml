@@ -21,7 +21,7 @@ PathSeq:
   host_bfi: "data/GRCh38.p13.hss"
 
 params:
-  PathSeq: "--min-score-identity .7 --is-host-aligned true --filter-duplicates false --skip-quality-filters true "
+  PathSeq: ""
 
 CellRanger:
   genome_dir: "$CELLRANGER_REF300/GRCh38"
