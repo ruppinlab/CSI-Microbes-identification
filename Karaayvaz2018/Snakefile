@@ -39,7 +39,7 @@ samples = samples.loc[samples.patient.isin(["PT039", "PT058", "PT084", "PT089", 
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-filter-host-batch.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-batch.smk"
 
 PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 PATHSEQ_FILE = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
