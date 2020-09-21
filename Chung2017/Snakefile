@@ -90,12 +90,10 @@ rule download_FASTQ_from_SRA:
         "FASTQ"
     params:
         FASTQ_DIR
-    conda:
-        "../envs/sra.yml"
     output:
         temp(SRA_FASTQ1_FILE),
         temp(SRA_FASTQ2_FILE)
     shell:
-        #"module load sratoolkit && "
-        "fasterq-dump -O {params} "#"-t /lscratch/$SLURM_JOBID "
+        "module load sratoolkit && "
+        "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
         "--split-files {wildcards.sample}"
