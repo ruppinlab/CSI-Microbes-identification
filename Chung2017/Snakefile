@@ -11,7 +11,6 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
 samples = samples.loc[samples["patient"].isin(["BC03", "BC04", "BC06", "BC07", "BC08"])]
-samples = samples.loc[samples["sample"] == "SRR5023537"]
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
 
@@ -35,12 +34,12 @@ pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-batch.smk"
 
 
 rule all:
     input:
-        expand(TRIMMED_FASTQ1_FILE, zip, sample=samples["sample"], patient=samples["patient"])
+        expand(config["PathSeq"]["bam_file"], zip, sample=samples["sample"], patient=samples["patient"])
 
 
 rule combine_human_spikein_fasta:
