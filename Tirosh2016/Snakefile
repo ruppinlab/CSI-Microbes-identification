@@ -17,8 +17,13 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 # print(samples)
 samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
-
-samples = samples.loc[samples["patient"] == "Melanoma_53"]
+plates_of_interest = [
+    "cy53_1_CD45_neg", "Cy71_CD45", "CY80_neg", "Cy80_II_CD45", "cy80_CD45_neg",
+    "Cy81_Bulk_CD45", "Cy81_FNA_CD45", "cy82_CD45_pos_1", "cy82_CD45_pos_2",
+    "cy82_CD45_pos_3"
+]
+samples = samples.loc[samples.plate.isin(["cy53_1_CD45_neg"])]
+# samples = samples.loc[samples["patient"] == "Melanoma_53"]
 
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
@@ -36,7 +41,7 @@ PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-batch.smk"
 
 
 rule all:
