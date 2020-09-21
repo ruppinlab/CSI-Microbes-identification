@@ -32,22 +32,21 @@ TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_3.fastq.gz"
 samples = samples.loc[~samples["sample"].isin(["SRR7667879"])]
 # SRR7667876 has issues with the pairing of the reads - may be corrupted
 samples = samples.loc[~samples["sample"].isin(["SRR7667876"])]
-samples = samples.loc[samples.patient == "PT039"]
-samples = samples.loc[samples.plate == "B1-P1"]
+samples = samples.loc[samples.patient.isin(["PT039", "PT058", "PT084", "PT089", "PT126"])]
+#samples = samples.loc[samples.plate == "B1-P1"]
 
 # include rules
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-filter-host-batch.smk"
 
 PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 PATHSEQ_FILE = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
 
 rule all:
     input:
-        expand(PATHSEQ_FILE, zip, sample=samples["sample"], patient=samples["patient"]),
-        # expand(PATHSEQ_FILE, zip, sample=samples["sample"], patient=samples["patient"])
+        expand(config["PathSeq"]["bam_file"], zip, sample=samples["sample"], patient=samples["patient"]),
 
 
 rule compress_FASTQ_File:
