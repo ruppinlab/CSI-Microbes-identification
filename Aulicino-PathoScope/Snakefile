@@ -112,8 +112,8 @@ rule compress_FASTQ_File:
         "gzip -vc {input[1]} > {output[1]}"
 
 rule download_FASTQ_from_SRA:
-    conda:
-        "../envs/sra.yml"
+    #conda:
+    #    "../envs/sra.yml"
     group:
         "FASTQ"
     params:
@@ -122,6 +122,6 @@ rule download_FASTQ_from_SRA:
         temp(SRA_FASTQ1_FILE),
         temp(SRA_FASTQ2_FILE)
     shell:
-        #"module load sratoolkit && "
+        "module load sratoolkit && "
         "fasterq-dump -O {params} "#"-t /lscratch/$SLURM_JOBID "
         "--split-files {wildcards.sample}"
