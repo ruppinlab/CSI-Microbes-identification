@@ -1,0 +1,23 @@
+---
+patients: data/patients.tsv
+samples: data/samples.tsv
+
+ref:
+  annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff_ERCC92.annotation.gtf"
+  genome: "raw/genome/GRCh38.p13.genome_ERCC92.fasta"
+
+human_ref:
+  genome: "raw/genome/GRCh38.p13.genome.fa"
+  annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
+
+PathSeq:
+  microbe_fasta: "../Aulicino2018/data/microbev1.fa"
+  microbe_fai: "../Aulicino2018/data/microbev1.fa.fai"
+
+
+STAR:
+  FASTQ_dir: "FASTQ/trimmed"
+
+params:
+  PathSeq: ""
+  STAR: ""
