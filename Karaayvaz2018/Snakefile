@@ -18,13 +18,14 @@ samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.l
 # validate(units, schema="schemas/units.schema.yaml")
 
 # directories
-FASTQ_DIR = join("FASTQ", "raw")
+FASTQ_DIR = "FASTQ"
+RAW_FASTQ_DIR = join(FASTQ_DIR, "raw")
 
 # Intermediate Files
-SRA_FASTQ1_FILE = join(FASTQ_DIR,  "{sample}_1.fastq")
-SRA_FASTQ2_FILE = join(FASTQ_DIR, "{sample}_2.fastq")
-FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
-FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
+SRA_FASTQ1_FILE = join(RAW_FASTQ_DIR,  "{sample}_1.fastq")
+SRA_FASTQ2_FILE = join(RAW_FASTQ_DIR, "{sample}_2.fastq")
+FASTQ1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
+FASTQ2_FILE = join(RAW_FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
 TRIMMED_FASTQ1_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_1.fastq.gz")
 TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_2.fastq.gz")
 TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_3.fastq.gz")
@@ -66,7 +67,7 @@ rule download_FASTQ_from_SRA:
     group:
         "FASTQ"
     params:
-        FASTQ_DIR
+        RAW_FASTQ_DIR
     output:
         temp(SRA_FASTQ1_FILE),
         temp(SRA_FASTQ2_FILE)

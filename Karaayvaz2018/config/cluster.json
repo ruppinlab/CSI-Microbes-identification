@@ -16,7 +16,7 @@
   {
     "time": "24:00:00",
     "nthreads" : 48,
-    "mem": "64g"
+    "mem": "96g"
   },
   "FASTQ":
   {
