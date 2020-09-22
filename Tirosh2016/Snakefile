@@ -24,7 +24,7 @@ plates_of_interest = [
 ]
 samples = samples.loc[samples.plate.isin(["cy53_1_CD45_neg"])]
 # samples = samples.loc[samples["patient"] == "Melanoma_53"]
-
+print(samples)
 # directories
 FASTQ_DIR = join("FASTQ", "raw")
 
@@ -46,7 +46,7 @@ include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-batch.smk"
 
 rule all:
     input:
-        expand(TRIMMED_UNPAIRED_FILE, zip, patient=samples["patient"], sample=samples["sample"])
+        expand(config["PathSeq"]["bam_file"], zip, patient=samples["patient"], sample=samples["sample"])
 
 
 rule download_FASTQ_files:
