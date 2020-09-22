@@ -1,0 +1,7 @@
+name: pathoscope-env
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+dependencies:
+  - pathoscope
