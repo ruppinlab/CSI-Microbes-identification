@@ -70,7 +70,7 @@ rule download_FQ1_files:
     output:
         fq1=FASTQ1_FILE
     shell:
-        #"module load google-cloud-sdk && "
+        "module load google-cloud-sdk && "
         "gsutil cp {params.fq}_R1.fastq.gz {output.fq1}"
 
 rule download_FQ2_files:
@@ -101,7 +101,7 @@ rule download_FQ1_files_comb:
         L4=temp(FQ1_L4_FILE),
         fq1=FASTQ1_FILE
     shell:
-        #"module load google-cloud-sdk && "
+        "module load google-cloud-sdk && "
         "gsutil cp {params.fq}_L001_R1_001.fastq.gz {output.L1}  && "
         "gsutil cp {params.fq}_L002_R1_001.fastq.gz {output.L2} && "
         "gsutil cp {params.fq}_L003_R1_001.fastq.gz {output.L3} && "
