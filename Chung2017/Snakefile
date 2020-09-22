@@ -43,6 +43,28 @@ rule all:
     input:
         expand(pathseq_bam, zip, sample=samples["sample"], patient=samples["patient"])
 
+rule STARsolo_smartseq2:
+    group:
+        "STAR_2pass"
+    conda:
+        STAR_ENV_FILE
+    input:
+        index = STAR_GENOME_INDEX,
+        gtf = config["ref"]["annotation"],
+    params:
+    threads:
+        16
+    shell:
+        "STAR "
+        "--runThreadN {threads} "
+        "--soloType SmartSeq "
+        "--readFilesManifest data/BC08-manifest.tsv "
+        "--soloUMIdedup Exact --soloStrand Unstranded "
+        "--genomeDir '{input.index}' "
+        "--outSAMattributes NH HI AS nM NM ch "
+        "--outSAMunmapped Within "
+        "--quantMode GeneCounts "
+        "--readFilesCommand zcat "
 
 rule combine_human_spikein_fasta:
     input:
