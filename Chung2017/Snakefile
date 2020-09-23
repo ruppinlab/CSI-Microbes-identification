@@ -9,21 +9,23 @@ min_version("5.1.2")
 configfile: join("config", "PathSeq-config.yaml")
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
-samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
-samples = samples.loc[samples["patient"].isin(["BC03", "BC04", "BC06", "BC07", "BC08"])]
-samples = samples.loc[samples["patient"].isin(["BC08"])]
+cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False)
+# samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
+#samples = samples.loc[samples["patient"].isin(["BC03", "BC04", "BC06", "BC07", "BC08"])]
+#samples = samples.loc[sample["patient"].isin(["BC08"])]
+#cells = cells.loc[cells["patient"].isin(["BC08"])]
 # directories
 FASTQ_DIR = "FASTQ"
 RAW_FASTQ_DIR = join(FASTQ_DIR, "raw")
 
 # Intermediate Files
-SRA_FASTQ1_FILE = join(RAW_FASTQ_DIR,  "{sample}_1.fastq")
-SRA_FASTQ2_FILE = join(RAW_FASTQ_DIR, "{sample}_2.fastq")
-FASTQ1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
-FASTQ2_FILE = join(RAW_FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
-TRIMMED_FASTQ1_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_1.fastq.gz")
-TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_2.fastq.gz")
-TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_3.fastq.gz")
+SRA_FASTQ1_FILE = join(RAW_FASTQ_DIR,  "{run}_1.fastq")
+SRA_FASTQ2_FILE = join(RAW_FASTQ_DIR, "{run}_2.fastq")
+FASTQ1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_1.fastq.gz")
+FASTQ2_FILE = join(RAW_FASTQ_DIR, "{patient}-{sample}-{cell}_2.fastq.gz")
+TRIMMED_FASTQ1_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_1.fastq.gz")
+TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_2.fastq.gz")
+TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_3.fastq.gz")
 
 # file containing sequences for RNA Spike In sequences
 RNA_SPIKE_SEQUENCES = join("data", "spike_in_sequences.fa")
@@ -35,36 +37,14 @@ pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 # include rules
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
-include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
+#include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
+#include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 
 
 rule all:
     input:
-        expand(pathseq_bam, zip, sample=samples["sample"], patient=samples["patient"])
-
-rule STARsolo_smartseq2:
-    group:
-        "STAR_2pass"
-    conda:
-        STAR_ENV_FILE
-    input:
-        index = STAR_GENOME_INDEX,
-        gtf = config["ref"]["annotation"],
-    params:
-    threads:
-        16
-    shell:
-        "STAR "
-        "--runThreadN {threads} "
-        "--soloType SmartSeq "
-        "--readFilesManifest data/BC08-manifest.tsv "
-        "--soloUMIdedup Exact --soloStrand Unstranded "
-        "--genomeDir '{input.index}' "
-        "--outSAMattributes NH HI AS nM NM ch "
-        "--outSAMunmapped Within "
-        "--quantMode GeneCounts "
-        "--readFilesCommand zcat "
+        expand(STAR_BAM_FILE, zip, patient="BC08", plate="BC08")
 
 rule combine_human_spikein_fasta:
     input:
@@ -96,12 +76,18 @@ rule combine_human_spikein_GTF:
 #     shell:
 #         "wget {params.url} -O temp.zip && unzip temp.zip -d {params.dir}"
 
+def get_SRA_fq_files(wildcards):
+    run = cells.loc[(wildcards.patient, wildcards.sample, wildcards.cell), "Run"]
+    return {
+        "FQ1": SRA_FASTQ1_FILE.format(run=run),
+        "FQ2": SRA_FASTQ2_FILE.format(run=run),
+    }
+
 rule compress_FASTQ_File:
     group:
         "FASTQ"
     input:
-        SRA_FASTQ1_FILE,
-        SRA_FASTQ2_FILE
+        unpack(get_SRA_fq_files)
     output:
         FASTQ1_FILE,
         FASTQ2_FILE
@@ -120,4 +106,4 @@ rule download_FASTQ_from_SRA:
     shell:
         "module load sratoolkit && "
         "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
-        "--split-files {wildcards.sample}"
+        "--split-files {wildcards.run}"
