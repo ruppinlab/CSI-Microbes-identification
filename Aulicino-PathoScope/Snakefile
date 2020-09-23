@@ -52,7 +52,8 @@ include: "../RNA-snakemake-rules/rules/trim.smk"
 
 rule all:
     input:
-        expand("output/PathoScope/{patient}-{sample}.sam", zip, sample=samples["sample"], patient=samples["patient"]),
+        "new_nt.fasta",
+        expand(TRIMMED_FASTQ2_FILE, zip, sample="SRR167721", patient="Tutorial"),
         # "new_subspecies_genome.fa",
         # join("data", "ERCC92.fa"),
         # "raw/genome/GRCh38.p13.genome.fa"
@@ -73,13 +74,22 @@ rule PathoMap:
         "-targetRefFiles {input[2]} -filterRefFiles {input[3]},{input[4]} "
         "-outDir output/PathoScope"
 
+rule PathoLib:
+    input:
+        "new_nt.fasta"
+    output:
+        directory("viral")
+    shell:
+        "pathoscope LIB -genomeFile {input} -taxonIds 10239 --subTax "
+        "-outPrefix viral"
+
 rule add_tax_id_fasta:
     conda:
         "../envs/pathoscope.yaml"
     input:
-        "../Aulicino-CAMMiQ/data/subspecies_genome.fa"
+        "data/nt.fasta"
     output:
-        "new_subspecies_genome.fa"
+        "new_nt.fasta"
     shell:
         "bash src/pasteTaxID.bash --multifasta {input}"
 
@@ -95,6 +105,13 @@ rule add_tax_id_fasta:
 #             url = row["url"]
 #             shell("wget -O - {url} | gunzip -c >> {output}")
 
+rule download_NT_DB:
+    params:
+        "ftp://ftp.ncbi.nih.gov/blast/db/FASTA/nt.gz"
+    output:
+        "data/nt.fasta"
+    shell:
+        "wget -O - {params} | gunzip -c > {output}"
 
 # rules for downloading sequencing data
 rule compress_FASTQ_File:
