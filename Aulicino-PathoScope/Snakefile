@@ -69,7 +69,6 @@ rule PathoMap:
     output:
         "output/PathoScope/{patient}-{sample}.sam"
     shell:
-        "mkdir output/PathoScope && "
         "pathoscope MAP -1 {input[0]} -2 {input[1]} "
         "-targetRefFiles {input[2]} -filterRefFiles {input[3]},{input[4]} "
         "-outDir output/PathoScope"
