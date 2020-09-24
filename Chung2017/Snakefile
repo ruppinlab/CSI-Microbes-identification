@@ -13,7 +13,7 @@ cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", 
 # samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
 #samples = samples.loc[samples["patient"].isin(["BC03", "BC04", "BC06", "BC07", "BC08"])]
 #samples = samples.loc[sample["patient"].isin(["BC08"])]
-#cells = cells.loc[cells["patient"].isin(["BC08"])]
+cells = cells.loc[cells["patient"].isin(["BC08"])]
 # directories
 FASTQ_DIR = "FASTQ"
 RAW_FASTQ_DIR = join(FASTQ_DIR, "raw")
@@ -44,7 +44,7 @@ include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
 
 rule all:
     input:
-        expand(STAR_BAM_FILE, zip, patient="BC08", plate="BC08")
+        expand(IND_STAR_BAM_FILE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["cell"])
 
 rule combine_human_spikein_fasta:
     input:
