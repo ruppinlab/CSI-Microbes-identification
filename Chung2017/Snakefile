@@ -11,9 +11,9 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False)
 # samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
-#samples = samples.loc[samples["patient"].isin(["BC03", "BC04", "BC06", "BC07", "BC08"])]
+samples = samples.loc[samples["patient"].isin(["BC03", "BC04", "BC06", "BC07", "BC08"])]
 #samples = samples.loc[sample["patient"].isin(["BC08"])]
-cells = cells.loc[cells["patient"].isin(["BC08"])]
+#cells = cells.loc[cells["patient"].isin(["BC08"])]
 # cells = cells.sample()
 # directories
 FASTQ_DIR = "FASTQ"
@@ -39,14 +39,16 @@ pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
-#include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-#include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+
 BENCHMARK_FILE = join("benchmarks", "{patient}-{run}.{rule}.benchmark.txt")
+
+plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
 rule all:
     input:
-        expand(STAR_PE_BAM_FILE,  zip, patient="BC08", sample="BC08", plate="BC08"),
-        expand(STAR_SE_BAM_FILE,  zip, patient="BC08", sample="BC08", plate="BC08")
+        expand(PATHSEQ_BAM_FILE,  zip, patient=plates["patient"], sample=plates["sample"], plate=plates["plate"]),
 
 def get_benchmark_files(wildcards):
     c = cells.loc[cells.plate == wildcards.plate]
