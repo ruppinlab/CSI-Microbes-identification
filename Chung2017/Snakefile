@@ -40,11 +40,26 @@ include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
 #include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 #include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
-
+BENCHMARK_FILE = join("benchmarks", "{patient}-{run}.{rule}.benchmark.txt")
 
 rule all:
     input:
         expand(IND_STAR_BAM_FILE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["cell"])
+
+def get_benchmark_files(wildcards):
+    c = cells.loc[cells.plate == wildcards.plate]
+    return expand(BENCHMARK_FILE, patient=wildcards.plate, rule=wildcards.rule, run=c["Run"])
+
+
+rule combine_benchmark_statistics:
+    wildcard_constraints:
+        plate="BC08"
+    input:
+        get_benchmark_files
+    output:
+        "output/{plate}_{rule}.benchmark.tsv"
+    script:
+        "src/combine_benchmark_statistics.py"
 
 rule combine_human_spikein_fasta:
     input:
