@@ -4,6 +4,13 @@ from snakemake.utils import min_version
 ##### set minimum snakemake version #####
 min_version("5.1.2")
 
+#wildcard_constraints:
+#    patient="(?!_STAR).+",
+#    sample="(?!_STAR).+",
+#    plate="(?!_STAR).+",
+    #sample="/^((?!_STAR).)*$/",
+    #plate="/^((?!_STAR).)*$/",
+
 #patient = config["patient"]
 ##### load config and sample sheets #####
 configfile: join("config", "PathSeq-config.yaml")
@@ -11,7 +18,13 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False)
 # samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
-samples = samples.loc[samples["patient"].isin(["BC03", "BC04", "BC06", "BC07", "BC08"])]
+cells = cells.loc[cells["patient"].isin(["BC03", "BC04", "BC06", "BC07", "BC08"])]
+
+wildcard_constraints:
+    patient="|".join(cells["patient"].unique()),
+    sample="|".join(cells["sample"].unique()),
+    plate="|".join(cells["plate"].unique()),
+
 #samples = samples.loc[sample["patient"].isin(["BC08"])]
 #cells = cells.loc[cells["patient"].isin(["BC08"])]
 # cells = cells.sample()
@@ -33,7 +46,7 @@ RNA_SPIKE_SEQUENCES = join("data", "spike_in_sequences.fa")
 # handcrafted TODO generate from fasta file
 RNA_SPIKE_GTF = join("data", "spike_in_sequences.gtf")
 
-pathseq_bam = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+PATHSEQ_BAM_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}", "pathseq.bam")
 
 # include rules
 include: "../RNA-snakemake-rules/rules/genome.smk"
