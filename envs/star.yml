@@ -1,5 +1,0 @@
-name: star
-channels:
-  - bioconda
-dependencies:
-  - star>=2.7.5a
