@@ -13,6 +13,12 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False)
 
+wildcard_constraints:
+    patient="|".join(cells["patient"].unique()),
+    sample="|".join(cells["sample"].unique()),
+    plate="|".join(cells["plate"].unique()),
+    cell="|".join(cells["cell"].unique()),
+
 # directories
 FASTQ_DIR = join("FASTQ")
 RAW_FASTQ_DIR = join(FASTQ_DIR, "raw")
@@ -29,7 +35,7 @@ FAILED_READS_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_failed.f
 HTML_REPORT = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_report.html")
 # Output Files
 #PathSeq_Output_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
-#PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
 
 # include rules
@@ -37,16 +43,15 @@ include: "../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
-#include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-#include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 #include: "../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
 
 plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
 rule all:
     input:
-        expand(STAR_PE_BAM_FILE,  zip, patient=plates["patient"], sample=plates["sample"], plate=plates["plate"]),
-        expand(STAR_SE_BAM_FILE,  zip, patient=plates["patient"], sample=plates["sample"], plate=plates["plate"])
+        expand(PathSeq_BAM_File,  zip, patient=plates["patient"], sample=plates["sample"], plate=plates["plate"]),
 
 # rule download_combine_subspe_genomes:
 #     input:

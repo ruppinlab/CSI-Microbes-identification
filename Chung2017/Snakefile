@@ -24,6 +24,7 @@ wildcard_constraints:
     patient="|".join(cells["patient"].unique()),
     sample="|".join(cells["sample"].unique()),
     plate="|".join(cells["plate"].unique()),
+    cell="|".join(cells["cell"].unique()),
 
 #samples = samples.loc[sample["patient"].isin(["BC08"])]
 #cells = cells.loc[cells["patient"].isin(["BC08"])]

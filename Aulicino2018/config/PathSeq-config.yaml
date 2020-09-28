@@ -12,7 +12,7 @@ human_ref:
   annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
 
 PathSeq:
-  bam_file: "output/star/{patient}-{sample}/host.reads.filtered.bam"
+  bam_file: "output/star/{patient}-{sample}-{plate}/unaligned.bam"
   microbe_fasta: "data/microbev1.fa"
   microbe_fai: "data/microbev1.fa.fai"
   microbe_dict: "data/microbev1.dict"

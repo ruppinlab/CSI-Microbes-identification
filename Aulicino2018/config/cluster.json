@@ -15,7 +15,7 @@
   "STAR_2pass":
   {
     "time": "8:00:00",
-    "nthreads" : 16,
+    "nthreads" : 48,
     "mem": "64g"
   },
   "FASTQ":
