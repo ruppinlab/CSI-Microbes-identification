@@ -80,8 +80,6 @@ rule compress_FASTQ_File:
         "gzip -vc {input[FQ2]} > {output[1]}"
 
 rule download_FASTQ_from_SRA:
-    conda:
-        "../envs/sra.yml"
     group:
         "FASTQ"
     params:
