@@ -14,6 +14,7 @@ cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", 
 #samples = samples.loc[samples["patient"].isin(["BC03", "BC04", "BC06", "BC07", "BC08"])]
 #samples = samples.loc[sample["patient"].isin(["BC08"])]
 cells = cells.loc[cells["patient"].isin(["BC08"])]
+# cells = cells.sample()
 # directories
 FASTQ_DIR = "FASTQ"
 RAW_FASTQ_DIR = join(FASTQ_DIR, "raw")
@@ -44,7 +45,8 @@ BENCHMARK_FILE = join("benchmarks", "{patient}-{run}.{rule}.benchmark.txt")
 
 rule all:
     input:
-        expand(IND_STAR_BAM_FILE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["cell"])
+        expand(STAR_PE_BAM_FILE,  zip, patient="BC08", sample="BC08", plate="BC08"),
+        expand(STAR_SE_BAM_FILE,  zip, patient="BC08", sample="BC08", plate="BC08")
 
 def get_benchmark_files(wildcards):
     c = cells.loc[cells.plate == wildcards.plate]
