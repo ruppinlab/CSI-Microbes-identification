@@ -35,8 +35,8 @@ FAILED_READS_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_failed.f
 HTML_REPORT = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_report.html")
 # Output Files
 #PathSeq_Output_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
-PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
-
+PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}-{plate}", "pathseq.bam")
+PathSeq_Cell_Score_File = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell}", "pathseq.txt")
 
 # include rules
 include: "../RNA-snakemake-rules/rules/ERCC92.smk"
@@ -45,13 +45,12 @@ include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
-#include: "../pathogen-discovery-rules/rules/make-PathSeq-files.smk"
 
 plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
 rule all:
     input:
-        expand(PathSeq_BAM_File,  zip, patient=plates["patient"], sample=plates["sample"], plate=plates["plate"]),
+        expand(PathSeq_Cell_Score_File,  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
 
 # rule download_combine_subspe_genomes:
 #     input:
