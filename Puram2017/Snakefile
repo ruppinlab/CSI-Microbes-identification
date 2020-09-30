@@ -36,21 +36,21 @@ wildcard_constraints:
 RAW_FASTQ_DIR = join("FASTQ", "raw")
 
 # Temporary Files
-FQ1_L1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}_L001_R1.fastq.gz")
-FQ1_L2_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}_L002_R1.fastq.gz")
-FQ1_L3_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}_L003_R1.fastq.gz")
-FQ1_L4_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}_L004_R1.fastq.gz")
-FQ2_L1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}_L001_R2.fastq.gz")
-FQ2_L2_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}_L002_R2.fastq.gz")
-FQ2_L3_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}_L003_R2.fastq.gz")
-FQ2_L4_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}_L004_R2.fastq.gz")
+FQ1_L1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_L001_R1.fastq.gz")
+FQ1_L2_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_L002_R1.fastq.gz")
+FQ1_L3_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_L003_R1.fastq.gz")
+FQ1_L4_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_L004_R1.fastq.gz")
+FQ2_L1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_L001_R2.fastq.gz")
+FQ2_L2_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_L002_R2.fastq.gz")
+FQ2_L3_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_L003_R2.fastq.gz")
+FQ2_L4_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_L004_R2.fastq.gz")
 
 # Intermediate Files
-FASTQ1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
-FASTQ2_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}_2.fastq.gz")
-TRIMMED_FASTQ1_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_1.fastq.gz")
-TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_2.fastq.gz")
-TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_3.fastq.gz")
+FASTQ1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_1.fastq.gz")
+FASTQ2_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_2.fastq.gz")
+TRIMMED_FASTQ1_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_1.fastq.gz")
+TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_2.fastq.gz")
+TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_3.fastq.gz")
 
 # Output Files
 PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell}", "pathseq.txt")
