@@ -1,6 +1,7 @@
 ---
 patients: data/patients.tsv
 samples: data/samples.tsv
+units: data/units.tsv
 
 ref:
   genome: "raw/genome/GRCh38.p13.genome.fa"
@@ -9,6 +10,7 @@ ref:
 params:
   PathSeq: ""
   STAR: ""
+  PathSeqScore: ""
 
 STAR:
   FASTQ_dir: "FASTQ/trimmed"

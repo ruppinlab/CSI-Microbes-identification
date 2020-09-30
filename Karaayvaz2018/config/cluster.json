@@ -26,9 +26,9 @@
   },
   "PathSeqPipelineSpark":
   {
-    "mem":"80g",
+    "mem":"150g",
     "nthreads": 12,
     "gres":"200",
-    "time": "7-00:00:00"
+    "time": "1-00:00:00"
   }
 }

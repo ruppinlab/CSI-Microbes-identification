@@ -1,7 +1,7 @@
-patient	breast_cancer_subtype	tissue
-PT089	TNBC	breast
-PT039	TNBC	breast
-PT058	TNBC	breast
-PT081	TNBC	breast
-PT084	TNBC	breast
-PT126	TNBC	breast
+patient
+PT039
+PT089
+PT058
+PT081
+PT084
+PT126
