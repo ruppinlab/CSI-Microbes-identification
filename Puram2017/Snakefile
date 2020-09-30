@@ -10,7 +10,7 @@ localrules: download_FQ1_files_comb, download_FQ2_files_comb, download_FQ1_files
 ##### load config and sample sheets #####
 configfile: "config/PathSeq-config.yaml"
 
-patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
+# patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
 cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False).sort_index()
 # samples = samples.groupby("batch").sample(1, random_state=0)
@@ -53,24 +53,25 @@ TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_2.fastq.gz")
 TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_3.fastq.gz")
 
 # Output Files
-PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell}", "pathseq.txt")
 
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
+include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 
 
 rule all:
     input:
-        expand(config["PathSeq"]["bam_file"], zip, patient=samples["patient"], sample=samples["sample"])
+        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"])
 
 
 rule download_FQ1_files:
     group:
         "FASTQ"
     params:
-        fq = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq_prefix"],
+        fq = lambda wildcards: cells.loc[(wildcards.patient, wildcards.sample, wildcards.cell), "fastq_prefix"],
     output:
         fq1=FASTQ1_FILE
     shell:
@@ -81,7 +82,7 @@ rule download_FQ2_files:
     group:
         "FASTQ"
     params:
-        fq = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq_prefix"],
+        fq = lambda wildcards: cells.loc[(wildcards.patient, wildcards.sample, wildcards.cell), "fastq_prefix"],
     output:
         fq2=FASTQ2_FILE
     shell:
@@ -97,7 +98,7 @@ rule download_FQ1_files_comb:
     wildcard_constraints:
         sample=".+_comb"
     params:
-        fq = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq_prefix"],
+        fq = lambda wildcards: cells.loc[(wildcards.patient, wildcards.sample, wildcards.cell), "fastq_prefix"],
     output:
         L1=temp(FQ1_L1_FILE),
         L2=temp(FQ1_L2_FILE),
@@ -118,7 +119,7 @@ rule download_FQ2_files_comb:
     wildcard_constraints:
         sample=".+_comb"
     params:
-        fq = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq_prefix"],
+        fq = lambda wildcards: cells.loc[(wildcards.patient, wildcards.sample, wildcards.cell), "fastq_prefix"],
     output:
         L1=temp(FQ2_L1_FILE),
         L2=temp(FQ2_L2_FILE),
