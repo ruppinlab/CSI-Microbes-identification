@@ -7,15 +7,8 @@ min_version("5.1.2")
 ruleorder: download_FQ1_files_comb > download_FQ1_files
 ruleorder: download_FQ2_files_comb > download_FQ2_files
 localrules: download_FQ1_files_comb, download_FQ2_files_comb, download_FQ1_files, download_FQ2_files, run_fastp
-# batch = config["batch"]
 ##### load config and sample sheets #####
 configfile: "config/PathSeq-config.yaml"
-#validate(config, schema="schemas/config.schema.yaml")
-wildcard_constraints:
-    patient="MEEI[0-9]{1,2}"
-
-def get_valid_cells(x):
-
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
@@ -32,6 +25,13 @@ plates_of_interest = [
     "HNSCC5_P7", "HNSCC5_P9", "HNSCC6_P15_LN", "HNSCC6_P16"
 ]
 cells = cells.loc[cells.plate.isin(plates_of_interest)]
+
+wildcard_constraints:
+    patient="|".join(cells["patient"].unique()),
+    sample="|".join(cells["sample"].unique()),
+    plate="|".join(cells["plate"].unique()),
+    cell="|".join(cells["cell"].unique()),
+
 # Directories
 RAW_FASTQ_DIR = join("FASTQ", "raw")
 
