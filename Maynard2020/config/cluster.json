@@ -7,10 +7,28 @@
     "gres": 10,
     "partition": "norm,ccr"
   },
+  "create_star_index" :
+  {
+    "nthreads" : 16,
+    "mem": "64g"
+  },
+  "STAR_2pass":
+  {
+    "time": "8:00:00",
+    "nthreads" : 48,
+    "mem": "64g"
+  },
   "FASTQ":
   {
     "nthreads": 6,
     "gres": 200,
     "mem": "32g"
-  }
+  },
+  "PathSeqPipelineSpark":
+  {
+    "mem":"180g",
+    "nthreads": 10,
+    "gres":"200",
+    "time": "2-00:00:00"
+  },
 }

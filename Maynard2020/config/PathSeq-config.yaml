@@ -5,8 +5,8 @@ units: data/units.tsv
 
 
 ref:
-  annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff_RNAspike.gtf"
-  genome: "raw/genome/GRCh38.p13_RNAspike.fasta"
+  annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff_ERCC92.annotation.gtf"
+  genome: "raw/genome/GRCh38.p13.genome_ERCC92.fasta"
 
 human_ref:
   genome: "raw/genome/GRCh38.p13.genome.fa"
@@ -15,6 +15,7 @@ human_ref:
 params:
   PathSeq: ""
   STAR: ""
+  PathSeqScore: ""
 
 STAR:
   FASTQ_dir: "FASTQ/trimmed"
