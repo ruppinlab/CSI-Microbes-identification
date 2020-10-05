@@ -48,7 +48,7 @@ include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 
 rule all:
     input:
-        expand(PATHSEQ_CELL_SCORE_FILE, zip, sample=cells["sample"], patient=cells["patient"], plate=cells["plate"], cell=cells["plate"]),
+        expand(PATHSEQ_CELL_SCORE_FILE, zip, sample=cells["sample"], patient=cells["patient"], plate=cells["plate"], cell=cells["cell"]),
 
 
 rule download_FASTQ_files:
@@ -58,8 +58,8 @@ rule download_FASTQ_files:
         fq1 = lambda wildcards: cells.loc[(wildcards.patient, wildcards.sample, wildcards.cell), "fastq1"],
         fq2 = lambda wildcards: cells.loc[(wildcards.patient, wildcards.sample, wildcards.cell), "fastq2"],
     output:
-        fq1=temp(FASTQ1_FILE),
-        fq2=temp(FASTQ2_FILE)
+        fq1=FASTQ1_FILE,
+        fq2=FASTQ2_FILE
     shell:
         "module load google-cloud-sdk && "
         "gsutil cp {params.fq1} {output.fq1}  && "
