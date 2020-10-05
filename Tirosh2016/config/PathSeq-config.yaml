@@ -6,6 +6,11 @@ ref:
   genome: "raw/genome/GRCh38.p13.genome.fa"
   annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
 
+params:
+  PathSeq: ""
+  STAR: ""
+  PathSeqScore: ""
+
 STAR:
   FASTQ_dir: "FASTQ/trimmed"
 
@@ -18,7 +23,3 @@ PathSeq:
   taxonomy_db: "../Aulicino2018/data/microbev1_release201_taxonomy.db"
   host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
-
-params:
-  PathSeq: ""
-  STAR: ""

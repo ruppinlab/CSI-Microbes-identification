@@ -11,38 +11,47 @@ min_version("5.1.2")
 configfile: join("config", "PathSeq-config.yaml")
 #validate(config, schema="schemas/config.schema.yaml")
 
-patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
+# patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
 
-samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
+cells = pd.read_csv(config["cells"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False)
 # print(samples)
-samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
+# cells.index = cells.index.set_levels([i.astype(str) for i in cells.index.levels])  # enforce str in index
+
+wildcard_constraints:
+    patient="|".join(cells["patient"].unique()),
+    sample="|".join(cells["sample"].unique()),
+    plate="|".join(cells["plate"].unique()),
+    cell="|".join(cells["cell"].unique()),
+
 plates_of_interest = [
     "cy53_1_CD45_neg", "Cy71_CD45", "CY80_neg", "Cy80_II_CD45", "cy80_CD45_neg",
     "Cy81_Bulk_CD45", "Cy81_FNA_CD45", "cy82_CD45_pos_1", "cy82_CD45_pos_2",
-    "cy82_CD45_pos_3"
+    "cy82_CD45_pos_3", "cy94_cd45neg_cd90pos"
 ]
-samples = samples.loc[samples.plate.isin(["cy53_1_CD45_neg"])]
+samples = samples.loc[samples.plate.isin(plates_of_interest)]
 # samples = samples.loc[samples["patient"] == "Melanoma_53"]
-print(samples)
+# print(samples)
 # directories
-FASTQ_DIR = join("FASTQ", "raw")
+FASTQ_DIR = join("FASTQ")
+RAW_FASTQ_DIR = join("FASTQ", "raw")
 
 # Intermediate Files
-FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
-FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
-TRIMMED_FASTQ1_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_1.fastq.gz")
-TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_2.fastq.gz")
-TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_3.fastq.gz")
+FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}-{cell}_1.fastq.gz")
+FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}-{cell}_2.fastq.gz")
+TRIMMED_FASTQ1_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_1.fastq.gz")
+TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_2.fastq.gz")
+TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_3.fastq.gz")
 
-# Output Files
-PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+PATHSEQ_BAM_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}", "pathseq.bam")
+PATHSEQ_CELL_SCORE_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell}", "pathseq.txt")
 
+# include rules
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
+include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-batch.smk"
-
+include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 
 rule all:
     input:
