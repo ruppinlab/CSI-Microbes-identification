@@ -9,50 +9,54 @@ configfile: join("config", "PathSeq-config.yaml")
 #validate(config, schema="schemas/config.schema.yaml")
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
-# validate(samples, schema="schemas/samples.schema.yaml")
-
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
-# print(samples)
-samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
-# validate(units, schema="schemas/units.schema.yaml")
-patients = [
-    "Mel102", "Mel103", "Mel105", "Mel106", "Mel110", "Mel112", "Mel121_1",
-    "Mel128", "Mel129pa", "Mel98", "Mel194"
+cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False)
+#samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
+patients_of_interest = [
+    "Mel102", "Mel103", "Mel105", "Mel106", "Mel110", "Mel112", "Mel129", "Mel194"
 ]
-samples = samples.loc[samples.patient.isin(patients)]
-#samples = samples.loc[samples.plate == plate]
-# samples = samples.sample(frac=1, random_state=0)
-# nrows = min(30, samples.shape[0])
-# samples = samples.iloc[0:nrows]
+cells = cells.loc[cells.patient.isin(patients_of_interest)]
+print(cells.shape)
+wildcard_constraints:
+    patient="|".join(cells["patient"].unique()),
+    sample="|".join(cells["sample"].unique()),
+    plate="|".join(cells["plate"].unique()),
+    cell="|".join(cells["cell"].unique()),
+
 # directories
-FASTQ_DIR = join("FASTQ", "raw")
+FASTQ_DIR = "FASTQ"
+RAW_FASTQ_DIR = join(FASTQ_DIR, "raw")
 
 # Intermediate Files
-FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
-FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
-TRIMMED_FASTQ1_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_1.fastq.gz")
-TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_2.fastq.gz")
-TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}_3.fastq.gz")
+FASTQ1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_1.fastq.gz")
+FASTQ2_FILE = join(RAW_FASTQ_DIR, "{patient}-{sample}-{cell}_2.fastq.gz")
+TRIMMED_FASTQ1_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_1.fastq.gz")
+TRIMMED_FASTQ2_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_2.fastq.gz")
+TRIMMED_UNPAIRED_FILE = join("FASTQ", "trimmed", "{patient}-{sample}-{cell}_3.fastq.gz")
+
+PATHSEQ_BAM_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}", "pathseq.bam")
+PATHSEQ_CELL_SCORE_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell}", "pathseq.txt")
+
 
 # include rules
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
+include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-batch.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 
 
 rule all:
     input:
-        expand(TRIMMED_FASTQ1_FILE, zip, sample=samples["sample"], patient=samples["patient"]),
-
+        expand(PATHSEQ_CELL_SCORE_FILE, zip, sample=cells["sample"], patient=cells["patient"], plate=cells["plate"], cell=cells["plate"]),
 
 
 rule download_FASTQ_files:
     group:
         "FASTQ"
     params:
-        fq1 = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq1"],
-        fq2 = lambda wildcards: samples.loc[(wildcards.patient, wildcards.sample), "fastq2"],
+        fq1 = lambda wildcards: cells.loc[(wildcards.patient, wildcards.sample, wildcards.cell), "fastq1"],
+        fq2 = lambda wildcards: cells.loc[(wildcards.patient, wildcards.sample, wildcards.cell), "fastq2"],
     output:
         fq1=temp(FASTQ1_FILE),
         fq2=temp(FASTQ2_FILE)
