@@ -40,14 +40,13 @@ pathseq_output = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
 
 # Snakemake includes
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
 include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
 
 rule all:
     input:
-        expand(CR_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
+        # expand(CR_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
         # expand(pathseq_output, zip, patient=samples["patient"], sample=samples["sample"]),
-        # expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
+        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
 
 
 # download files from SRA
