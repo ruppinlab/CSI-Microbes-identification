@@ -8,12 +8,12 @@ params:
   PathSeqScore: ""
 
 PathSeq:
-  bam_file: "{patient}-{sample}/outs/possorted_genome_bam.bam"
-  microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
-  microbe_fai: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.fai"
-  microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
-  microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
-  taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
+  bam_file: "output/BAM/{patient}-{sample}-unaligned.bam"
+  microbe_fasta: "../Aulicino2018/data/microbev1.fa"
+  microbe_fai: "../Aulicino2018/data/microbev1.fa.fai"
+  microbe_dict: "../Aulicino2018/data/microbev1.dict"
+  microbe_bwa_image: "../Aulicino2018/data/microbev1.fa.img"
+  taxonomy_db: "../Aulicino2018/data/microbev1_release201_taxonomy.db"
   host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
 
