@@ -59,7 +59,7 @@ include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 
 rule all:
     input:
-        expand(STAR_PE_READCOUNT_FILE, zip, sample=cells["sample"], patient=cells["patient"], cell=cells["cell"])
+        expand(STAR_PE_READCOUNT_FILE, zip, sample=cells["sample"], patient=cells["patient"], plate=cells["plate"])
 
 
 def get_SRA_fq_files(wildcards):
@@ -75,8 +75,8 @@ rule compress_FASTQ_File:
     input:
         unpack(get_SRA_fq_files)
     output:
-        temp(FASTQ1_FILE),
-        temp(FASTQ2_FILE)
+        FASTQ1_FILE,
+        FASTQ2_FILE
     benchmark:
         "benchmark/{patient}-{sample}-{cell}-compress_FASTQ_File.txt"
     shell:
