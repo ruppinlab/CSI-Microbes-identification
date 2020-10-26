@@ -10,15 +10,18 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
 cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False)
 #samples.index = samples.index.set_levels([i.astype(str) for i in samples.index.levels])  # enforce str in index
+# plates_of_interest = [
+#     "B003648", "B003659", "1001000327", "1001000339", "1001000340", "B003518",
+#     "B003522", "B003527", "B003529", "B003588", "B003523", "B003528", "B003577",
+#     "B001543", "B001545", "B001548", "1001000411", "B000860", "B000861",
+#     "B000862", "B000863", "B000579", "B003654", "B003125", "B003126", "B003129",
+#     "B003132", "B003187", "B003191", "B003647", "B003112", "B003116", "B003119",
+#     "B003120", "B003771", "B003894", "B003920", "B003995", "B000420", "B000422",
+#     "B002077", "B002078", "B002079", "B003775", "B003776", "B003777", "B001470",
+#     "B001474", "B001475", "B001464"
+# ]
 plates_of_interest = [
-    "B003648", "B003659", "1001000327", "1001000339", "1001000340", "B003518",
-    "B003522", "B003527", "B003529", "B003588", "B003523", "B003528", "B003577",
-    "B001543", "B001545", "B001548", "1001000411", "B000860", "B000861",
-    "B000862", "B000863", "B000579", "B003654", "B003125", "B003126", "B003129",
-    "B003132", "B003187", "B003191", "B003647", "B003112", "B003116", "B003119",
-    "B003120", "B003771", "B003894", "B003920", "B003995", "B000420", "B000422",
-    "B002077", "B002078", "B002079", "B003775", "B003776", "B003777", "B001470",
-    "B001474", "B001475", "B001464"
+    "B003648"
 ]
 cells = cells.loc[cells.plate.isin(plates_of_interest)]
 
@@ -56,7 +59,7 @@ include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 
 rule all:
     input:
-        expand(PATHSEQ_CELL_SCORE_FILE, zip, sample=cells["sample"], patient=cells["patient"], cell=cells["cell"])
+        expand(STAR_PE_READCOUNT_FILE, zip, sample=cells["sample"], patient=cells["patient"], cell=cells["cell"])
 
 
 def get_SRA_fq_files(wildcards):
