@@ -41,16 +41,19 @@ CB_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_R1_001.fastq.gz")
 cDNA_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_R2_001.fastq.gz")
 CR_BAM_FILE = join(CR_SAMPLE_ODIR, "outs", "possorted_genome_bam.bam")
 
+TRIMMED_FQ1 = join("FASTQ", "unmapped", "trimmed", "{patient}-{sample}_1.fastq.gz")
+SRPRISM_INPUT_FQ1 = TRIMMED_FQ1
 PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
 # Snakemake includes
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+include: "../RNA-snakemake-rules/rules/SRPRISM-unpaired.smk"
+#include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
 
 rule all:
     input:
-        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"])
+        expand(SRPRISM_UNPAIRED_PRIMARY_BAM, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["sample"])
 
 # download files from SRA
 # need to --include-technical to get the 10x UMI and CB reads
