@@ -24,5 +24,10 @@
     {
       "mem": "96g",
       "time": "4:00:00"
+    },
+    "add_CR_tags_SRPRISM":
+    {
+      "mem": "96g",
+      "time": "4:00:00"
     }
 }
