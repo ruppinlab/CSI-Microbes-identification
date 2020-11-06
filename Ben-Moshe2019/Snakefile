@@ -45,8 +45,8 @@ TRIMMED_FQ1 = join("FASTQ", "unmapped", "trimmed", "{patient}-{sample}_1.fastq.g
 SRPRISM_INPUT_FQ1 = TRIMMED_FQ1
 PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
-SRPRISM_CB_UMI_TABLE = join("output", "SRPRISM", "{patient}-{sample}-{cell}", "cb_umi_table.tsv")
-SRPRISM_CB_UMI_COUNT = join("output", "SRPRISM", "{patient}-{sample}-{cell}", "cb_umi_count.tsv")
+SRPRISM_CB_UMI_TABLE = join("output", "SRPRISM", "{patient}-{sample}-{cell}", "{genome}_cb_umi_table.tsv")
+SRPRISM_CB_UMI_COUNT = join("output", "SRPRISM", "{patient}-{sample}-{cell}", "{genome}_cb_umi_count.tsv")
 
 # Snakemake includes
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
@@ -56,7 +56,7 @@ include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
 
 rule all:
     input:
-        expand(SRPRISM_CB_UMI_TABLE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["sample"])
+        expand(SRPRISM_CB_UMI_TABLE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["sample"], genome="SL1344")
 
 
 rule add_CR_tags_SRPRISM:
