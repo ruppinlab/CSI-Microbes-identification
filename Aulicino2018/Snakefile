@@ -48,9 +48,49 @@ include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 
 plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
+cells = cells.iloc[0:5]
+
 rule all:
     input:
-        expand(PathSeq_Cell_Score_File,  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
+        expand(join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_2.fq.gz"),  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
+
+rule convert_BAM_to_FASTQ:
+    input:
+        join("output", "star", "{patient}-{sample}-{plate}-{cell}", "qname.sorted.unaligned.paired.bam")
+    output:
+        join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_1.fq.gz"),
+        join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_2.fq.gz")
+    shell:
+        "modules load bedtools && "
+        "bamToFastq -i {input} -fq {output[0]} -fq2 {output[1]}"
+
+rule split_STAR_unaligned_BAM_by_RG:
+    input:
+        pathseq_bam = join("output", "star", "{patient}-{sample}-{plate}", "unaligned.bam"),
+    output:
+        temp(join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned.bam")),
+    shell:
+        "module load samtools && "
+        "samtools view -h -b -r {wildcards.cell} {input} > {output}"
+
+rule sort_reads_by_queryname:
+    input:
+        join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned.paired.bam"),
+    output:
+        temp(join("output", "star", "{patient}-{sample}-{plate}-{cell}", "qname.sorted.unaligned.paired.bam")),
+    shell:
+        "module load picard && "
+        "java -jar $PICARDJARPATH/picard.jar SortSam "
+        "I={input} O={output} SORT_ORDER=queryname"
+
+rule extract_paired_reads:
+    input:
+        join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned.bam"),
+    output:
+        temp(join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned.paired.bam")),
+    shell:
+        "module load samtools && "
+        "samtools view -h -b -f 1 {input} > {output}"
 
 # rule download_combine_subspe_genomes:
 #     input:
