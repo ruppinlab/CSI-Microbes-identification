@@ -40,6 +40,7 @@ PathSeq_Cell_Score_File = join("output", "PathSeq", "{patient}-{sample}-{plate}-
 
 SRPRISM_INPUT_FQ1 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_1.fq")
 SRPRISM_INPUT_FQ2 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_2.fq")
+SRPRISM_COUNT_FILE = join("output", "star", "{patient}-{sample}", "{genome}.tsv")
 
 # include rules
 include: "../RNA-snakemake-rules/rules/ERCC92.smk"
@@ -58,7 +59,22 @@ LT2_cells = cells.loc[cells.infection.isin(["LT2", "D23580"])]
 
 rule all:
     input:
-        expand(SRPRISM_PROPER_PAIRED_PRIMARY_BAM,  zip, patient=LT2_cells["patient"], sample=LT2_cells["sample"], plate=LT2_cells["plate"], cell=LT2_cells["cell"], genome=LT2_cells["infection"]),
+        expand(SRPRISM_COUNT_FILE,  zip, patient="Pt0", sample="S0", genome=["LT2", "D23580"]),
+
+def get_bam_files(wildcards):
+    c = cells.loc[cells.infected == wildcards.genome]
+    expand(SRPRISM_PROPER_PAIRED_PRIMARY_BAM,  zip, patient=c["patient"], sample=c["sample"], plate=c["plate"], cell=c["cell"], genome=c["infection"])
+
+
+rule count_nreads:
+    conda:
+        "../envs/pysam-env.yaml"
+    input:
+        get_bam_files
+    output:
+        SRPRISM_COUNT_FILE
+    script:
+        "src/count_nreads.py"
 
 rule convert_BAM_to_FASTQ:
     group:

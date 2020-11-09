@@ -1,0 +1,8 @@
+name: pysam-env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - pysam
+  - pandas
