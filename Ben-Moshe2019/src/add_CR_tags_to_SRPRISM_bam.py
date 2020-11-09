@@ -1,5 +1,6 @@
 import pysam
 from collections import defaultdict
+import pandas as pd
 
 # load and index the CellRanger BAM file
 cr_bam = pysam.AlignmentFile(snakemake.input[0], mode="rb")
@@ -9,8 +10,9 @@ cr_idx.build()
 # load and iterate through the PathSeq BAM file
 pathseq_bam = pysam.AlignmentFile(snakemake.input[1], mode="rb")
 
-CB_output = []
-UMI_output = []
+output = {} 
+output["CB"] = []
+output["UMI"] = []
 # d = defaultdict(lambda: defaultdict(list))
 # seg is an AlignedSegment object
 for seg in pathseq_bam.fetch(until_eof=True):
@@ -19,10 +21,12 @@ for seg in pathseq_bam.fetch(until_eof=True):
     # we assume that all records belonging to the same query name will have the same CB/UB tag
     # not all records will have the CB tag and the UB tag
     if cr_list[0].has_tag("CB") and cr_list[0].has_tag("UB"):
-        CB_output.append(cr_list[0].get_tag(tag="CB"))
-        UMI_output.append(cr_list[0].get_tag(tag="UB"))
+        output["CB"].append(cr_list[0].get_tag(tag="CB"))
+        output["UMI"].append(cr_list[0].get_tag(tag="UB"))
 
-df = pd.DataFrame(data=[CB_output, UMI_output], columns=["CB", "UMI"])
+print(output)
+df = pd.DataFrame(data=output)
+print(df)
 df.to_csv(snakemake.output[0], sep="\t")
 print(df.groupby("CB")["UMI"].nunique())
 out_df = df.groupby("CB")["UMI"].nunique()

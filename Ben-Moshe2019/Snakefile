@@ -53,10 +53,10 @@ include: "../RNA-snakemake-rules/rules/cellranger.smk"
 include: "../RNA-snakemake-rules/rules/SRPRISM-unpaired.smk"
 #include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
-
+cells = cells.drop_duplicates(subset=["patient", "sample"])
 rule all:
     input:
-        expand(SRPRISM_CB_UMI_TABLE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["sample"], genome="SL1344")
+        expand(SRPRISM_CB_UMI_TABLE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["sample"], genome=["SL1344", "SL1344"])
 
 
 rule add_CR_tags_SRPRISM:
@@ -68,6 +68,9 @@ rule add_CR_tags_SRPRISM:
     output:
         SRPRISM_CB_UMI_TABLE,
         SRPRISM_CB_UMI_COUNT
+    script:
+        "src/add_CR_tags_to_SRPRISM_bam.py"
+
 
 # download files from SRA
 # need to --include-technical to get the 10x UMI and CB reads

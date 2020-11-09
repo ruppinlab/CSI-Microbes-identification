@@ -1,7 +1,7 @@
 cd Ben-Moshe2019
 sbatch \
---time=7-00:00:00 \
---cpus-per-task=64 \
---mem=96g \
+--time=1-00:00:00 \
+--cpus-per-task=4 \
+--mem=10g \
 --partition=norm,ccr \
 scripts/run-snakemake.sh
