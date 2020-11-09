@@ -61,7 +61,7 @@ rule convert_BAM_to_FASTQ:
         join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_1.fq.gz"),
         join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_2.fq.gz")
     shell:
-        "modules load bedtools && "
+        "module load bedtools && "
         "bamToFastq -i {input} -fq {output[0]} -fq2 {output[1]}"
 
 rule split_STAR_unaligned_BAM_by_RG:
@@ -73,7 +73,7 @@ rule split_STAR_unaligned_BAM_by_RG:
         "module load samtools && "
         "samtools view -h -b -r {wildcards.cell} {input} > {output}"
 
-rule sort_reads_by_queryname:
+rule sort_unaligned_reads_by_queryname:
     input:
         join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned.paired.bam"),
     output:
@@ -83,7 +83,7 @@ rule sort_reads_by_queryname:
         "java -jar $PICARDJARPATH/picard.jar SortSam "
         "I={input} O={output} SORT_ORDER=queryname"
 
-rule extract_paired_reads:
+rule extract_unaligned_paired_reads:
     input:
         join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned.bam"),
     output:
