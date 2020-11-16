@@ -8,6 +8,17 @@ GENOME_DB_FILE = join(SRPRISM_DB_DIR, "RNA-spikein-sequences.idx")
 RNA_SPIKE_SEQUENCES = join("data", "E-MTAB-5466_spike_in_sequences.fa")
 
 
+rule map_reads_against_RNA_SPIKE_SEQUENCES:
+    input:
+        join("output", "PathSeq", "BC06-BC06-BC06", "paired_1.fastq"),
+        join("output", "PathSeq", "BC06-BC06-BC06", "paired_2.fastq"),
+        GENOME_DB_FILE
+    output:
+        join("output", "SRPRISM", "BC06-BC06-BC06", "paired.sam")
+    shell:
+        "srprism search -I {params} -i {input[0]},{input[1]} -F fastq -p true -o {output} --sam-header true"
+
+
 rule convert_paired_bam_to_fastq:
     input:
         join("..", "output", "PathSeq", "BC06-BC06-BC06", "pathseq.bam")
