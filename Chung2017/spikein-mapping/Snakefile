@@ -1,0 +1,17 @@
+from os.path import join
+
+
+# file containing sequences for RNA Spike In sequences
+RNA_SPIKE_SEQUENCES = join("data", "spike_in_sequences.fa")
+
+
+rule download_RNA_spikes:
+    params:
+        url="https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-5466/E-MTAB-5466.additional.1.zip",
+        dir="data"
+    output:
+        RNA_SPIKE_SEQUENCES,
+        temp("temp.zip"),
+        temp(join("data", "E-MTAB-5466_spike_in_concentration.txt"))
+    shell:
+        "wget {params.url} -O temp.zip && unzip temp.zip -d {params.dir}"
