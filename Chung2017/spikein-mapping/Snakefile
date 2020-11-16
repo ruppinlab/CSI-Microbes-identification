@@ -8,6 +8,37 @@ GENOME_DB_FILE = join(SRPRISM_DB_DIR, "RNA-spikein-sequences.idx")
 RNA_SPIKE_SEQUENCES = join("data", "E-MTAB-5466_spike_in_sequences.fa")
 
 
+rule convert_paired_bam_to_fastq:
+    input:
+        join("..", "output", "PathSeq", "BC06-BC06-BC06", "pathseq.bam")
+    output:
+        join("output", "PathSeq", "BC06-BC06-BC06", "paired_1.fastq"),
+        join("output", "PathSeq", "BC06-BC06-BC06", "paired_2.fastq"),
+        join("output", "PathSeq", "BC06-BC06-BC06", "unpaired.fastq"),
+    shell:
+        "module load picard && "
+        "java -jar $PICARDJARPATH/picard.jar SamToFastq "
+        "I={input} F={output[0]} F2={output[1]} FU={output[2]}"
+
+# rule extract_paired_read_BAM:
+#     input:
+#         join("output", "PathSeq", "BC06-BC06-BC06", "pathseq.sorted.bam")
+#     output:
+#         join("output", "PathSeq", "BC06-BC06-BC06", "pathseq.paired.bam")
+#     shell:
+#         "module load samtools && "
+#         "samtools view -h -b -f 0x1 {input} > {output}"
+#
+# rule sort_PathSeq_BAM_by_queryname:
+#     input:
+#         join("..", "output", "PathSeq", "BC06-BC06-BC06", "pathseq.bam")
+#     output:
+#         join("output", "PathSeq", "BC06-BC06-BC06", "pathseq.sorted.bam")
+#     shell:
+#         "module load picard && "
+#         "java -jar $PICARDJARPATH/picard.jar SortSam "
+#         "I={input} O={output} SORT_ORDER=queryname"
+
 rule make_reference_DB:
     params:
         GENOME_DB_PREFIX
