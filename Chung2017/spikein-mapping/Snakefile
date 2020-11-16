@@ -8,7 +8,19 @@ GENOME_DB_FILE = join(SRPRISM_DB_DIR, "RNA-spikein-sequences.idx")
 RNA_SPIKE_SEQUENCES = join("data", "E-MTAB-5466_spike_in_sequences.fa")
 
 
-rule map_reads_against_RNA_SPIKE_SEQUENCES:
+rule extract_spike_querynames:
+    input:
+        join("output", "SRPRISM", "BC06-BC06-BC06", "paired.sam"),
+        join("output", "SRPRISM", "BC06-BC06-BC06", "unpaired.sam")
+    output:
+        join("output", "BC06-BC06-BC06", "excluded_reads.txt")
+    shell:
+        "module load samtools && "
+        "samtools view {input[0]} | cut -f 1 > {output} && "
+        "samtools view {input[1]} | cut -f 1 >> {output}"
+
+
+rule map_paired_reads_against_RNA_SPIKE_SEQUENCES:
     input:
         join("output", "PathSeq", "BC06-BC06-BC06", "paired_1.fastq"),
         join("output", "PathSeq", "BC06-BC06-BC06", "paired_2.fastq"),
@@ -18,6 +30,16 @@ rule map_reads_against_RNA_SPIKE_SEQUENCES:
     shell:
         "srprism search -I {params} -i {input[0]},{input[1]} -F fastq -p true -o {output} --sam-header true"
 
+rule map_SRPRISM_genome_unpaired:
+    params:
+        GENOME_DB_PREFIX
+    input:
+        join("output", "PathSeq", "BC06-BC06-BC06", "unpaired.fastq"),
+        GENOME_DB_FILE
+    output:
+        join("output", "SRPRISM", "BC06-BC06-BC06", "unpaired.sam")
+    shell:
+        "srprism search -I {params} -i {input[0]} -F fastq -p false -o {output} --sam-header true"
 
 rule convert_paired_bam_to_fastq:
     input:
