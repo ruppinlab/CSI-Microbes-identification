@@ -21,6 +21,8 @@ rule extract_spike_querynames:
 
 
 rule map_paired_reads_against_RNA_SPIKE_SEQUENCES:
+    params:
+        GENOME_DB_PREFIX
     input:
         join("output", "PathSeq", "BC06-BC06-BC06", "paired_1.fastq"),
         join("output", "PathSeq", "BC06-BC06-BC06", "paired_2.fastq"),
