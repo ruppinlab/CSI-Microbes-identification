@@ -7,6 +7,19 @@ GENOME_DB_FILE = join(SRPRISM_DB_DIR, "RNA-spikein-sequences.idx")
 # file containing sequences for RNA Spike In sequences
 RNA_SPIKE_SEQUENCES = join("data", "E-MTAB-5466_spike_in_sequences.fa")
 
+#
+rule filter_spike_reads_from_PathSeq_bam:
+    input:
+        join("..", "output", "PathSeq", "BC06-BC06-BC06", "pathseq.bam"),
+        join("output", "BC06-BC06-BC06", "excluded_reads.txt")
+    output:
+        join("..", "output", "PathSeq", "BC06-BC06-BC06", "pathseq.filtered.bam"),
+    shell:
+        "module load picard && "
+        "java -jar $PICARDJARPATH/picard.jar FilterSamReads "
+        "I={input[0]} O={output[0]} "
+        "FILTER=excludeReadList READ_LIST_FILE={input[1]}"
+
 
 rule extract_spike_querynames:
     input:
