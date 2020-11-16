@@ -1,8 +1,22 @@
 from os.path import join
 
+SRPRISM_DB_DIR = join("output", "genomes_db")
+GENOME_DB_PREFIX = join(SRPRISM_DB_DIR, "RNA-spikein-sequences")
+GENOME_DB_FILE = join(SRPRISM_DB_DIR, "RNA-spikein-sequences.idx")
 
 # file containing sequences for RNA Spike In sequences
-RNA_SPIKE_SEQUENCES = join("data", "spike_in_sequences.fa")
+RNA_SPIKE_SEQUENCES = join("data", "E-MTAB-5466_spike_in_sequences.fa")
+
+
+rule make_reference_DB:
+    params:
+        GENOME_DB_PREFIX
+    input:
+        RNA_SPIKE_SEQUENCES
+    output:
+        GENOME_DB_FILE
+    shell:
+        "srprism mkindex -i {input} -o {params}"
 
 
 rule download_RNA_spikes:
