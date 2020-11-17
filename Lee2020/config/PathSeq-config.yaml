@@ -17,7 +17,7 @@ PathSeq:
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
 
 params:
-  PathSeq: ""
+  PathSeq: "--min-base-quality 1 --max-masked-bases 10 --dust-t 24 "
   PathSeqScore: ""
 
 CellRanger:
