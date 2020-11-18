@@ -15,6 +15,7 @@ human_ref:
 params:
   PathSeq: ""
   STAR: ""
+  PathSeqScore: ""
 
 STAR:
   FASTQ_dir: "FASTQ/trimmed"
