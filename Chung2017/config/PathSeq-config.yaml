@@ -16,6 +16,9 @@ params:
   PathSeq: ""
   STAR: ""
 
+trimming:
+  skip: False
+
 STAR:
   FASTQ_dir: "FASTQ/trimmed"
 
