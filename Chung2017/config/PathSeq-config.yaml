@@ -17,6 +17,9 @@ params:
   STAR: ""
   PathSeqScore: ""
 
+trimming:
+  skip: False
+
 STAR:
   FASTQ_dir: "FASTQ/trimmed"
 

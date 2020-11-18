@@ -48,7 +48,7 @@ PATHSEQ_CELL_SCORE_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}-
 # include rules
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
-include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
+include: "../RNA-snakemake-rules/rules/STAR.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 
@@ -58,7 +58,7 @@ plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
 rule all:
     input:
-        expand(PATHSEQ_CELL_SCORE_FILE,  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
+        expand(STAR_PE_READCOUNT_FILE,  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
 
 def get_benchmark_files(wildcards):
     c = cells.loc[cells.plate == wildcards.plate]
