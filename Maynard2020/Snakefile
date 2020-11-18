@@ -20,8 +20,13 @@ cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", 
 #     "B002077", "B002078", "B002079", "B003775", "B003776", "B003777", "B001470",
 #     "B001474", "B001475", "B001464"
 # ]
+# TH067 - B003648 and B003659
+# TH169 - 1001000339, 1001000340
+# TH171 - B003518, B003522, B003527, B003529, B003588
 plates_of_interest = [
-    "B003648"
+    "B003648", "B003659",
+    "1001000339", "1001000340",
+    "B003518", "B003522", "B003527", "B003529", "B003588"
 ]
 cells = cells.loc[cells.plate.isin(plates_of_interest)]
 
