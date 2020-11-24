@@ -49,8 +49,8 @@ PATHSEQ_CELL_SCORE_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}-
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
-include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+#include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
+#include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 
 BENCHMARK_FILE = join("benchmarks", "{patient}-{run}.{rule}.benchmark.txt")
 
@@ -58,22 +58,44 @@ plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
 rule all:
     input:
-        expand(STAR_PE_BAM_FILE,  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
-        expand(STAR_SE_BAM_FILE,  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
+        expand("output/star/{patient}-{sample}-{plate}/unmapped.bamtools.bam",  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
+        expand("output/star/{patient}-{sample}-{plate}/unmapped.samtools.bam",  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
 
-def get_benchmark_files(wildcards):
-    c = cells.loc[cells.plate == wildcards.plate]
-    return expand(BENCHMARK_FILE, patient=wildcards.plate, rule=wildcards.rule, run=c["Run"])
+# def get_benchmark_files(wildcards):
+#     c = cells.loc[cells.plate == wildcards.plate]
+#     return expand(BENCHMARK_FILE, patient=wildcards.plate, rule=wildcards.rule, run=c["Run"])
+#
+# rule combine_benchmark_statistics:
+#     wildcard_constraints:
+#         plate="BC08"
+#     input:
+#         get_benchmark_files
+#     output:
+#         "output/{plate}_{rule}.benchmark.tsv"
+#     script:
+#         "src/combine_benchmark_statistics.py"
 
-rule combine_benchmark_statistics:
-    wildcard_constraints:
-        plate="BC08"
+rule filter_host_reads_with_bamtools:
     input:
-        get_benchmark_files
+        STAR_PE_BAM_FILE
     output:
-        "output/{plate}_{rule}.benchmark.tsv"
-    script:
-        "src/combine_benchmark_statistics.py"
+        "output/star/{patient}-{sample}-{plate}/unmapped.bamtools.bam"
+    benchmark:
+        "benchmarks/{patient}-{sample}-{plate}.filter_pe_aligned_reads_bamtools.benchmark.txt"
+    shell:
+        "module load bamtools && "
+        "bamtools filter -tag 'uT:<=2' -in {input[0]} -out {output[0]}"
+
+rule filter_host_reads_with_samtools:
+    input:
+        STAR_PE_BAM_FILE
+    output:
+        "output/star/{patient}-{sample}-{plate}/unmapped.samtools.bam"
+    benchmark:
+        "benchmarks/{patient}-{sample}-{plate}.filter_pe_aligned_reads_samtools.benchmark.txt"
+    shell:
+        "module load samtools && "
+        "samtools view -b -f 4 {input} > {output}"
 
 rule combine_human_spikein_fasta:
     input:

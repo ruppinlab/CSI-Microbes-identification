@@ -13,7 +13,7 @@ human_ref:
   annotation: "raw/genome/gencode.v34.primary_assembly.annotation.gtf"
 
 params:
-  PathSeq: ""
+  PathSeq: "--min-clipped-read-length 50 --min-base-quality 1 --max-masked-bases 10 --dust-t 24 --exclude-interval data/excluded_intervals.txt"
   STAR: ""
   PathSeqScore: ""
   fastp: "--length_required 50 "
