@@ -5,12 +5,12 @@ units: data/units.tsv
 
 
 ref:
-  annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff_RNAspike.gtf"
-  genome: "raw/genome/GRCh38.p13_RNAspike.fasta"
+  annotation: "raw/genome/gencode.v34.primary_assembly.annotation.RNAspike.gtf"
+  genome: "raw/genome/GRCh38.primary_assembly.genome.RNAspike.fasta"
 
 human_ref:
-  genome: "raw/genome/GRCh38.p13.genome.fa"
-  annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
+  genome: "raw/genome/GRCh38.primary_assembly.genome.fa"
+  annotation: "raw/genome/gencode.v34.primary_assembly.annotation.gtf"
 
 params:
   PathSeq: ""
