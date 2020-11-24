@@ -16,6 +16,7 @@ params:
   PathSeq: ""
   STAR: ""
   PathSeqScore: ""
+  fastp: "--length_required 50 "
 
 trimming:
   skip: False
