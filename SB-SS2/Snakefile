@@ -1,0 +1,85 @@
+from os.path import join
+import pandas as pd
+from snakemake.utils import min_version
+##### set minimum snakemake version #####
+min_version("5.1.2")
+
+
+
+#patient = config["patient"]
+##### load config and sample sheets #####
+configfile: join("config", "PathSeq-config.yaml")
+cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False)
+
+wildcard_constraints:
+    patient="|".join(cells["patient"].unique()),
+    sample="|".join(cells["sample"].unique()),
+    plate="|".join(cells["plate"].unique()),
+    cell="|".join(cells["cell"].unique()),
+
+#samples = samples.loc[sample["patient"].isin(["BC08"])]
+#cells = cells.loc[cells["patient"].isin(["BC08"])]
+# cells = cells.sample()
+# directories
+FASTQ_DIR = "FASTQ"
+RAW_FASTQ_DIR = join(FASTQ_DIR, "raw")
+TRIMMED_FASTQ_DIR = join(FASTQ_DIR, "trimmed")
+
+# Intermediate Files
+FASTQ1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_1.fastq.gz")
+FASTQ2_FILE = join(RAW_FASTQ_DIR, "{patient}-{sample}-{cell}_2.fastq.gz")
+TRIMMED_FASTQ1_FILE = join(TRIMMED_FASTQ_DIR, "{patient}-{sample}-{cell}_1.fastq.gz")
+TRIMMED_FASTQ2_FILE = join(TRIMMED_FASTQ_DIR, "{patient}-{sample}-{cell}_2.fastq.gz")
+TRIMMED_UNPAIRED_FILE = join(TRIMMED_FASTQ_DIR, "{patient}-{sample}-{cell}_3.fastq.gz")
+
+
+PATHSEQ_BAM_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}", "pathseq.bam")
+PATHSEQ_CELL_SCORE_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell}", "pathseq.txt")
+
+# include rules
+#include: "../RNA-snakemake-rules/rules/genome.smk"
+include: "../RNA-snakemake-rules/rules/trim.smk"
+#include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
+#include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
+#include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+
+BENCHMARK_FILE = join("benchmarks", "{patient}-{run}.{rule}.benchmark.txt")
+
+plates = cells[["patient", "sample", "plate"]].drop_duplicates()
+
+rule all:
+    input:
+        expand(TRIMMED_FASTQ1_FILE,  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
+
+
+# PathSeq doesn't like names so just add to Git for now
+# rule download_RNA_spikes:
+#     params:
+#         url="https://www.ebi.ac.uk/arrayexpress/files/E-MTAB-5466/E-MTAB-5466.additional.1.zip",
+#         dir="data"
+#     output:
+#         RNA_SPIKE_SEQUENCES,
+#         temp("temp.zip"),
+#         temp(join("data", "E-MTAB-5466_spike_in_concentration.txt"))
+#     shell:
+#         "wget {params.url} -O temp.zip && unzip temp.zip -d {params.dir}"
+
+def get_fq_files(wildcards):
+    fq1 = cells.loc[(wildcards.patient, wildcards.sample, wildcards.cell), "fq1"]
+    fq2 = cells.loc[(wildcards.patient, wildcards.sample, wildcards.cell), "fq2"]
+    return {
+        "FQ1": fq1,
+        "FQ2": fq2,
+    }
+
+rule copy_FASTQ_File:
+    group:
+        "FASTQ"
+    input:
+        unpack(get_fq_files)
+    output:
+        FASTQ1_FILE,
+        FASTQ2_FILE
+    shell:
+        "mv {input[0]} {output[0]} && "
+        "mv {input[1]} {output[1]}"
