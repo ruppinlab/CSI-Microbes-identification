@@ -48,8 +48,9 @@ include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
 #include: "../RNA-snakemake-rules/rules/SRPRISM-paired.smk"
-#include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-#include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+include: "../pathogen-discovery-rules/rules/CAMMiQ.smk"
 
 plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
@@ -59,8 +60,9 @@ plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
 rule all:
     input:
-        expand(STAR_SE_BAM_FILE,  zip, patient="Pt0", sample="S0"),
-        expand(STAR_PE_BAM_FILE,  zip, patient="Pt0", sample="S0"),
+        expand(CAMMIQ_COUNT_FILE, tax_level="species")
+        #expand(STAR_SE_BAM_FILE,  zip, patient="Pt0", sample="S0"),
+        #expand(STAR_PE_BAM_FILE,  zip, patient="Pt0", sample="S0"),
 
 # def get_bam_files(wildcards):
 #     c = cells.loc[cells.infected == wildcards.genome]
