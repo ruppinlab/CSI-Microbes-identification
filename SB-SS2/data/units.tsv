@@ -14,7 +14,6 @@ patient	sample	plate	cell	fq1	fq2
 4196	4249	P1	E02	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_E02_S13_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_E02_S13_R2_001.fastq.gz
 4196	4249	P1	F02	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_F02_S14_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_F02_S14_R2_001.fastq.gz
 4196	4249	P1	G02	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_G02_S15_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_G02_S15_R2_001.fastq.gz
-4196	4249	P1	H02	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_H02_S16_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_H02_S16_R2_001.fastq.gz
 4196	4249	P1	A03	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_A03_S17_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_A03_S17_R2_001.fastq.gz
 4196	4249	P1	B03	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_B03_S18_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_B03_S18_R2_001.fastq.gz
 4196	4249	P1	C03	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_C03_S19_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_C03_S19_R2_001.fastq.gz
@@ -37,6 +36,13 @@ patient	sample	plate	cell	fq1	fq2
 4196	4249	P3	G05	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_G05_S36_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_G05_S36_R2_001.fastq.gz
 4196	4249	P3	H05	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_H05_S37_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_H05_S37_R2_001.fastq.gz
 4196	4249	P3	A06	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_A06_S38_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_A06_S38_R2_001.fastq.gz
+4196	4249	P3	B06	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_B06_S39_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_B06_S39_R2_001.fastq.gz
+4196	4249	P3	C06	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_C06_S40_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_C06_S40_R2_001.fastq.gz
+4196	4249	P3	D06	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_D06_S41_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_D06_S41_R2_001.fastq.gz
+4196	4249	P3	E06	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_E06_S42_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_E06_S42_R2_001.fastq.gz
+4196	4249	P3	F06	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_F06_S43_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_F06_S43_R2_001.fastq.gz
+4196	4249	P3	G06	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_G06_S44_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_G06_S44_R2_001.fastq.gz
+4196	4249	P3	H06	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_H06_S45_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_H06_S45_R2_001.fastq.gz
 4196	4249	P4	A07	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_A07_S46_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_A07_S46_R2_001.fastq.gz
 4196	4249	P4	B07	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_B07_S47_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_B07_S47_R2_001.fastq.gz
 4196	4249	P4	C07	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_C07_S48_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_C07_S48_R2_001.fastq.gz
@@ -80,3 +86,8 @@ patient	sample	plate	cell	fq1	fq2
 4196	4249	P5	A12	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_A12_S86_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_A12_S86_R2_001.fastq.gz
 4196	4249	P5	B12	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_B12_S87_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_B12_S87_R2_001.fastq.gz
 4196	4249	P5	C12	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_C12_S88_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_C12_S88_R2_001.fastq.gz
+4196	4249	P5	D12	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_D12_S89_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_D12_S89_R2_001.fastq.gz
+4196	4249	P5	E12	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_E12_S90_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_E12_S90_R2_001.fastq.gz
+4196	4249	P5	F12	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_F12_S91_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_F12_S91_R2_001.fastq.gz
+4196	4249	P5	G12	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_G12_S92_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_G12_S92_R2_001.fastq.gz
+4196	4249	P5	H12	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_H12_S93_R1_001.fastq.gz	/data/Robinson-SB/Seq1_AAAGLMFM5_SS2/P01_H12_S93_R2_001.fastq.gz
