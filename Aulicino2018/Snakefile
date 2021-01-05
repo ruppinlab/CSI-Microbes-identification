@@ -109,15 +109,18 @@ rule count_total_reads:
     script:
         "src/count_nreads.py"
 
+def get_filtered_bam_files(wildcards):
+    return expand(SRPRISM_FILTER_BAM,  zip, patient=cells["patient"],
+           sample=cells["sample"], plate=cells["plate"], cell=cells["cell"],
+           genome=cells["infection"], filter=[wildcards.filter]*cells.shape[0])
+
 rule count_filtered_reads:
     params:
         cells=cells["cell"]
     conda:
         "../envs/pysam-env.yaml"
     input:
-        expand(SRPRISM_FILTER_BAM,  zip, patient=cells["patient"],
-               sample=cells["sample"], plate=cells["plate"], cell=cells["cell"],
-               genome=cells["infection"], filter=["{wildcards.filter}"]*cells.shape[0])
+        get_filtered_bam_files
     output:
         SRPRISM_FILTER_COUNT_FILE
     script:
