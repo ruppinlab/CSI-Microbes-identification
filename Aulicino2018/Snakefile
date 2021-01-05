@@ -40,6 +40,7 @@ PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}-{plate}", "path
 PathSeq_Cell_Score_File = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell}", "pathseq.txt")
 
 # Intermediate Files for SRPRISM
+GENOME_GTF = join("raw", "{genome}.gtf")
 rRNA_BED_FILE=join("raw", "{genome}_rRNA.bed")
 rRNA_16S_BED_FILE=join("raw", "{genome}_16S_rRNA.bed")
 
