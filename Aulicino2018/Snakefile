@@ -41,7 +41,8 @@ PathSeq_Cell_Score_File = join("output", "PathSeq", "{patient}-{sample}-{plate}-
 SRPRISM_INPUT_FQ1 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_1.fq")
 SRPRISM_INPUT_FQ2 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_2.fq")
 SRPRISM_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}.tsv")
-
+SRPRISM_16S_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.16S.primary.sorted.bam")
+SRPRISM_NON_16S_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.non16S.primary.sorted.bam")
 # include rules
 include: "../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../RNA-snakemake-rules/rules/genome.smk"
@@ -66,15 +67,36 @@ rule all:
         expand(SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAI, zip,
                patient=cells["patient"], sample=cells["sample"],
                plate=cells["plate"], cell=cells["cell"], genome=cells["infection"])
-        # expand(CAMMIQ_COUNT_FILE, tax_level="species")
-        #expand(STAR_SE_BAM_FILE,  zip, patient="Pt0", sample="S0"),
-        #expand(STAR_PE_BAM_FILE,  zip, patient="Pt0", sample="S0"),
+        expand(SRPRISM_16S_BAM, zip,
+               patient=cells["patient"], sample=cells["sample"],
+               plate=cells["plate"], cell=cells["cell"], genome=cells["infection"])
+        expand(SRPRISM_NON_16S_BAM, zip,
+               patient=cells["patient"], sample=cells["sample"],
+               plate=cells["plate"], cell=cells["cell"], genome=cells["infection"])
+
+# rules for manipulating SPRISM bam files
+rule filter_by_region:
+    input:
+        SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAM,
+        SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAI
+    output:
+        SRPRISM_16S_BAM,
+        SRPRISM_NON_16S_BAM
+    shell:
+        "module load samtools && "
+        "samtools view -h -b -L data/{wildcards.genome}_16S.bed -U {output[1]} {input[0]} > {output[0]}"
 
 def get_bam_files(wildcards):
     c = cells.loc[cells.infection == wildcards.genome]
-    expand(SRPRISM_PROPER_PAIRED_PRIMARY_BAM,  zip, patient=c["patient"], sample=c["sample"], plate=c["plate"], cell=c["cell"], genome=c["infection"])
+    return expand(SRPRISM_PROPER_PAIRED_PRIMARY_BAM,  zip, patient=c["patient"], sample=c["sample"], plate=c["plate"], cell=c["cell"], genome=c["infection"])
 
-rule count_nreads:
+def get_cells(wildcards):
+    c = cells.loc[cells.infection == wildcards.genome]
+    return c["cell"]
+
+rule count_total_reads:
+    params:
+        cells=get_cells
     conda:
         "../envs/pysam-env.yaml"
     input:
