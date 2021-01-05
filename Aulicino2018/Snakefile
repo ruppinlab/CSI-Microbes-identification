@@ -41,20 +41,19 @@ PathSeq_Cell_Score_File = join("output", "PathSeq", "{patient}-{sample}-{plate}-
 
 # Intermediate Files for SRPRISM
 GENOME_GTF = join("raw", "{genome}.gtf")
-rRNA_BED_FILE=join("raw", "{genome}_rRNA.bed")
-rRNA_16S_BED_FILE=join("raw", "{genome}_16S_rRNA.bed")
+BED_FILE=join("raw", "{genome}_{filter}.bed")
 
 # SRPRISM Output Files
 SRPRISM_INPUT_FQ1 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_1.fq")
 SRPRISM_INPUT_FQ2 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_2.fq")
 SRPRISM_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "read_counts.tsv")
-SRPRISM_16S_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "16S_read_counts.tsv")
-SRPRISM_rRNA_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "rRNA_read_counts.tsv")
+SRPRISM_FILTER_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "{filter}_read_counts.tsv")
+#SRPRISM_rRNA_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "rRNA_read_counts.tsv")
 
-SRPRISM_16S_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.16S.primary.sorted.bam")
-SRPRISM_NON_16S_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.non16S.primary.sorted.bam")
-SRPRISM_rRNA_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.rRNA.primary.sorted.bam")
-SRPRISM_NON_rRNA_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.nonrRNA.primary.sorted.bam")
+SRPRISM_FILTER_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.{filter}.primary.sorted.bam")
+SRPRISM_NON_16S_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.non.{filter}.primary.sorted.bam")
+#SRPRISM_rRNA_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.rRNA.primary.sorted.bam")
+#SRPRISM_NON_rRNA_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.nonrRNA.primary.sorted.bam")
 
 
 # include rules
@@ -67,7 +66,7 @@ include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 include: "../pathogen-discovery-rules/rules/CAMMiQ.smk"
 
-localrules: filter_by_rRNA, filter_by_16S
+localrules: filter_reads
 
 plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
@@ -79,37 +78,18 @@ cells = cells.loc[cells.infection.isin(["LT2", "D23580"])]
 rule all:
     input:
         expand(SRPRISM_COUNT_FILE, patient="Pt0", sample="S0"),
-        expand(SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAI, zip,
-               patient=cells["patient"], sample=cells["sample"],
-               plate=cells["plate"], cell=cells["cell"], genome=cells["infection"]),
-        expand(SRPRISM_16S_BAM, zip,
-               patient=cells["patient"], sample=cells["sample"],
-               plate=cells["plate"], cell=cells["cell"], genome=cells["infection"]),
-        expand(SRPRISM_NON_16S_BAM, zip,
-               patient=cells["patient"], sample=cells["sample"],
-               plate=cells["plate"], cell=cells["cell"], genome=cells["infection"])
+        expand(SRPRISM_FILTER_COUNT_FILE, patient="Pt0", sample="S0", filter=["rRNA", "16S"])
+
 
 # rules for manipulating SPRISM bam files
-rule filter_by_rRNA:
+rule filter_reads:
     input:
         SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAM,
         SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAI,
-        rRNA_BED_FILE
+        BED_FILTER_FILE
     output:
-        SRPRISM_rRNA_BAM,
-        SRPRISM_NON_rRNA_BAM
-    shell:
-        "module load samtools && "
-        "samtools view -h -b -L {input[2]} -U {output[1]} {input[0]} > {output[0]}"
-
-rule filter_by_16S:
-    input:
-        SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAM,
-        SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAI,
-        rRNA_16S_BED_FILE
-    output:
-        SRPRISM_16S_BAM,
-        SRPRISM_NON_16S_BAM
+        SRPRISM_FILTER_BAM,
+        SRPRISM_NON_FILTER_BAM
     shell:
         "module load samtools && "
         "samtools view -h -b -L {input[2]} -U {output[1]} {input[0]} > {output[0]}"
@@ -129,42 +109,43 @@ rule count_total_reads:
     script:
         "src/count_nreads.py"
 
-rule count_16S_reads:
+rule count_filtered_reads:
     params:
         cells=cells["cell"]
     conda:
         "../envs/pysam-env.yaml"
     input:
-        expand(SRPRISM_16S_BAM,  zip, patient=cells["patient"],
+        expand(SRPRISM_FILTER_BAM,  zip, patient=cells["patient"],
                sample=cells["sample"], plate=cells["plate"], cell=cells["cell"],
-               genome=cells["infection"])
+               genome=cells["infection"], filter=[snakemake.wildcards["filter"]]*cells.shape[0])
     output:
-        SRPRISM_16S_COUNT_FILE
+        SRPRISM_FILTER_COUNT_FILE
     script:
         "src/count_nreads.py"
 
-rule count_rRNA_reads:
-    params:
-        cells=cells["cell"]
-    conda:
-        "../envs/pysam-env.yaml"
-    input:
-        expand(SRPRISM_rRNA_BAM,  zip, patient=cells["patient"],
-               sample=cells["sample"], plate=cells["plate"], cell=cells["cell"],
-               genome=cells["infection"])
-    output:
-        SRPRISM_rRNA_COUNT_FILE
-    script:
-        "src/count_nreads.py"
+# rule count_rRNA_reads:
+#     params:
+#         cells=cells["cell"]
+#     conda:
+#         "../envs/pysam-env.yaml"
+#     input:
+#         expand(SRPRISM_rRNA_BAM,  zip, patient=cells["patient"],
+#                sample=cells["sample"], plate=cells["plate"], cell=cells["cell"],
+#                genome=cells["infection"])
+#     output:
+#         SRPRISM_rRNA_COUNT_FILE
+#     script:
+#         "src/count_nreads.py"
 
-rule extract_rRNA_BED:
+rule extract_filter_BED:
+    wildcard_constraints:
+        filter="rRNA|16S"
     conda:
         "../envs/pysam-env.yaml"
     input:
         GENOME_GTF
     output:
-        rRNA_BED_FILE,
-        rRNA_16S_BED_FILE
+        FILTER_BED_FILE,
     script:
         "src/extract_rRNA_coordinates.py"
 
