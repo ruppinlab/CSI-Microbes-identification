@@ -53,6 +53,8 @@ include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 include: "../pathogen-discovery-rules/rules/CAMMiQ.smk"
 
+localrules: filter_by_region
+
 plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
 cells = cells.loc[cells.infection.isin(["LT2", "D23580"])]
@@ -63,13 +65,13 @@ cells = cells.loc[cells.infection.isin(["LT2", "D23580"])]
 rule all:
     input:
         expand(SRPRISM_COUNT_FILE, patient="Pt0", sample="S0",
-               genome=["LT2", "D23580"])
+               genome=["LT2", "D23580"]),
         expand(SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAI, zip,
                patient=cells["patient"], sample=cells["sample"],
-               plate=cells["plate"], cell=cells["cell"], genome=cells["infection"])
+               plate=cells["plate"], cell=cells["cell"], genome=cells["infection"]),
         expand(SRPRISM_16S_BAM, zip,
                patient=cells["patient"], sample=cells["sample"],
-               plate=cells["plate"], cell=cells["cell"], genome=cells["infection"])
+               plate=cells["plate"], cell=cells["cell"], genome=cells["infection"]),
         expand(SRPRISM_NON_16S_BAM, zip,
                patient=cells["patient"], sample=cells["sample"],
                plate=cells["plate"], cell=cells["cell"], genome=cells["infection"])
