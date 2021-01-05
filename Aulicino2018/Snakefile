@@ -41,7 +41,7 @@ PathSeq_Cell_Score_File = join("output", "PathSeq", "{patient}-{sample}-{plate}-
 
 # Intermediate Files for SRPRISM
 GENOME_GTF = join("raw", "{genome}.gtf")
-BED_FILE=join("raw", "{genome}_{filter}.bed")
+BED_FILTER_FILE=join("raw", "{genome}_{filter}.bed")
 
 # SRPRISM Output Files
 SRPRISM_INPUT_FQ1 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_1.fq")
@@ -51,7 +51,7 @@ SRPRISM_FILTER_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "
 #SRPRISM_rRNA_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "rRNA_read_counts.tsv")
 
 SRPRISM_FILTER_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.{filter}.primary.sorted.bam")
-SRPRISM_NON_16S_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.non.{filter}.primary.sorted.bam")
+SRPRISM_NON_FILTER_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.non.{filter}.primary.sorted.bam")
 #SRPRISM_rRNA_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.rRNA.primary.sorted.bam")
 #SRPRISM_NON_rRNA_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.nonrRNA.primary.sorted.bam")
 
@@ -117,7 +117,7 @@ rule count_filtered_reads:
     input:
         expand(SRPRISM_FILTER_BAM,  zip, patient=cells["patient"],
                sample=cells["sample"], plate=cells["plate"], cell=cells["cell"],
-               genome=cells["infection"], filter=[snakemake.wildcards["filter"]]*cells.shape[0])
+               genome=cells["infection"], filter=["{wildcards.filter}"]*cells.shape[0])
     output:
         SRPRISM_FILTER_COUNT_FILE
     script:
@@ -145,7 +145,7 @@ rule extract_filter_BED:
     input:
         GENOME_GTF
     output:
-        FILTER_BED_FILE,
+        BED_FILTER_FILE,
     script:
         "src/extract_rRNA_coordinates.py"
 
