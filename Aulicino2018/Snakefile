@@ -21,6 +21,7 @@ wildcard_constraints:
     sample="|".join(cells["sample"].unique()),
     plate="|".join(cells["plate"].unique()),
     cell="|".join(cells["cell"].unique()),
+    genome="LT2|D23580"
 
 # directories
 FASTQ_DIR = join("FASTQ")
