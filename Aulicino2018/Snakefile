@@ -33,14 +33,14 @@ SRA_FASTQ2_FILE = join(RAW_FASTQ_DIR, "{run}_2.fastq")
 FASTQ1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_1.fastq.gz")
 FASTQ2_FILE = join(RAW_FASTQ_DIR, "{patient}-{sample}-{cell}_2.fastq.gz")
 
-# Output Files
-#PathSeq_Output_File = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
+# PathSeq Output Files
 PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}-{plate}", "pathseq.bam")
 PathSeq_Cell_Score_File = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell}", "pathseq.txt")
 
+# SRPRISM Output Files
 SRPRISM_INPUT_FQ1 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_1.fq")
 SRPRISM_INPUT_FQ2 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_2.fq")
-#SRPRISM_COUNT_FILE = join("output", "star", "{patient}-{sample}", "{genome}.tsv")
+SRPRISM_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}.tsv")
 
 # include rules
 include: "../RNA-snakemake-rules/rules/ERCC92.smk"
@@ -61,27 +61,28 @@ cells = cells.loc[cells.infection.isin(["LT2", "D23580"])]
 
 rule all:
     input:
-        expand(SRPRISM_PROPER_PAIRED_PRIMARY_BAM, zip,
+        expand(SRPRISM_COUNT_FILE, patient="Pt0", sample="S0",
+               genome=["LT2", "D23580"])
+        expand(SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAI, zip,
                patient=cells["patient"], sample=cells["sample"],
                plate=cells["plate"], cell=cells["cell"], genome=cells["infection"])
         # expand(CAMMIQ_COUNT_FILE, tax_level="species")
         #expand(STAR_SE_BAM_FILE,  zip, patient="Pt0", sample="S0"),
         #expand(STAR_PE_BAM_FILE,  zip, patient="Pt0", sample="S0"),
 
-# def get_bam_files(wildcards):
-#     c = cells.loc[cells.infected == wildcards.genome]
-#     expand(SRPRISM_PROPER_PAIRED_PRIMARY_BAM,  zip, patient=c["patient"], sample=c["sample"], plate=c["plate"], cell=c["cell"], genome=c["infection"])
-#
-#
-# rule count_nreads:
-#     conda:
-#         "../envs/pysam-env.yaml"
-#     input:
-#         get_bam_files
-#     output:
-#         SRPRISM_COUNT_FILE
-#     script:
-#         "src/count_nreads.py"
+def get_bam_files(wildcards):
+    c = cells.loc[cells.infection == wildcards.genome]
+    expand(SRPRISM_PROPER_PAIRED_PRIMARY_BAM,  zip, patient=c["patient"], sample=c["sample"], plate=c["plate"], cell=c["cell"], genome=c["infection"])
+
+rule count_nreads:
+    conda:
+        "../envs/pysam-env.yaml"
+    input:
+        get_bam_files
+    output:
+        SRPRISM_COUNT_FILE
+    script:
+        "src/count_nreads.py"
 
 # rule download_combine_subspe_genomes:
 #     input:
