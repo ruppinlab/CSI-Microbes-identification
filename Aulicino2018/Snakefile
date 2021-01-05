@@ -41,6 +41,8 @@ PathSeq_Cell_Score_File = join("output", "PathSeq", "{patient}-{sample}-{plate}-
 SRPRISM_INPUT_FQ1 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_1.fq")
 SRPRISM_INPUT_FQ2 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_2.fq")
 SRPRISM_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}.tsv")
+SRPRISM_16S_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "16S_reads_{genome}.tsv")
+
 SRPRISM_16S_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.16S.primary.sorted.bam")
 SRPRISM_NON_16S_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.non16S.primary.sorted.bam")
 # include rules
@@ -64,7 +66,7 @@ cells = cells.loc[cells.infection.isin(["LT2", "D23580"])]
 
 rule all:
     input:
-        expand(SRPRISM_COUNT_FILE, patient="Pt0", sample="S0",
+        expand(SRPRISM_16S_COUNT_FILE, patient="Pt0", sample="S0",
                genome=["LT2", "D23580"]),
         expand(SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAI, zip,
                patient=cells["patient"], sample=cells["sample"],
@@ -92,6 +94,11 @@ def get_bam_files(wildcards):
     c = cells.loc[cells.infection == wildcards.genome]
     return expand(SRPRISM_PROPER_PAIRED_PRIMARY_BAM,  zip, patient=c["patient"], sample=c["sample"], plate=c["plate"], cell=c["cell"], genome=c["infection"])
 
+def get_16S_bam_files(wildcards):
+    c = cells.loc[cells.infection == wildcards.genome]
+    return expand(SRPRISM_16S_BAM,  zip, patient=c["patient"], sample=c["sample"], plate=c["plate"], cell=c["cell"], genome=c["infection"])
+
+
 def get_cells(wildcards):
     c = cells.loc[cells.infection == wildcards.genome]
     return c["cell"]
@@ -105,6 +112,18 @@ rule count_total_reads:
         get_bam_files
     output:
         SRPRISM_COUNT_FILE
+    script:
+        "src/count_nreads.py"
+
+rule count_16S_reads:
+    params:
+        cells=get_cells
+    conda:
+        "../envs/pysam-env.yaml"
+    input:
+        get_16S_bam_files
+    output:
+        SRPRISM_16S_COUNT_FILE
     script:
         "src/count_nreads.py"
 
