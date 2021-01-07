@@ -23,7 +23,8 @@ wildcard_constraints:
     sample="|".join(cells["sample"].unique()),
     plate="|".join(cells["plate"].unique()),
     cell="|".join(cells["cell"].unique()),
-    genome="LT2|D23580"
+    genome="LT2|D23580",
+    filter="rRNA|16S|protein_coding"
 
 # directories
 FASTQ_DIR = join("FASTQ")
@@ -78,7 +79,7 @@ cells = cells.loc[cells.infection.isin(["LT2", "D23580"])]
 rule all:
     input:
         expand(SRPRISM_COUNT_FILE, patient="Pt0", sample="S0"),
-        expand(SRPRISM_FILTER_COUNT_FILE, patient="Pt0", sample="S0", filter=["rRNA", "16S"])
+        expand(SRPRISM_FILTER_COUNT_FILE, patient="Pt0", sample="S0", filter=["rRNA", "16S", "protein_coding"])
 
 
 # rules for manipulating SPRISM bam files
@@ -142,7 +143,7 @@ rule count_filtered_reads:
 
 rule extract_filter_BED:
     wildcard_constraints:
-        filter="rRNA|16S"
+        filter="rRNA|16S|protein_coding"
     conda:
         "../envs/pysam-env.yaml"
     input:
