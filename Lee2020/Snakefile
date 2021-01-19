@@ -71,7 +71,7 @@ rule move_FQ_for_SRPRISM:
     output:
         temp(SRPRISM_UNPAIRED_INPUT_FQ)
     shell:
-        "gunzip -ck {input} > {output}"
+        "zcat -c {input} > {output}"
 
 ### rules to download Fusobacterium Nucleatum ATCC 25688 reference files ###
 
