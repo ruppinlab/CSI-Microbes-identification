@@ -44,7 +44,7 @@ CR_BAM_FILE = join(CR_SAMPLE_ODIR, "outs", "possorted_genome_bam.bam")
 
 GENOME_FA = join("raw", "{genome}.fa")
 GENOME_GTF = join("raw", "{genome}.gtf")
-TRIMMED_FQ1 = join("FASTQ", "unmapped", "trimmed", "{patient}-{sample}_1.fastq")
+TRIMMED_FQ1 = join("FASTQ", "unmapped", "trimmed", "{patient}-{sample}_1.fastq.gz")
 SRPRISM_UNPAIRED_INPUT_FQ = join(SRPRISM_ODIR, "{patient}", "{sample}", "unaligned_3.fq")
 SRPRISM_UNPAIRED_PRIMARY_SORTED_BAM = join(SRPRISM_ODIR, "{patient}", "{sample}", "{genome}-unpaired.primary.sorted.bam")
 SRPRISM_UNPAIRED_PRIMARY_SORTED_BAI = join(SRPRISM_ODIR, "{patient}", "{sample}", "{genome}-unpaired.primary.sorted.bam.bai")
@@ -53,7 +53,7 @@ SRPRISM_READ_COUNT = join(SRPRISM_ODIR, "{patient}", "{sample}", "{genome}-nread
 
 rule all:
     input:
-        # expand(SRPRISM_READ_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=sample["genome"]),
+        expand(SRPRISM_READ_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
 
 
 rule count_total_n_reads:
@@ -71,7 +71,7 @@ rule move_FQ_for_SRPRISM:
     output:
         temp(SRPRISM_UNPAIRED_INPUT_FQ)
     shell:
-        "mv {input} {output}"
+        "gunzip -ck {input} > {output}"
 
 ### rules to download Fusobacterium Nucleatum ATCC 25688 reference files ###
 
