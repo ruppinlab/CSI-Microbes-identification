@@ -53,7 +53,7 @@ SRPRISM_READ_COUNT = join(SRPRISM_ODIR, "{patient}", "{sample}", "{genome}-nread
 
 rule all:
     input:
-        expand(SRPRISM_READ_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
+        expand(SRPRISM_READ_COUNT, zip, patient="SC028", sample="Sample6a", genome="Nucleatum"),
 
 
 rule count_total_n_reads:
