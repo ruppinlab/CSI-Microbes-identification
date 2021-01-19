@@ -51,6 +51,7 @@ TRIMMED_FQ1 = join("FASTQ", "unmapped", "trimmed", "{patient}-{sample}_1.fastq.g
 SRPRISM_UNPAIRED_INPUT_FQ = join("output", "SRPRISM", "{patient}", "{sample}", "unaligned_3.fq")
 SRPRISM_UNPAIRED_PRIMARY_SORTED_BAM = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-unpaired.primary.sorted.bam")
 SRPRISM_UNPAIRED_PRIMARY_SORTED_BAI = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-unpaired.primary.sorted.bam.bai")
+SRPRISM_READ_COUNT = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-nreads.tsv")
 
 # PathSeq files
 PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
@@ -58,7 +59,16 @@ PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
 rule all:
     input:
-        expand(SRPRISM_UNPAIRED_PRIMARY_SORTED_BAI, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"])
+        expand(SRPRISM_READ_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"])
+
+rule count_total_n_reads:
+    input:
+        SRPRISM_UNPAIRED_PRIMARY_SORTED_BAM
+    output:
+        SRPRISM_READ_COUNT
+    shell:
+        "module load samtools && "
+        "samtools view -c {input} > {output}"
 
 rule move_decompress_FQ_for_SRPRISM:
     input:
