@@ -11,11 +11,10 @@ configfile: "config/PathSeq-config.yaml"
 SL1344_genome_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.fna.gz"
 SL1344_GTF_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.gtf.gz"
 
-
-#
 wildcard_constraints:
     patient="Pt0",
-    sample="GSM345452[8-9]"
+    sample="GSM345452[8-9]",
+    genome="SL1344"
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
@@ -23,18 +22,19 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample", "lane"], drop=False)
 lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
 samples = lanes[["sample", "patient"]].drop_duplicates()
+samples["genome"] = "SL1344"
 
 cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
-# cells = cells.loc[cells.barcode.isin(["ATGCGATGTGCCTGGT-1", "GGCCGATGTCCGCTGA-1"])]
+
+# Snakemake includes
+include: "../RNA-snakemake-rules/rules/cellranger.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
+include: "../RNA-snakemake-rules/rules/SRPRISM-unpaired.smk"
 
 # Directories
 FASTQ_DIR = "FASTQ"
-#ENV_DIR = join("..", "envs")
 PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")
 CR_SAMPLE_ODIR = "{patient}-{sample}"
-
-# Files
-# STAR_ENV_FILE = join(ENV_DIR, "star.yml")
 
 # STAR Input Files
 SRA_FASTQ1_FILE = join(FASTQ_DIR, "{run}_1.fastq")
@@ -47,28 +47,26 @@ cDNA_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_R2_001.fastq.gz")
 CR_BAM_FILE = join(CR_SAMPLE_ODIR, "outs", "possorted_genome_bam.bam")
 
 # SRPRISM files
-SRPRISM_UNPAIRED_INPUT_FQ1 = join("FASTQ", "unmapped", "trimmed", "{patient}-{sample}_1.fastq.gz")
+TRIMMED_FQ1 = join("FASTQ", "unmapped", "trimmed", "{patient}-{sample}_1.fastq.gz")
+SRPRISM_UNPAIRED_INPUT_FQ = join("output", "SRPRISM", "{patient}", "{sample}", "unaligned_3.fq")
 SRPRISM_UNPAIRED_PRIMARY_SORTED_BAM = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-unpaired.primary.sorted.bam")
 SRPRISM_UNPAIRED_PRIMARY_SORTED_BAI = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-unpaired.primary.sorted.bam.bai")
 
 # PathSeq files
 PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
 
-SRPRISM_CB_UMI_TABLE = join("output", "SRPRISM", "{patient}-{sample}-{cell}", "{genome}_cb_umi_table.tsv")
-SRPRISM_CB_UMI_COUNT = join("output", "SRPRISM", "{patient}-{sample}-{cell}", "{genome}_cb_umi_count.tsv")
-
-# Snakemake includes
-include: "../RNA-snakemake-rules/rules/cellranger.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
-include: "../RNA-snakemake-rules/rules/SRPRISM-unpaired.smk"
-
-samples = cells.drop_duplicates(subset=["patient", "sample"])
-samples["genome"] = "SL1344"
 
 rule all:
     input:
         expand(SRPRISM_UNPAIRED_PRIMARY_SORTED_BAI, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"])
 
+rule move_decompress_FQ_for_SRPRISM:
+    input:
+        TRIMMED_FQ1
+    output:
+        temp(SRPRISM_UNPAIRED_INPUT_FQ)
+    shell:
+        "gunzip {input} > {output}"
 
 # rule add_CR_tags_SRPRISM:
 #     conda:
