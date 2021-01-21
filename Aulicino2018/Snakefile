@@ -57,8 +57,10 @@ GENOME_GFF = join("raw", "{genome}.gff")
 BED_FILTER_FILE=join("raw", "{genome}_{filter}.bed")
 
 # SRPRISM Output Files
-SRPRISM_INPUT_FQ1 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_1.fq")
-SRPRISM_INPUT_FQ2 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_2.fq")
+STAR_UNALIGNED_FQ1 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_1.fq")
+STAR_UNALIGNED_FQ2 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_2.fq")
+SRPRISM_INPUT_FQ1 = join("output", "SRPRISM", "{patient}", "{identifier}", "unaligned_1.fq")
+SRPRISM_INPUT_FQ2 = join("output", "SRPRISM", "{patient}", "{identifier}", "unaligned_2.fq")
 SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.primary.sorted.bam.bai")
 SRPRISM_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "read_counts.tsv")
 # SRPRISM_FILTER_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "{filter}_read_counts.tsv")
@@ -87,6 +89,17 @@ rule all:
         # expand(SRPRISM_FILTER_COUNT_FILE, patient="Pt0", sample="S0", filter=["rRNA", "16S", "protein_coding"])
 
 ### rules for analyzing SRPRISM output ###
+
+rule rename_FQ_files:
+    input:
+        STAR_UNALIGNED_FQ1,
+        STAR_UNALIGNED_FQ2
+    output:
+        SRPRISM_INPUT_FQ1,
+        SRPRISM_INPUT_FQ2
+    shell:
+        "mv {input[0]} {output[0]} && "
+        "mv {input[1]} {output[1]}"
 
 rule intersect_BAM_GFF:
     input:
