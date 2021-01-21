@@ -73,7 +73,7 @@ GFF_READCOUNT_FILE = join("output", "{patient}", "{sample}-{plate}-{cell}", "{ge
 
 
 
-localrules: filter_reads
+localrules: rename_FQ_files, intersect_BAM_GFF
 
 plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
