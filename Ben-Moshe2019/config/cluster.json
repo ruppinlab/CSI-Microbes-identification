@@ -7,7 +7,7 @@
         "gres": 10,
         "partition": "norm,ccr"
     },
-    "download_FASTQ_from_SRA":
+    "FASTQ":
     {
         "mem": "32g",
         "gres": 200
