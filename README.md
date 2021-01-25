@@ -34,7 +34,44 @@ git submodule update
 
 ### How to monitor progress?
 
-This workflow creates one slurm job named `run-snakemake.sh`, which run an instance of snakemake. The jobid of `run-snakemake.sh` is the output of the `./scripts/run-Ben-Moshe2019.sh` (or other submission scripts in the `scripts` directory). Snakemake will submit additional jobs to SLURM as appropriate. To monitor progress, you can check the slurm output file. For example, if `./scripts/run-Ben-Moshe2019.sh` returns 6586175 then you can check `Ben-Moshe2019/slurm-6586175.out` for progress.
+This workflow creates one slurm job named `run-snakemake.sh`, which run an instance of snakemake. The jobid of `run-snakemake.sh` is the output of the `./scripts/run-Ben-Moshe2019.sh` (or other submission scripts in the `scripts` directory). For example, if `./scripts/run-Ben-Moshe2019.sh` returns 6586175 then `Ben-Moshe2019/slurm-6586175.out` contains the snakemake output.
+
+Snakemake will first build a DAG of the jobs that need to be run and will output this information in the top of `Ben-Moshe2019/slurm-6586175.out` as shown below.
+
+```
+Job counts:
+        count   jobs
+        2       FastqToBam
+        2       PathSeqPipelineSpark
+        7000    PathSeqScoreSpark
+        2       add_CB_UB_tags_to_PathSeq_BAM
+        1       all
+        2       cellranger_count
+        8       compress_rename_SRA_FASTQ_files
+        2       convert_to_fastq
+        8       download_FASTQ_from_SRA
+        2       filter_aligned_reads
+        2       filter_vector_contaminant_reads
+        2       get_query_names_for_vector_contaminants
+        2       identify_reads_with_vector_contamination
+        2       run_fastp
+        2       sort_by_query_name
+        7000    split_PathSeq_BAM_by_CB_UB
+        2       trim_reads
+        14041
+```
+
+The job counts do not correspond to the number of slurm jobs that will be submitted as many of these jobs will be batched together (group jobs) or run as `localrules` on the slurm job running the snakemake instance. For example, all 7,000 `PathSeqScoreSpark` and `split_PathSeq_BAM_by_CB_UB` jobs, which are very short jobs run for each cell, will be run on the slurm job running the snakemake instance. Snakemake will submit computationally intensive jobs to SLURM as appropriate. To monitor progress, you can check the slurm output file. For example, if `./scripts/run-Ben-Moshe2019.sh` returns 6586175 then you can check `Ben-Moshe2019/slurm-6586175.out` for progress. To obtain the percentage of the jobs completed (which may not correspond to the percentage of time), you can use the following command: `grep % Ben-Moshe2019/slurm-6586175.out`.
+
+To calculate the number of jobs to be done without submitting them, you can perform a dry-run using Snakemake (which may take a long time) using the below commands. The below commands are also potentially useful for debugging.
+
+```
+sinteractive
+cd Ben-Moshe2019
+module load snakemake
+snakemake -n --quiet
+```
+
 
 ### What if I don't have access to the ccr partition?
 
@@ -87,6 +124,10 @@ to
     "partition": "norm"
 }
 ```
+
+### What are the expected output files?
+
+The expected output files from CSI-Microbes-identification are pathseq.txt files, which are output in `output/PathSeq`. For example, the pathseq file for cell barcode TTTCCTCTCCACTGGG-1 from sample GSM3454529 (exposed to _Salmonella_) is located at `output/PathSeq/Pt0-GSM3454529-TTTCCTCTCCACTGGG-1/pathseq.txt`. These output files are used as input to [CSI-Microbes-analysis](https://github.com/ruppinlab/CSI-Microbes-analysis), which computes the differential abundance of microbes across cell-types. 
 
 ## Aulicino2018
 
