@@ -18,7 +18,7 @@ PathSeq:
 
 params:
   PathSeq: "--min-clipped-read-length 50 --min-base-quality 1 --max-masked-bases 10 --dust-t 24 "
-  PathSeqScore: ""
+  PathSeqScore: "--min-score-identity .7"
 
 CellRanger:
   genome_dir: "$CELLRANGER_REF300/GRCh38"

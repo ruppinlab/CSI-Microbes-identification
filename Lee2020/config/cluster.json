@@ -7,6 +7,11 @@
         "gres": 10,
         "partition": "norm,ccr"
     },
+    "FASTQ":
+    {
+        "mem": "32g",
+        "gres": 200
+    },
     "cellranger_count":
     {
       "mem": "64g",
@@ -21,6 +26,11 @@
       "gres": 200
     },
     "add_CB_UB_tags_to_PathSeq_BAM":
+    {
+      "mem": "96g",
+      "time": "4:00:00"
+    },
+    "add_CR_tags_SRPRISM":
     {
       "mem": "96g",
       "time": "4:00:00"
