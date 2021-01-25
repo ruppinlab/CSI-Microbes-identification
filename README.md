@@ -6,11 +6,21 @@ This repository contains the workflows to identify microbial reads from scRNA-se
 
 This workflow is only set-up to be run on the NIH Biowulf cluster. This workflow expects that conda has been installed. For instructions on how to install conda, see [conda install documentation](https://docs.conda.io/projects/conda/en/latest/user-guide/install/).
 
-Next, the GitHub repository needs to be cloned as below.
+Next, the GitHub repository needs to be cloned as below. The below instructions assume that you have an ssh key associated with your GitHub account. If you do not, you can generate a new ssh key and associate it with your GitHub username by following [these instructions](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
 
 ```
 git clone git@github.com:ruppinlab/CSI-Microbes-identification.git
 ```
+
+The above command may return an error like
+
+```
+Permission denied (publickey).
+fatal: Could not read from remote repository.
+Please make sure you have the correct access rights and the repository exists.
+```
+
+In this case, your ssh key may not be associated with your GitHub account. Please follow the instructions above and re-try.
 
 This repository uses [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules), which need to be initialized and fetched.
 
