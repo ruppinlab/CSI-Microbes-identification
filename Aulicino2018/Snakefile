@@ -95,17 +95,29 @@ rule all:
         # expand(SRPRISM_FILTER_COUNT_FILE, patient="Pt0", sample="S0", filter=["rRNA", "16S", "protein_coding"])
 
 ### rules for analyzing SRPRISM output ###
-
-rule rename_FQ_files:
+# filter only reads from cell of interest from the STAR bam file
+rule split_STAR_unaligned_BAM_by_RG:
+    group:
+        "SRPRISM"
     input:
-        STAR_UNALIGNED_FQ1,
-        STAR_UNALIGNED_FQ2
+        join("output", "star", "{patient}-{sample}-{plate}", "_STARpe", "unaligned.bam"),
+    output:
+        join("output", "star", "{patient}-{sample}-{plate}-{cell}", "_STARpe", "unaligned.bam"),
+    shell:
+        "module load samtools && "
+        "samtools view -h -b -r {wildcards.cell} {input} > {output}"
+
+rule extract_FQ_files_from_BAM:
+    group:
+        "SRPRISM"
+    input:
+        join("output", "star", "{patient}-{sample}-{plate}-{cell}", "_STARpe", "unaligned.bam"),
     output:
         SRPRISM_INPUT_FQ1,
         SRPRISM_INPUT_FQ2
     shell:
-        "mv {input[0]} {output[0]} && "
-        "mv {input[1]} {output[1]}"
+        "module load bedtools && "
+        "bamToFastq -i {input} -fq {output[0]} -fq2 {output[1]}"
 
 rule intersect_BAM_GFF:
     input:
