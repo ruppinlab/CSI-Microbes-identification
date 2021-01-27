@@ -53,8 +53,10 @@ TRIMMED_FQ1 = join("FASTQ", "unmapped", "trimmed", "{patient}-{sample}_1.fastq.g
 SRPRISM_UNPAIRED_INPUT_FQ = join("output", "SRPRISM", "{patient}", "{sample}", "unaligned_3.fq")
 SRPRISM_UNPAIRED_PRIMARY_SORTED_BAM = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-unpaired.primary.sorted.bam")
 SRPRISM_UNPAIRED_PRIMARY_SORTED_BAI = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-unpaired.primary.sorted.bam.bai")
-SRPRISM_TAG_BAM = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-unpaired.primary.sorted.withtags.bam")
-SRPRISM_READ_COUNT = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-nreads.tsv")
+#SRPRISM_TAG_BAM = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-unpaired.primary.sorted.withtags.bam")
+SRPRISM_READ_COUNT = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-nreads.tsv") # reads for a sample
+SRPRISM_CB_UMI_TABLE = join("output", "SRPRISM", "{patient}", "{sample}", "all-CB-UMI-table-{genome}.tsv") # table of all mapped reads with CB and UMI for a sample
+SRPRISM_CB_UMI_COUNT = join("output", "SRPRISM", "{patient}", "{sample}", "CB-UMI-count-{genome}.tsv") # table of the number of UMIs for each CB for a sample
 
 # PathSeq files
 PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
@@ -67,20 +69,35 @@ rule all:
 
 rule SRPRISM_output:
     input:
-        expand(SRPRISM_READ_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"])
+        expand(SRPRISM_READ_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
+        expand(SRPRISM_CB_UMI_TABLE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
+        expand(SRPRISM_CB_UMI_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
 
-# add the CB and UB tag from the CellRanger BAM to the SRPRISM BAM
-rule add_CB_UB_tags_to_SRPRISM_BAM:
+rule add_CR_tags_SRPRISM:
     conda:
         "../pathogen-discovery-rules/envs/pysam.yaml"
     input:
         CR_BAM_FILE,
-        SRPRISM_UNPAIRED_PRIMARY_SORTED_BAM,
+        SRPRISM_UNPAIRED_PRIMARY_SORTED_BAM
     output:
-        SRPRISM_TAG_BAM,
+        SRPRISM_CB_UMI_TABLE,
+        SRPRISM_CB_UMI_COUNT
     script:
-        "../pathogen-discovery-rules/src/add_tags_to_PathSeq_bam.py"
+        "src/add_CR_tags_to_SRPRISM_bam.py"
 
+# add the CB and UB tag from the CellRanger BAM to the SRPRISM BAM
+# rule add_CB_UB_tags_to_SRPRISM_BAM:
+#     conda:
+#         "../pathogen-discovery-rules/envs/pysam.yaml"
+#     input:
+#         CR_BAM_FILE,
+#         SRPRISM_UNPAIRED_PRIMARY_SORTED_BAM,
+#     output:
+#         SRPRISM_TAG_BAM,
+#     script:
+#         "../pathogen-discovery-rules/src/add_tags_to_PathSeq_bam.py"
+
+# rule to count the total number of reads from a BAM sample
 rule count_total_n_reads:
     input:
         SRPRISM_UNPAIRED_PRIMARY_SORTED_BAM
@@ -98,17 +115,7 @@ rule move_FQ_for_SRPRISM:
     shell:
         "zcat -c {input} > {output}"
 
-# rule add_CR_tags_SRPRISM:
-#     conda:
-#         "../pathogen-discovery-rules/envs/pysam.yaml"
-#     input:
-#         CR_BAM_FILE,
-#         SRPRISM_UNPAIRED_PRIMARY_BAM
-#     output:
-#         SRPRISM_CB_UMI_TABLE,
-#         SRPRISM_CB_UMI_COUNT
-#     script:
-#         "src/add_CR_tags_to_SRPRISM_bam.py"
+
 
 ### rules to download SL1344 reference files ###
 
