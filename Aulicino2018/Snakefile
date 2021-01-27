@@ -57,8 +57,6 @@ GENOME_GFF = join("raw", "{genome}.gff")
 BED_FILTER_FILE=join("raw", "{genome}_{filter}.bed")
 
 # SRPRISM Output Files
-STAR_UNALIGNED_FQ1 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_1.fq")
-STAR_UNALIGNED_FQ2 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_2.fq")
 SRPRISM_INPUT_FQ1 = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "unaligned_1.fq")
 SRPRISM_INPUT_FQ2 = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "unaligned_2.fq")
 SRPRISM_PROPER_PAIRED_PRIMARY_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-proper-paired.primary.bam")
@@ -74,7 +72,7 @@ GFF_READCOUNT_FILE = join("output", "{patient}", "{sample}-{plate}-{cell}", "{ge
 
 
 
-localrules: rename_FQ_files, intersect_BAM_GFF
+localrules: intersect_BAM_GFF
 
 plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
@@ -86,11 +84,8 @@ plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
 rule all:
     input:
-        expand(SRPRISM_PROPER_PAIRED_PRIMARY_BAM,  zip, patient=cells["patient"],
-               sample=cells["sample"], plate=cells["plate"], cell=cells["cell"],
-               genome=["D23580"]*cells.shape[0])
         # expand(GFF_READCOUNT_FILE, zip, patient=exposed_cells["patient"], sample=exposed_cells["sample"], plate=exposed_cells["plate"], cell=exposed_cells["cell"], genome=exposed_cells["infection"]),
-        # expand(SRPRISM_COUNT_FILE, patient="Pt0", sample="S0", genome=["LT2", "D23580"]),
+        expand(SRPRISM_COUNT_FILE, patient="Pt0", sample="S0", genome=["LT2", "D23580"]),
         # expand(SRPRISM_COUNT_FILE, patient="Pt0", sample="S0"),
         # expand(SRPRISM_FILTER_COUNT_FILE, patient="Pt0", sample="S0", filter=["rRNA", "16S", "protein_coding"])
 
