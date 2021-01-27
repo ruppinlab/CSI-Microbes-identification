@@ -10,8 +10,8 @@ configfile: "config/PathSeq-config.yaml"
 # URLs
 LT2_genome_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.fna.gz"
 D23580_genome_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/900/538/085/GCF_900538085.1_D23580_liv/GCF_900538085.1_D23580_liv_genomic.fna.gz"
-LT2_GTF_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.gtf.gz"
-D23580_GTF_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/900/538/085/GCF_900538085.1_D23580_liv/GCF_900538085.1_D23580_liv_genomic.gtf.gz"
+LT2_GFF_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.gff.gz"
+D23580_GFF_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/900/538/085/GCF_900538085.1_D23580_liv/GCF_900538085.1_D23580_liv_genomic.gff.gz"
 
 # metadata
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
@@ -33,7 +33,7 @@ include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
 include: "../RNA-snakemake-rules/rules/SRPRISM-paired.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-SS2-STARsolo.smk"
 #include: "../pathogen-discovery-rules/rules/CAMMiQ.smk"
 
 # directories
@@ -59,9 +59,10 @@ BED_FILTER_FILE=join("raw", "{genome}_{filter}.bed")
 # SRPRISM Output Files
 STAR_UNALIGNED_FQ1 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_1.fq")
 STAR_UNALIGNED_FQ2 = join("output", "star", "{patient}-{sample}-{plate}-{cell}", "unaligned_2.fq")
-SRPRISM_INPUT_FQ1 = join("output", "SRPRISM", "{patient}", "{identifier}", "unaligned_1.fq")
-SRPRISM_INPUT_FQ2 = join("output", "SRPRISM", "{patient}", "{identifier}", "unaligned_2.fq")
-SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.primary.sorted.bam.bai")
+SRPRISM_INPUT_FQ1 = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "unaligned_1.fq")
+SRPRISM_INPUT_FQ2 = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "unaligned_2.fq")
+SRPRISM_PROPER_PAIRED_PRIMARY_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.primary.bam")
+SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.primary.sorted.bam")
 SRPRISM_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "read_counts.tsv")
 # SRPRISM_FILTER_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "{filter}_read_counts.tsv")
 #
@@ -84,7 +85,7 @@ exposed_cells = cells.loc[cells.infection.isin(["LT2", "D23580"])]
 
 rule all:
     input:
-        expand(GFF_READCOUNT_FILE, zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
+        expand(GFF_READCOUNT_FILE, zip, patient=exposed_cells["patient"], sample=exposed_cells["sample"], plate=exposed_cells["plate"], cell=exposed_cells["cell"], genome=exposed_cells["infection"]),
         # expand(SRPRISM_COUNT_FILE, patient="Pt0", sample="S0"),
         # expand(SRPRISM_FILTER_COUNT_FILE, patient="Pt0", sample="S0", filter=["rRNA", "16S", "protein_coding"])
 
