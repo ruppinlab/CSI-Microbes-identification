@@ -76,15 +76,11 @@ localrules: intersect_BAM_GFF
 
 plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
-#exposed_cells = cells.loc[cells.infection.isin(["LT2", "D23580"])]
-#unexposed_cells = cells.loc[~cells.infection.isin(["LT2", "D23580"])]
-#D23580_cells = cells.loc[cells.infection == "D23580"]
-# LT2_cells = LT2_cells.iloc[0:10]
-
 
 rule all:
     input:
-        # expand(GFF_READCOUNT_FILE, zip, patient=exposed_cells["patient"], sample=exposed_cells["sample"], plate=exposed_cells["plate"], cell=exposed_cells["cell"], genome=exposed_cells["infection"]),
+        expand(GFF_READCOUNT_FILE, zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"], genome=["LT2"]*cells.shape[0]),
+        expand(GFF_READCOUNT_FILE, zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"], genome=["D23580"]*cells.shape[0]),
         expand(SRPRISM_COUNT_FILE, patient="Pt0", sample="S0", genome=["LT2", "D23580"]),
         # expand(SRPRISM_COUNT_FILE, patient="Pt0", sample="S0"),
         # expand(SRPRISM_FILTER_COUNT_FILE, patient="Pt0", sample="S0", filter=["rRNA", "16S", "protein_coding"])
