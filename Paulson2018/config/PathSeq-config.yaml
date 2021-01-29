@@ -4,16 +4,16 @@ samples: data/samples.tsv
 units: data/units.tsv
 
 params:
-  PathSeq: ""
-  PathSeqScore: ""
+  PathSeq: "--min-clipped-read-length 50 --min-base-quality 1 --max-masked-bases 10 --dust-t 24 "
+  PathSeqScore: "--min-score-identity .7"
 
 PathSeq:
   bam_file: "output/BAM/{patient}-{sample}-unaligned.bam"
-  microbe_fasta: "../Aulicino2018/data/microbev1.fa"
-  microbe_fai: "../Aulicino2018/data/microbev1.fa.fai"
-  microbe_dict: "../Aulicino2018/data/microbev1.dict"
-  microbe_bwa_image: "../Aulicino2018/data/microbev1.fa.img"
-  taxonomy_db: "../Aulicino2018/data/microbev1_release201_taxonomy.db"
+  microbe_fasta: "/data/Robinson-SB/CSI-Microbes-identification/Aulicino2018/data/microbev1.fa"
+  microbe_fai: "/data/Robinson-SB/CSI-Microbes-identification/Aulicino2018/data/microbev1.fa.fai"
+  microbe_dict: "/data/Robinson-SB/CSI-Microbes-identification/Aulicino2018/data/microbev1.dict"
+  microbe_bwa_image: "/data/Robinson-SB/CSI-Microbes-identification/Aulicino2018/data/microbev1.fa.img"
+  taxonomy_db: "/data/Robinson-SB/CSI-Microbes-identification/Aulicino2018/data/microbev1_release201_taxonomy.db"
   host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
 
