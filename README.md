@@ -1,10 +1,10 @@
 # CSI-Microbes Identification
 
-This repository contains the workflows to identify microbial reads from scRNA-seq data.
+This repository contains part of the workflows for reproducing the results from the bioarxiv paper [Identifying the Landscape of Intratumoral Microbes via a Single Cell Transcriptomic Analysis](https://www.biorxiv.org/content/10.1101/2020.05.14.096230v1) by Welles Robinson, Fiorella Schischlik, Michael Gertz, Alejandro Schaffer and Eytan Ruppin.  This repository contains the workflows to identify microbial reads from droplet-based (10x) and plate-based (Smart-seq2) scRNA-seq datasets. These microbial reads can then be analyzed using the [CSI-Microbes-analysis repository](https://github.com/ruppinlab/CSI-Microbes-analysis). The code in this repository was written by Welles Robinson and alpha-tested by Alejandro Schaffer.
 
 ## Set-up
 
-This workflow is only set-up to be run on the NIH Biowulf cluster. This workflow expects that conda has been installed. For instructions on how to install conda, see [conda install documentation](https://docs.conda.io/projects/conda/en/latest/user-guide/install/).
+The workflows in this repository are set-up to be run specifically on the NIH Biowulf cluster. This workflow expects that conda has been installed. For instructions on how to install conda, see [conda install documentation](https://docs.conda.io/projects/conda/en/latest/user-guide/install/).
 
 Next, the GitHub repository needs to be cloned as below. The below instructions assume that you have an ssh key associated with your GitHub account. If you do not, you can generate a new ssh key and associate it with your GitHub username by following [these instructions](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
 
@@ -12,7 +12,7 @@ Next, the GitHub repository needs to be cloned as below. The below instructions 
 git clone git@github.com:ruppinlab/CSI-Microbes-identification.git
 ```
 
-The above command may return an error like
+The above command may return an error such as
 
 ```
 Permission denied (publickey).
@@ -22,13 +22,21 @@ Please make sure you have the correct access rights and the repository exists.
 
 In this case, your ssh key may not be associated with your GitHub account. Please follow the instructions above and re-try. The below git submodule commands assume that your ssh has been associated with your GitHub account.
 
-This repository uses [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules), which need to be initialized and fetched.
+This repository uses two [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) ([RNA-snakemake-rules](https://github.com/ruppinlab/RNA-snakemake-rules) and [pathogen-discovery-rules](https://github.com/ruppinlab/pathogen-discovery-rules)), which need to be initialized and fetched using the following commands.
 
 ```
 cd CSI-Microbes-identification
 git submodule init
 git submodule update
 ```
+
+## Software Dependencies
+
+CSI-Microbes-identification depends on the following software packages that are loaded via the Biowulf module system: snakemake (latest=5.24.1), sratoolkit (latest=2.10.9), cellranger (4.0.0), samtools (latest=1.11), bedtools (latest2.30.0), picard (latest=2.23.7) and GATK (4.1.8.1). CSI-Microbes-identification also depends on the following conda software packages from the conda-forge channel: fastp (0.20.1) and pysam (latest). CSI-Microbes-identification for Smart-seq2 also depends on STAR (2.7.6a_patch_2020-11-16), which must be downloaded from GitHub (there is currently no rule to download the executable and the current path to the STAR executable is hardecoded and requires access to the Biowulf directory `/data/Robinson-SB`).
+
+## Database Dependencies
+
+Currently, CSI-Microbes-identification requires the path to PathSeq database files to be hardcoded in the `config/PathSeq-config.yaml`. The code to generate these files is not ready and so currently execution of the pipeline depends on access to the Biowulf directory `/data/Robinson-SB`.
 
 ## Running CSI-Microbes-identification
 
@@ -38,19 +46,34 @@ The code in this pipeline is designed to analyze scRNA-seq datasets generated us
 
 ### Running CSI-Microbes-identification for Ben-Moshe2019 10x dataset
 
-The example 10x datasets analyzed in our paper is `Ben-Moshe2019`, which performed 10x 3' v2 scRNA-seq (read length=58bp) on ~3,500 immune cells exposed to _Salmonella SL1344_ strain and ~3,500 control cells. To run Ben-Moshe2019 (which can take ~18 hours), run the below command.
+The gold-standard 10x dataset analyzed in our paper is `Ben-Moshe2019`, which performed 10x 3' v2 scRNA-seq (read length=58bp) on ~3,500 immune cells exposed to _Salmonella SL1344_ strain and ~3,500 control cells. To run Ben-Moshe2019 (which can take ~18 hours), run the below command.
 
 ```
 ./scripts/run-Ben-Moshe2019.sh
 ```
 
-The expected output of this pipeline is one pathseq.txt file for each cell. A cell is specified by the unique combination of patient, sample and cell barcode. The cell metadata is specified in the `data/units.tsv` file. For Ben-Moshe2019, you can see that there is one patient (Pt0), two samples (GSM3454528, the control cells, and GSM3454529, the exposed cells) and 7,000 cells. However, the reads from each sample were sequenced in four lanes, which are represented in `data/samples.tsv`.
+The expected output of this pipeline is one pathseq.txt file for each cell. A cell is specified by the unique combination of patient, sample and cell barcode. The cell metadata is specified in the `data/units.tsv` file. For Ben-Moshe2019, you can see that there is one patient (Pt0), two samples (GSM3454528, the control cells, and GSM3454529, the exposed cells) and 7,000 cells. Moreover, the reads from each sample were sequenced in four lanes, which are represented in `data/samples.tsv`.
 
-CSI-Microbes-identification groups cells together by their sample, which should come from a single GEM well (which can contain multiple sequencing runs or multiple lanes from the same sequencing run). One sample is processed through CellRanger count, the aligned reads are filtered and the unaligned reads are trimmed and cleaned. Next, the cleaned unaligned are mapped to microbial genomes through PathSeq, which produces a score file (`output/PathSeq/{patient}-{sample}/pathseq.txt`) and BAM file (`output/PathSeq/{patient}-{sample}/pathseq.bam`) for all the reads in the sample. Next, the reads in the PathSeq BAM are merged with the CellRanger BAM file to add the cell barcode and UMI tags to the microbe annotations. Finally, we split the sample-level PathSeq BAM files into a cell barcode-level PathSeq BAM file and score it to create a cell-specific pathseq.txt file (`output/PathSeq/{patient}-{sample}-{cell}/pathseq.txt`).
+CSI-Microbes-identification groups cells together by their sample, which should come from a single GEM (Gelbeads in EMulsion) well, which can contain multiple sequencing runs or multiple lanes from the same sequencing run. One sample is processed through CellRanger count, the aligned reads are filtered and the unaligned reads are trimmed and cleaned. Next, the cleaned unaligned are mapped to microbial genomes through PathSeq, which produces a score file (`output/PathSeq/{patient}-{sample}/pathseq.txt`) and BAM file (`output/PathSeq/{patient}-{sample}/pathseq.bam`) for all the reads in the sample. Next, the reads in the PathSeq BAM are merged with the CellRanger BAM file to add the cell barcode and UMI tags to the microbe annotations. Finally, we split the sample-level PathSeq BAM files into a cell barcode-level PathSeq BAM file and score it to create a cell-specific pathseq.txt file (`output/PathSeq/{patient}-{sample}-{cell}/pathseq.txt`).
 
 ### Running CSI-Microbes-identification for additional 10x datasets
 
-To run CSI-Microbes-identification on additional 10x datasets, you should create a separate top-level directory (first-author last name publication year). Many files including `config/cluster.json`, which specifies the requirements for each job submitted to the cluster, `config/PathSeq-config.yaml`, which specifies rule parameters and host genome files, `scripts/run-snakemake.sh`, which contains the code for the Snakemake instance that runs localrules and submits jobs to the cluster) and `Snakemake` can likely be copied verbatim from `Ben-Moshe2019`. It is important to generate appropriate `data/units.tsv` and `data/samples.tsv` files. The `data/samples.tsv` file must contain the following columns: patient, sample and lane. The `data/units.tsv` must contain the following columns: patient, sample and barcode. The barcode must be identical to the barcode reported by CellRanger in the CB tag in the output BAM or else the pipeline will report all cells have zero microbial reads. It is likely that additional datasets will require their own rules for downloading the FASTQ files (in my experience, there are even differences between datasets from the same host ex. SRA).
+To run CSI-Microbes-identification on additional 10x datasets, you will need to set up some data files and some instructions for running the pipeline in the form of scripts. Below are the directories and files that are needed to add an example dataset `Robinson2021`.
+
+```
+Robinson2021/
+- config/
+  - cluster.json - specifies the cluster requirements for particular rules
+  - PathSeq-config.yaml - specifies parameters and files (such as host genome files)
+- data/
+  - samples.tsv - must contain columns named patient, sample and lane (column order is irrelevant and additional columns may be included)
+  - units.tsv - must contain columns named patient, sample and barcode (column order is irrelevant and additional columns may be included)
+- scripts/
+  - run-snakemake.sh - code for running the Snakemake instance that runs local rules and submits jobs to the cluster
+- Snakefile - contains rules for downloading the data and includes .smk files that contain rules that are reused
+scripts/
+- run-Robinson2021-microbes.sh - submits Robinson2021/scripts/run-snakemake.sh to the Biowulf cluster
+```
 
 
 ## FAQs
@@ -103,7 +126,7 @@ snakemake -n --quiet
 
 ### What if I don't have access to the ccr partition?
 
-This workflow assumes access to the ccr and norm partition. This assumption is hardcoded in the `scripts/run-Ben-Moshe2019.sh` script and `Ben-Moshe2019/config/cluster.json`.
+This workflow assumes access to the ccr and norm partition. This assumption is hardcoded in files such as `scripts/run-Ben-Moshe2019.sh` script and `Ben-Moshe2019/config/cluster.json`.
 
 If you do not have access to the ccr partition, you should change `scripts/run-Ben-Moshe2019.sh` from
 
@@ -157,7 +180,7 @@ to
 
 The expected output files from CSI-Microbes-identification are pathseq.txt files, which are output in `output/PathSeq`. For example, the pathseq file for cell barcode TTTCCTCTCCACTGGG-1 from sample GSM3454529 (exposed to _Salmonella_) is located at `output/PathSeq/Pt0-GSM3454529-TTTCCTCTCCACTGGG-1/pathseq.txt`. These output files are used as input to [CSI-Microbes-analysis](https://github.com/ruppinlab/CSI-Microbes-analysis), which computes the differential abundance of microbes across cell-types.
 
-## Aulicino2018
+<!-- ## Aulicino2018
 
 There are two key sets of output files generated by this pipeline for Aulicino2018. The first set of files are the read count files resulting from directly mapping the unaligned reads (the reads that do not map to the human genome) against the _Salmonella_ strain genome used for infection (_LT2_ or _D23580_) using SRPRISM.
 
@@ -184,4 +207,10 @@ Currently, the pipeline is set-up to generate the second set of files. To genera
 
 ## Paulson2018
 
-[Paulson2018](https://www.nature.com/articles/s41467-018-06300-3) performed scRNA-seq (10x 3' scRNA-seq for patient 2586-4 (read length=98bp) and 5' scRNA-seq for patient 9245-3 (read length=91bp)) on two patients with Merkel cell carcinoma.
+[Paulson2018](https://www.nature.com/articles/s41467-018-06300-3) performed scRNA-seq (10x 3' scRNA-seq for patient 2586-4 (read length=98bp) and 5' scRNA-seq for patient 9245-3 (read length=91bp)) on two patients with Merkel cell carcinoma. -->
+
+### How to file a problem report?
+
+Send a detailed e-mail to Welles Robinson (Wells.Robinson@nih.gov). You may wish to record the commands you issued and the responses you received within an instance of the unix script and then send the contents of the script as part of your report. A run of a program or pipeline such as CSI-Microbes-Identification is an experiment. Please report what you observe and why the output you received  differs from what you expected without speculating as to the cause of the discrepancy.
+
+### How to resume a run that did not complete?
