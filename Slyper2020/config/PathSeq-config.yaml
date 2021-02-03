@@ -3,25 +3,19 @@ patients: data/patients.tsv
 samples: data/samples.tsv
 units: data/units.tsv
 
-trimming:
-  skip: True
-
-ref:
-  genome: "raw/genome/GRCh38.p13.genome.fa"
-  annotation: "raw/genome/gencode.v34.chr_patch_hapl_scaff.annotation.gtf"
-
 PathSeq:
-  bam_file: "{patient}-{sample}/outs/possorted_genome_bam.bam"
-  microbe_fasta: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa"
-  microbe_fai: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.fai"
-  microbe_dict: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.dict"
-  microbe_bwa_image: "/data/Robinson-SB/PathSeq-data/pathseq_microbe.fa.img"
-  taxonomy_db: "/data/Robinson-SB/PathSeq-data/pathseq_taxonomy.db"
-  host_img: "data/GRCh38.p13.img"
-  host_bfi: "data/GRCh38.p13.hss"
+  bam_file: "output/BAM/{patient}-{sample}-unaligned.bam"
+  microbe_fasta: "/data/Robinson-SB/CSI-Microbes-identification/Aulicino2018/data/microbev1.fa"
+  microbe_fai: "/data/Robinson-SB/CSI-Microbes-identification/Aulicino2018/data/microbev1.fa.fai"
+  microbe_dict: "/data/Robinson-SB/CSI-Microbes-identification/Aulicino2018/data/microbev1.dict"
+  microbe_bwa_image: "/data/Robinson-SB/CSI-Microbes-identification/Aulicino2018/data/microbev1.fa.img"
+  taxonomy_db: "/data/Robinson-SB/CSI-Microbes-identification/Aulicino2018/data/microbev1_release201_taxonomy.db"
+  host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
+  host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
 
 params:
-  PathSeq: ""
+  PathSeq: "--min-clipped-read-length 38 --min-base-quality 1 --max-masked-bases 10 --dust-t 24"
+  PathSeqScore: ""
 
 CellRanger:
   genome_dir: "$CELLRANGER_REF300/GRCh38"
