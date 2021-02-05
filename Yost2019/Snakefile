@@ -37,8 +37,7 @@ pathseq_output = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
 # Snakemake includes
 
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-single.smk"
-include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
 
 rule all:
     input:
