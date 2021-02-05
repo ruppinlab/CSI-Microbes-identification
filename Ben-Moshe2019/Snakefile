@@ -75,7 +75,7 @@ rule SRPRISM_output:
 
 rule add_CR_tags_SRPRISM:
     conda:
-        "../pathogen-discovery-rules/envs/pysam.yaml"
+        "../envs/pysam-env.yaml"
     input:
         CR_BAM_FILE,
         SRPRISM_UNPAIRED_PRIMARY_SORTED_BAM
