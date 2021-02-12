@@ -1,0 +1,44 @@
+from os.path import join
+import pandas as pd
+from snakemake.utils import min_version
+##### set minimum snakemake version #####
+min_version("5.1.2")
+
+##### load config and sample sheets #####
+configfile: "config/PathSeq-config.yaml"
+
+wildcard_constraints:
+    patient="Pt0",
+    sample="GSM3454529"
+
+patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
+# validate(samples, schema="schemas/samples.schema.yaml")
+
+lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample", "lane"], drop=False)
+lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
+samples = lanes[["sample", "patient"]].drop_duplicates()
+
+cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
+
+# Snakemake includes
+include: "../RNA-snakemake-rules/rules/cellranger.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
+
+# Directories
+FASTQ_DIR = "FASTQ"
+PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")
+CR_SAMPLE_ODIR = "{patient}-{sample}"
+
+# CellRanger Files
+CB_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_R1_001.fastq.gz")
+cDNA_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_R2_001.fastq.gz")
+CR_BAM_FILE = join(CR_SAMPLE_ODIR, "outs", "possorted_genome_bam.bam")
+
+# PathSeq files
+PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq.txt")
+
+rule all:
+    input:
+        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"])
+        #expand(SRPRISM_TAG_BAM, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"])
