@@ -1,0 +1,14 @@
+tax_id	taxonomy	type	name	kingdom	score	score_normalized	reads	unambiguous	reference_length
+80865	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria|Burkholderiales|Comamonadaceae|Delftia	genus	Delftia	Bacteria	1.0	99.99999999999999	1	1	0
+80864	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria|Burkholderiales|Comamonadaceae	family	Comamonadaceae	Bacteria	1.0	99.99999999999999	1	1	0
+1	root	root	root	root	1.0	99.99999999999999	1	1	0
+2	root|cellular_organisms|Bacteria	superkingdom	Bacteria	Bacteria	1.0	99.99999999999999	1	1	0
+1920191	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria|Burkholderiales|Comamonadaceae|Delftia|unclassified_Delftia|Delftia_sp._HK171	species	Delftia_sp._HK171	Bacteria	0.3333333333333333	33.33333333333333	1	0	6430384
+80866	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria|Burkholderiales|Comamonadaceae|Delftia|Delftia_acidovorans	species	Delftia_acidovorans	Bacteria	0.3333333333333333	33.33333333333333	1	0	0
+2613839	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria|Burkholderiales|Comamonadaceae|Delftia|unclassified_Delftia	no_rank	unclassified_Delftia	Bacteria	0.6666666666666666	66.66666666666666	1	0	0
+1224	root|cellular_organisms|Bacteria|Proteobacteria	phylum	Proteobacteria	Bacteria	1.0	99.99999999999999	1	1	0
+80840	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria|Burkholderiales	order	Burkholderiales	Bacteria	1.0	99.99999999999999	1	1	0
+131567	root|cellular_organisms	no_rank	cellular_organisms	root	1.0	99.99999999999999	1	1	0
+398578	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria|Burkholderiales|Comamonadaceae|Delftia|Delftia_acidovorans|Delftia_acidovorans_SPH-1	strain	Delftia_acidovorans_SPH-1	Bacteria	0.3333333333333333	33.33333333333333	1	0	6767514
+742013	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria|Burkholderiales|Comamonadaceae|Delftia|unclassified_Delftia|Delftia_sp._Cs1-4	species	Delftia_sp._Cs1-4	Bacteria	0.3333333333333333	33.33333333333333	1	0	6685842
+28216	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria	class	Betaproteobacteria	Bacteria	1.0	99.99999999999999	1	1	0

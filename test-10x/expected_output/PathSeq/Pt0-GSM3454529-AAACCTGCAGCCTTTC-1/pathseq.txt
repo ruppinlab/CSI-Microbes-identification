@@ -1,0 +1,1 @@
+tax_id	taxonomy	type	name	kingdom	score	score_normalized	reads	unambiguous	reference_length

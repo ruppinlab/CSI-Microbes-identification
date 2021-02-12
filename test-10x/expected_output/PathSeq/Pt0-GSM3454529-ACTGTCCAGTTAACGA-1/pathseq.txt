@@ -1,0 +1,12 @@
+tax_id	taxonomy	type	name	kingdom	score	score_normalized	reads	unambiguous	reference_length
+31969	root|cellular_organisms|Bacteria|Terrabacteria_group|Tenericutes|Mollicutes	class	Mollicutes	Bacteria	1.0	100.0	1	1	0
+1	root	root	root	root	1.0	100.0	1	1	0
+2	root|cellular_organisms|Bacteria	superkingdom	Bacteria	Bacteria	1.0	100.0	1	1	0
+65123	root|cellular_organisms|Bacteria|Terrabacteria_group|Tenericutes|Mollicutes|Mycoplasmatales|Mycoplasmataceae|Mycoplasma|Mycoplasma_wenyonii	species	Mycoplasma_wenyonii	Bacteria	1.0	100.0	1	1	0
+1783272	root|cellular_organisms|Bacteria|Terrabacteria_group	clade	Terrabacteria_group	Bacteria	1.0	100.0	1	1	0
+2085	root|cellular_organisms|Bacteria|Terrabacteria_group|Tenericutes|Mollicutes|Mycoplasmatales	order	Mycoplasmatales	Bacteria	1.0	100.0	1	1	0
+544448	root|cellular_organisms|Bacteria|Terrabacteria_group|Tenericutes	phylum	Tenericutes	Bacteria	1.0	100.0	1	1	0
+2092	root|cellular_organisms|Bacteria|Terrabacteria_group|Tenericutes|Mollicutes|Mycoplasmatales|Mycoplasmataceae	family	Mycoplasmataceae	Bacteria	1.0	100.0	1	1	0
+2093	root|cellular_organisms|Bacteria|Terrabacteria_group|Tenericutes|Mollicutes|Mycoplasmatales|Mycoplasmataceae|Mycoplasma	genus	Mycoplasma	Bacteria	1.0	100.0	1	1	0
+131567	root|cellular_organisms	no_rank	cellular_organisms	root	1.0	100.0	1	1	0
+1197325	root|cellular_organisms|Bacteria|Terrabacteria_group|Tenericutes|Mollicutes|Mycoplasmatales|Mycoplasmataceae|Mycoplasma|Mycoplasma_wenyonii|Mycoplasma_wenyonii_str._Massachusetts	strain	Mycoplasma_wenyonii_str._Massachusetts	Bacteria	1.0	100.0	1	1	650228

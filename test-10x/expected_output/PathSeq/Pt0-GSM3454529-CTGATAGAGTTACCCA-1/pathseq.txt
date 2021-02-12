@@ -1,0 +1,14 @@
+tax_id	taxonomy	type	name	kingdom	score	score_normalized	reads	unambiguous	reference_length
+1760	root|cellular_organisms|Bacteria|Terrabacteria_group|Actinobacteria|Actinobacteria	class	Actinobacteria	Bacteria	1.0	100.0	1	1	0
+1	root	root	root	root	1.0	100.0	1	1	0
+2	root|cellular_organisms|Bacteria	superkingdom	Bacteria	Bacteria	1.0	100.0	1	1	0
+1912216	root|cellular_organisms|Bacteria|Terrabacteria_group|Actinobacteria|Actinobacteria|Propionibacteriales|Propionibacteriaceae|Cutibacterium	genus	Cutibacterium	Bacteria	1.0	100.0	1	1	0
+267747	root|cellular_organisms|Bacteria|Terrabacteria_group|Actinobacteria|Actinobacteria|Propionibacteriales|Propionibacteriaceae|Cutibacterium|Cutibacterium_acnes|Cutibacterium_acnes_KPA171202	strain	Cutibacterium_acnes_KPA171202	Bacteria	0.5	50.0	1	0	2560265
+131567	root|cellular_organisms	no_rank	cellular_organisms	root	1.0	100.0	1	1	0
+85009	root|cellular_organisms|Bacteria|Terrabacteria_group|Actinobacteria|Actinobacteria|Propionibacteriales	order	Propionibacteriales	Bacteria	1.0	100.0	1	1	0
+33010	root|cellular_organisms|Bacteria|Terrabacteria_group|Actinobacteria|Actinobacteria|Propionibacteriales|Propionibacteriaceae|Cutibacterium|Cutibacterium_avidum	species	Cutibacterium_avidum	Bacteria	0.5	50.0	1	0	0
+1747	root|cellular_organisms|Bacteria|Terrabacteria_group|Actinobacteria|Actinobacteria|Propionibacteriales|Propionibacteriaceae|Cutibacterium|Cutibacterium_acnes	species	Cutibacterium_acnes	Bacteria	0.5	50.0	1	0	0
+1783272	root|cellular_organisms|Bacteria|Terrabacteria_group	clade	Terrabacteria_group	Bacteria	1.0	100.0	1	1	0
+31957	root|cellular_organisms|Bacteria|Terrabacteria_group|Actinobacteria|Actinobacteria|Propionibacteriales|Propionibacteriaceae	family	Propionibacteriaceae	Bacteria	1.0	100.0	1	1	0
+201174	root|cellular_organisms|Bacteria|Terrabacteria_group|Actinobacteria	phylum	Actinobacteria	Bacteria	1.0	100.0	1	1	0
+1170318	root|cellular_organisms|Bacteria|Terrabacteria_group|Actinobacteria|Actinobacteria|Propionibacteriales|Propionibacteriaceae|Cutibacterium|Cutibacterium_avidum|Cutibacterium_avidum_44067	strain	Cutibacterium_avidum_44067	Bacteria	0.5	50.0	1	0	2526138

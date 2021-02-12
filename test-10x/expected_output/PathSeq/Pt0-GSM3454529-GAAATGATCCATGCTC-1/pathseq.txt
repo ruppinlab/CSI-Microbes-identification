@@ -1,0 +1,10 @@
+tax_id	taxonomy	type	name	kingdom	score	score_normalized	reads	unambiguous	reference_length
+149698	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria|Burkholderiales|Oxalobacteraceae|Massilia	genus	Massilia	Bacteria	1.0	100.0	1	1	0
+1	root	root	root	root	1.0	100.0	1	1	0
+2	root|cellular_organisms|Bacteria	superkingdom	Bacteria	Bacteria	1.0	100.0	1	1	0
+871742	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria|Burkholderiales|Oxalobacteraceae|Massilia|Massilia_flava	species	Massilia_flava	Bacteria	1.0	100.0	1	1	6922031
+75682	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria|Burkholderiales|Oxalobacteraceae	family	Oxalobacteraceae	Bacteria	1.0	100.0	1	1	0
+1224	root|cellular_organisms|Bacteria|Proteobacteria	phylum	Proteobacteria	Bacteria	1.0	100.0	1	1	0
+28216	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria	class	Betaproteobacteria	Bacteria	1.0	100.0	1	1	0
+80840	root|cellular_organisms|Bacteria|Proteobacteria|Betaproteobacteria|Burkholderiales	order	Burkholderiales	Bacteria	1.0	100.0	1	1	0
+131567	root|cellular_organisms	no_rank	cellular_organisms	root	1.0	100.0	1	1	0
