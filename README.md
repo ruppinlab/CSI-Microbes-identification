@@ -32,7 +32,7 @@ git submodule update
 
 ## Software Dependencies
 
-CSI-Microbes-identification depends on the following software packages that are loaded via the Biowulf module system: snakemake (latest=5.24.1), sratoolkit (latest=2.10.9), cellranger (4.0.0), samtools (latest=1.11), bedtools (latest2.30.0), picard (latest=2.23.7) and GATK (4.1.8.1). CSI-Microbes-identification also depends on the following conda software packages from the conda-forge channel: fastp (0.20.1) and pysam (latest). CSI-Microbes-identification for Smart-seq2 also depends on STAR (2.7.6a_patch_2020-11-16), which must be downloaded from GitHub (there is currently no rule to download the executable and the current path to the STAR executable is hardecoded and requires access to the Biowulf directory `/data/Robinson-SB`).
+CSI-Microbes-identification depends on the following software packages that are loaded via the Biowulf module system: snakemake (latest=5.24.1)<sup>[REF](#Snakemake)</sup>, sratoolkit (latest=2.10.9)<sup>[REF](#SRAToolkit)</sup>, cellranger (5.0.1)<sup>[REF](#CellRanger)</sup>, samtools (latest=1.11)<sup>[REF](#SAMtools)</sup>, bedtools (2.29.2)<sup>[REF](#BedTools)</sup>, picard (latest=2.23.7)<sup>[REF](#Picard)</sup> and GATK (4.1.8.1) <sup>[REF](#PathSeq)</sup>. CSI-Microbes-identification also depends on the following conda software packages from the conda-forge channel: fastp (0.20.1)<sup>[REF](#Fastp)</sup> and pysam (latest)<sup>[REF](#pysam)</sup>. CSI-Microbes-identification for Smart-seq2 also depends on STAR (2.7.6a_patch_2020-11-16)<sup>[REF](#STAR)</sup>, which must be downloaded from GitHub (there is currently no rule to download the executable and the current path to the STAR executable is hardecoded and requires access to the Biowulf directory `/data/Robinson-SB`).
 
 ## Database Dependencies
 
@@ -44,9 +44,25 @@ The output of the CSI-Microbes-identification pipeline is microbial abundance fi
 
 The code in this pipeline is designed to analyze scRNA-seq datasets generated using either Smart-Seq2 (or similar plate-based approaches) or 10x although it should be straightforward to extend this pipeline to analyze scRNA-seq datasets from additional approaches.
 
+### Test Run CSI-Microbes-identification
+
+We have created a small test directory `test-10x` for users to run to ensure that they can properly run the code base. The input fastq files are located at `test-10x/FASTQ/raw/Pt0/` (Yes, they were added to git. No, I do not feel good about it.). The input fastq files contains the reads belonging to 12 cells from Ben-Moshe2019. To run this directory, use the below command, which submits the job running the Snakemake instance to the server.
+
+```
+./scripts/run-test-10x.sh
+```
+
+The job that runs the Snakemake instance will also submit additional jobs to the server. In total, these jobs should last ~20 minutes (depending on waiting times for job allocation). The key output directories are placed in the directory `output/PathSeq`. This directory should contain 13 directories: one directory for the microbial reads found in the sample (`output/PathSeq/{patient}-{sample}/`) and one directory for each of the 12 cells processed (`output/PathSeq/{patient}-{sample}-{cell}/`). These directories contain the `pathseq.txt` file that contains the microbial reads identified in this cell. To check the results of your run, you can compare against expected results in `expected_output/PathSeq` using the following command (from within the `test-10x` directory)
+
+```
+diff -r output/PathSeq/ expected_output/PathSeq/
+```
+
+which should yield a list of files that exist only in `output/PathSeq/` but no differences between the files that exist in both directories.
+
 ### Running CSI-Microbes-identification for Ben-Moshe2019 10x dataset
 
-The gold-standard 10x dataset analyzed in our paper is `Ben-Moshe2019`, which performed 10x 3' v2 scRNA-seq (read length=58bp) on ~3,500 immune cells exposed to _Salmonella SL1344_ strain and ~3,500 control cells. To run Ben-Moshe2019 (which can take ~18 hours), run the below command.
+The gold-standard 10x dataset analyzed in our paper is `Ben-Moshe2019`<sup>[REF](#BenMoshe2019)</sup>, which performed 10x 3' v2 scRNA-seq (read length=58bp) on ~3,500 immune cells exposed to _Salmonella SL1344_ strain and ~3,500 control cells. To run Ben-Moshe2019 (which can take ~18 hours), run the below command.
 
 ```
 ./scripts/run-Ben-Moshe2019.sh
@@ -214,3 +230,44 @@ Currently, the pipeline is set-up to generate the second set of files. To genera
 Send a detailed e-mail to Welles Robinson (Wells.Robinson@nih.gov). You may wish to record the commands you issued and the responses you received within an instance of the unix script and then send the contents of the script as part of your report. A run of a program or pipeline such as CSI-Microbes-Identification is an experiment. Please report what you observe and why the output you received  differs from what you expected without speculating as to the cause of the discrepancy.
 
 ### How to resume a run that did not complete?
+
+If your run does not complete due to a failed job, you can kick off the pipeline again (after making the necessary changes) and Snakemake will resume from the last completed job. If there is an issue with the snakemake instance (ex. the node running the snakemake instance is killed), then it may be necessary to [unlock the directory](https://snakemake.readthedocs.io/en/stable/project_info/faq.html#how-does-snakemake-lock-the-working-directory) before kicking off the pipeline again.
+
+
+## References
+
+### Software Tools
+
+This pipeline leverages the many open-source tools that are listed below.
+
+<a id="CellRanger"></a> CellRanger [https://github.com/10XGenomics/cellranger](https://github.com/10XGenomics/cellranger)
+
+<a id="Fastp"></a> Chen, S., Zhou, Y., Chen, Y., & Gu, J. (2018). Fastp: An ultra-fast all-in-one FASTQ preprocessor. Bioinformatics, 34(17), i884–i890. [https://doi.org/10.1093/bioinformatics/bty560](https://doi.org/10.1093/bioinformatics/bty560)
+
+<a id="STAR"></a> Dobin, A., Davis, C. A., Schlesinger, F., Drenkow, J., Zaleski, C., Jha, S., Batut, P., Chaisson, M., & Gingeras, T. R. (2013). STAR: Ultrafast universal RNA-seq aligner. Bioinformatics, 29(1), 15–21. [https://doi.org/10.1093/bioinformatics/bts635](https://doi.org/10.1093/bioinformatics/bts635)
+
+<a id="Snakemake"></a> Köster, J., & Rahmann, S. (2012). Snakemake-a scalable bioinformatics workflow engine. Bioinformatics, 28(19), 2520–2522. [https://doi.org/10.1093/bioinformatics/bts480](https://doi.org/10.1093/bioinformatics/bts480)
+
+<a id="SAMtools"></a> Li, H., Handsaker, B., Wysoker, A., Fennell, T., Ruan, J., Homer, N., Marth, G., Abecasis, G., & Durbin, R. (2009). The Sequence Alignment/Map format and SAMtools. Bioinformatics, 25(16), 2078–2079. [https://doi.org/10.1093/bioinformatics/btp352](https://doi.org/10.1093/bioinformatics/btp352)
+
+<a id="SRPRISM"></a> Morgulis, A., & Agarwala, R. (2020). SRPRISM (Single Read Paired Read Indel Substitution Minimizer): an efficient aligner for assemblies with explicit guarantees. GigaScience, 9(4), 1–12. [https://doi.org/10.1093/gigascience/giaa023](https://doi.org/10.1093/gigascience/giaa023)
+
+<a id="Picard"></a> Picard [http://broadinstitute.github.io/picard/](http://broadinstitute.github.io/picard/)
+
+<a id="Pysam"></a> pysam [https://github.com/pysam-developers/pysam](https://github.com/pysam-developers/pysam)
+
+<a id="BedTools"></a> Quinlan, A. R., & Hall, I. M. (2010). BEDTools: A flexible suite of utilities for comparing genomic features. Bioinformatics, 26(6), 841–842. [https://doi.org/10.1093/bioinformatics/btq033](https://doi.org/10.1093/bioinformatics/btq033)
+
+<a id="SRAToolkit"></a> SRAToolkit [https://github.com/ncbi/sra-tools](https://github.com/ncbi/sra-tools)
+
+<a id="PathSeq"></a> Walker, M. A., Pedamallu, C. S., Ojesina, A. I., Bullman, S., Sharpe, T., Whelan, C. W., & Meyerson, M. (2018). GATK PathSeq: a customizable computational tool for the discovery and identification of microbial sequences in libraries from eukaryotic hosts. Bioinformatics (Oxford, England), 34(24), 4287–4289. [https://doi.org/10.1093/bioinformatics/bty501](https://doi.org/10.1093/bioinformatics/bty501)
+
+<a id="CAMMiQ"></a> Zhu, K., Robinson, W., Schaffer, A. A., Xu, J., Ruppin, E., Ergun, F., Ye, Y., & Sahinalp, C. (2020). Strain Level Microbial Detection and Quantification with Applications to Single Cell Metagenomics. BioRxiv, 2020.06.12.149245. [https://www.biorxiv.org/content/10.1101/2020.06.12.149245v2](https://www.biorxiv.org/content/10.1101/2020.06.12.149245v2)
+
+### Publications
+
+This repository processes data from the following publications.
+
+<a id="Aulicino2018"></a>Aulicino, A., Rue-Albrecht, K. C., Preciado-Llanes, L., Napolitani, G., Ashley, N., Cribbs, A., Koth, J., Lagerholm, B. C., Ambrose, T., Gordon, M. A., Sims, D., & Simmons, A. (2018). Invasive Salmonella exploits divergent immune evasion strategies in infected and bystander dendritic cell subsets. Nature Communications, 9(1). [https://doi.org/10.1038/s41467-018-07329-0](https://doi.org/10.1038/s41467-018-07329-0)
+
+<a id="BenMoshe2019"></a> Bossel Ben-Moshe, N., Hen-Avivi, S., Levitin, N., Yehezkel, D., Oosting, M., Joosten, L. A. B., Netea, M. G., & Avraham, R. (2019). Predicting bacterial infection outcomes using single cell RNA-sequencing analysis of human immune cells. Nature Communications, 10(1), 1–16. [https://doi.org/10.1038/s41467-019-11257-y](https://doi.org/10.1038/s41467-019-11257-y)
