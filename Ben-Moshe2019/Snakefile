@@ -155,7 +155,7 @@ rule download_FASTQ_from_SRA:
         temp(SRA_FASTQ2_FILE),
         temp(SRA_FASTQ3_FILE),
     shell:
-        "module load sratoolkit && "
+        "module load sratoolkit/2.9.6 && "
         "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
         "--include-technical --split-files {wildcards.run}"
 
