@@ -13,9 +13,10 @@ human_ref:
   annotation: "raw/genome/gencode.v34.primary_assembly.annotation.gtf"
 
 params:
-  PathSeq: ""
+  PathSeq: "--min-clipped-read-length 50 --min-base-quality 1 --max-masked-bases 10 --dust-t 24"
   STAR: ""
   PathSeqScore: ""
+  fastp: "--length_required 31"
 
 STAR:
   FASTQ_dir: "FASTQ/trimmed"
@@ -24,11 +25,11 @@ trimming:
   skip: False
 
 PathSeq:
-  bam_file: "output/star/{patient}-{sample}-{plate}/host.reads.filtered.bam"
+  bam_file: "output/star/{patient}-{sample}-{plate}/unaligned.bam"
   microbe_fasta: "../Aulicino2018/data/microbev1.fa"
   microbe_fai: "../Aulicino2018/data/microbev1.fa.fai"
   microbe_dict: "../Aulicino2018/data/microbev1.dict"
   microbe_bwa_image: "../Aulicino2018/data/microbev1.fa.img"
   taxonomy_db: "../Aulicino2018/data/microbev1_release201_taxonomy.db"
-  host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
+  host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host_ERCC92.img"
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
