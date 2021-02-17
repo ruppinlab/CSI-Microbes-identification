@@ -17,6 +17,9 @@ PathSeq:
   host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
 
+VecScreen:
+  contaminant_hits: "/data/Robinson-SB/run-VecScreen/output/microbev1-vecscreen-combined-matches.bed"
+
 CellRanger:
   genome_dir: "$CELLRANGER_REF300/GRCh38"
   chemistry: "auto"

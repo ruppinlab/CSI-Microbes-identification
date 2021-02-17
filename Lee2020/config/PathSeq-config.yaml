@@ -16,6 +16,9 @@ PathSeq:
   host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
 
+VecScreen:
+  contaminant_hits: "/data/Robinson-SB/run-VecScreen/output/microbev1-vecscreen-combined-matches.bed"
+
 params:
   PathSeq: "--min-clipped-read-length 50 --min-base-quality 1 --max-masked-bases 10 --dust-t 24 "
   PathSeqScore: ""

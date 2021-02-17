@@ -25,10 +25,11 @@ wildcard_constraints:
     cell="|".join(cells["cell"].unique()),
 
 plates_of_interest = [
-    "cy53_1_CD45_neg", "Cy71_CD45", "CY80_neg", "Cy80_II_CD45", "cy80_CD45_neg",
+    "cy53_1_CD45_neg", "Cy71_CD45", "CY80_neg", "cy80_CD45_neg",
     "Cy81_Bulk_CD45", "Cy81_FNA_CD45", "cy82_CD45_pos_1", "cy82_CD45_pos_2",
     "cy82_CD45_pos_3", "cy94_cd45neg_cd90pos"
 ]
+# removed - "Cy80_II_CD45",
 samples = samples.loc[samples.plate.isin(plates_of_interest)]
 # samples = samples.loc[samples["patient"] == "Melanoma_53"]
 # print(samples)
