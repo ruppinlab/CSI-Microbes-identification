@@ -1,0 +1,13 @@
+sample	patient	region	Run	lane
+scrBT1429m	P6	normal_tissue_adjacent_to_tumour	ERS2657938	S0_L001
+scrBT1430m	P6	tumour_edge	ERS2657939	S0_L002
+scrBT1431m	P6	tumour_middle_(in_between_core_and_edge_sample)	ERS2657940	S0_L003
+scrBT1432m	P6	tumour_core	ERS2657941	S0_L004
+BT1375	P7	tumour_core	ERS2657942	S5_L004
+BT1376	P7	tumour_middle_(in_between_core_and_edge_sample)	ERS2657943	S6_L005
+BT1377	P7	tumour_edge	ERS2657944	S7_L006
+BT1378	P7	normal_tissue_adjacent_to_tumour	ERS2657945	S8_L007
+scrBT1425	P8	tumour_core	ERS2657946	S11_L006
+scrBT1426	P8	tumour_middle_(in_between_core_and_edge_sample)	ERS2657947	S12_L006
+scrBT1427	P8	tumour_edge	ERS2657948	S13_L007
+scrBT1428	P8	normal_tissue_adjacent_to_tumour	ERS2657949	S14_L007
