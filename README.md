@@ -83,7 +83,7 @@ Robinson2021/
   - PathSeq-config.yaml - specifies parameters and files (such as host genome files)
 - data/
   - samples.tsv - must contain columns named patient, sample and lane (column order is irrelevant and additional columns may be included)
-  - units.tsv - must contain columns named patient, sample and barcode (column order is irrelevant and additional columns may be included)
+  - units.tsv - must contain columns named patient, sample and barcode (column order is irrelevant and additional columns may be included); the barcode must match the "CB" tag from the BAM outputted by CellRanger; usually the cell-barcode and cell-type annotations are published by the original authors (when they are not, I have successfully requested them via email)
 - scripts/
   - run-snakemake.sh - code for running the Snakemake instance that runs local rules and submits jobs to the cluster
 - Snakefile - contains rules for downloading the data and includes .smk files that contain rules that are reused
