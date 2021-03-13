@@ -7,6 +7,11 @@
         "gres": 10,
         "partition": "norm,ccr"
     },
+    "FASTQ":
+    {
+        "mem": "32g",
+        "gres": 200
+    },
     "cellranger_count":
     {
       "mem": "64g",
@@ -16,20 +21,18 @@
     "PathSeqPipelineSpark":
     {
       "time": "2-00:00:00",
-      "mem": "70g",
+      "mem": "96g",
       "nthreads": 10,
-      "gres": 300
+      "gres": 200
     },
     "add_CB_UB_tags_to_PathSeq_BAM":
     {
-      "mem": "48g",
+      "mem": "96g",
       "time": "4:00:00"
     },
-    "cell":
+    "add_CR_tags_SRPRISM":
     {
-      "mem": "4g",
-      "nthreads": 1,
-      "time": "2:00:00",
-      "partition": "quick"
+      "mem": "96g",
+      "time": "4:00:00"
     }
 }
