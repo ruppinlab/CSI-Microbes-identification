@@ -18,6 +18,11 @@
       "nthreads": 16,
       "time": "12:00:00"
     },
+    "run_fastp":
+    {
+      "mem": "32g",
+      "nthreads": 6
+    },
     "PathSeqPipelineSpark":
     {
       "time": "2-00:00:00",
