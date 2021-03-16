@@ -1,6 +1,7 @@
 #!/bin/bash
 
-module load snakemake/5.24.1
+#module load snakemake/5.24.1
+# load snakemake 6.0.5 (not currently available as a module) before submitting the job
 snakemake \
 --use-conda \
 --rerun-incomplete \
@@ -9,4 +10,5 @@ snakemake \
 --jobs 100 \
 --latency-wait 60 \
 --keep-going \
---local-cores 20 all
+--group-components split_PathSeq_BAM_by_CB_UB=500 PathSeqScoreSpark=500 \
+--local-cores 4 all

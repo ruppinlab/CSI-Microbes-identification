@@ -1,6 +1,8 @@
 #!/bin/bash
 
-module load snakemake
+#module load snakemake
+# temporarily use conda env for snakemake=6.0.5 because there is no module yet
+# conda activate snakemake-env
 snakemake \
 --use-conda \
 --rerun-incomplete \
@@ -9,4 +11,5 @@ snakemake \
 --jobs 100 \
 --latency-wait 60 \
 --keep-going \
---local-cores 20 all
+--group-components split_PathSeq_BAM_by_CB_UB=12 PathSeqScoreSpark=12 \
+--local-cores 4 all

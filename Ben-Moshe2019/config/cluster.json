@@ -34,5 +34,17 @@
     {
       "mem": "96g",
       "time": "4:00:00"
+    },
+    "split_PathSeq_BAM_by_CB_UB":
+    {
+      "mem": "32g",
+      "time": "4:00:00",
+      "nthreads": 16
+    },
+    "PathSeqScoreSpark":
+    {
+      "mem": "32g",
+      "time": "4:00:00",
+      "nthreads": 16
     }
 }

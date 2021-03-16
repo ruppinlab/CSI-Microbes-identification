@@ -30,9 +30,16 @@
       "mem": "96g",
       "time": "4:00:00"
     },
-    "add_CR_tags_SRPRISM":
+    "split_PathSeq_BAM_by_CB_UB":
     {
-      "mem": "96g",
-      "time": "4:00:00"
+      "mem": "16g",
+      "time": "1:00:00",
+      "nthreads": 8
+    },
+    "PathSeqScoreSpark":
+    {
+      "mem": "16g",
+      "time": "1:00:00",
+      "nthreads": 8
     }
 }
