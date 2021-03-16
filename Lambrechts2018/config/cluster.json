@@ -27,12 +27,24 @@
     },
     "add_CB_UB_tags_to_PathSeq_BAM":
     {
-      "mem": "96g",
+      "mem": "150g",
       "time": "4:00:00"
     },
     "add_CR_tags_SRPRISM":
     {
       "mem": "96g",
       "time": "4:00:00"
+    },
+    "split_PathSeq_BAM_by_CB_UB":
+    {
+      "mem": "8g",
+      "time": "4:00:00",
+      "nthreads": 16
+    },
+    "PathSeqScoreSpark":
+    {
+      "mem": "32g",
+      "time": "4:00:00",
+      "nthreads": 16
     }
 }
