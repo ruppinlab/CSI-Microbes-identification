@@ -1,7 +1,6 @@
 #!/bin/bash
 
-#module load snakemake/5.24.1
-# load snakemake 6.0.5 (not currently available as a module) before submitting the job
+module load snakemake/6.0.5
 snakemake \
 --use-conda \
 --rerun-incomplete \
