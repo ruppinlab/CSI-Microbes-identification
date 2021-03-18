@@ -1,7 +1,7 @@
 {
     "__default__" :
     {
-        "time" : "08:00:00",
+        "time" : "4:00:00",
         "mem": "16g",
         "nthreads" : 4,
         "gres": 10,
@@ -42,7 +42,7 @@
     },
     "split_PathSeq_BAM_by_CB_UB":
     {
-      "mem": "32g",
+      "mem": "8g",
       "time": "4:00:00",
       "nthreads": 16
     },

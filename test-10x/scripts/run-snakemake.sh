@@ -1,8 +1,6 @@
 #!/bin/bash
 
-#module load snakemake
-# temporarily use conda env for snakemake=6.0.5 because there is no module yet
-# conda activate snakemake-env
+module load snakemake/6.0.5
 snakemake \
 --use-conda \
 --rerun-incomplete \
