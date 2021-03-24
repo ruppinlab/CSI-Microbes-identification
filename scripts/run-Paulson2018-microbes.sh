@@ -1,7 +1,7 @@
 cd Paulson2018
 sbatch \
---time=7-00:00:00 \
---cpus-per-task=16 \
---mem=48g \
+--time=2-00:00:00 \
+--cpus-per-task=4 \
+--mem=16g \
 --partition=norm,ccr \
 scripts/run-snakemake.sh

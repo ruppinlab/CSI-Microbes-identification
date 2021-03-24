@@ -1,7 +1,7 @@
 {
     "__default__" :
     {
-        "time" : "08:00:00",
+        "time" : "4:00:00",
         "mem": "16g",
         "nthreads" : 4,
         "gres": 10,
@@ -18,21 +18,33 @@
       "nthreads": 16,
       "time": "12:00:00"
     },
+    "run_fastp":
+    {
+      "mem": "32g",
+      "nthreads": 6
+    },
     "PathSeqPipelineSpark":
     {
-      "time": "2-00:00:00",
+      "time": "1-00:00:00",
       "mem": "96g",
       "nthreads": 10,
       "gres": 200
     },
     "add_CB_UB_tags_to_PathSeq_BAM":
     {
-      "mem": "96g",
+      "mem": "150g",
       "time": "4:00:00"
     },
-    "add_CR_tags_SRPRISM":
+    "split_PathSeq_BAM_by_CB_UB":
     {
-      "mem": "96g",
-      "time": "4:00:00"
+      "mem": "8g",
+      "time": "4:00:00",
+      "nthreads": 16
+    },
+    "PathSeqScoreSpark":
+    {
+      "mem": "32g",
+      "time": "4:00:00",
+      "nthreads": 16
     }
 }

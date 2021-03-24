@@ -1,7 +1,7 @@
 {
     "__default__" :
     {
-        "time" : "08:00:00",
+        "time" : "4:00:00",
         "mem": "16g",
         "nthreads" : 4,
         "gres": 10,
@@ -17,6 +17,11 @@
       "mem": "64g",
       "nthreads": 16,
       "time": "12:00:00"
+    },
+    "run_fastp":
+    {
+      "mem": "32g",
+      "nthreads": 6
     },
     "PathSeqPipelineSpark":
     {
@@ -34,5 +39,17 @@
     {
       "mem": "96g",
       "time": "4:00:00"
+    },
+    "split_PathSeq_BAM_by_CB_UB":
+    {
+      "mem": "8g",
+      "time": "4:00:00",
+      "nthreads": 16
+    },
+    "PathSeqScoreSpark":
+    {
+      "mem": "32g",
+      "time": "4:00:00",
+      "nthreads": 16
     }
 }
