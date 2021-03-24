@@ -18,7 +18,8 @@ lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient"
 lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
 samples = lanes[["sample", "patient"]].drop_duplicates()
 cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
-
+cells = cells.loc[cells["sample"].isin(samples["sample"])]
+print(cells.shape)
 # Snakemake includes
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
