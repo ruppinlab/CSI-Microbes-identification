@@ -43,5 +43,5 @@ SMC23	SMC23-T	Tumor	S12_L007	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0023-T-A1
 SMC23	SMC23-T	Tumor	S12_L008	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0023-T-A1_S12_L008_R1_001.fastq.gz	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0023-T-A1_S12_L008_R2_001.fastq.gz
 SMC24	SMC24-T	Tumor	S13_L007	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0024-T-A1_S13_L007_R1_001.fastq.gz	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0024-T-A1_S13_L007_R2_001.fastq.gz
 SMC24	SMC24-T	Tumor	S13_L008	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0024-T-A1_S13_L008_R1_001.fastq.gz	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0024-T-A1_S13_L008_R2_001.fastq.gz
-SMC25	SMC24-T	Tumor	S14_L007	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0025-T-A1_S14_L007_R1_001.fastq.gz	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0025-T-A1_S14_L007_R2_001.fastq.gz
-SMC25	SMC24-T	Tumor	S14_L008	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0025-T-A1_S14_L008_R1_001.fastq.gz	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0025-T-A1_S14_L008_R2_001.fastq.gz
+SMC25	SMC25-T	Tumor	S14_L007	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0025-T-A1_S14_L007_R1_001.fastq.gz	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0025-T-A1_S14_L007_R2_001.fastq.gz
+SMC25	SMC25-T	Tumor	S14_L008	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0025-T-A1_S14_L008_R1_001.fastq.gz	/data/Robinson-SB/Lee2020-fastq-dir/PM-PS-0025-T-A1_S14_L008_R2_001.fastq.gz
