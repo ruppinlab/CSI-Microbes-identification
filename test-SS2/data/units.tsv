@@ -1,0 +1,16 @@
+Run	cell	time	status	infection	plate	well	infected	patient	sample
+SRR6815582	GSM3032980	2h	D23580-bystander	D23580	P1	E2	bystander	Pt0	S0
+SRR6815584	GSM3032982	4h	LT2-bystander	LT2	P1	E5	bystander	Pt0	S0
+SRR6815586	GSM3032984	6h	D23580-bystander	D23580	P1	E8	bystander	Pt0	S0
+SRR6815587	GSM3032985	2h	uninfected	Mock	P1	A10	uninfected	Pt0	S0
+SRR6815588	GSM3032986	2h	uninfected	Mock	P1	E11	uninfected	Pt0	S0
+SRR6815589	GSM3032987	2h	D23580-bystander	D23580	P1	B1	bystander	Pt0	S0
+SRR6815590	GSM3032988	2h	D23580-bystander	D23580	P1	F2	bystander	Pt0	S0
+SRR6815595	GSM3032993	2h	uninfected	Mock	P1	B10	uninfected	Pt0	S0
+SRR6815596	GSM3032994	2h	uninfected	Mock	P1	F11	uninfected	Pt0	S0
+SRR6815613	GSM3033011	2h	D23580-bystander	D23580	P1	E1	bystander	Pt0	S0
+SRR6815614	GSM3033012	2h	D23580-infected	D23580	P1	A3	infected	Pt0	S0
+SRR6815615	GSM3033013	4h	LT2-bystander	LT2	P1	E4	bystander	Pt0	S0
+SRR6815616	GSM3033014	4h	LT2-infected	LT2	P1	A6	infected	Pt0	S0
+SRR6815617	GSM3033015	6h	D23580-bystander	D23580	P1	E7	bystander	Pt0	S0
+SRR6815618	GSM3033016	6h	D23580-infected	D23580	P1	A9	infected	Pt0	S0
