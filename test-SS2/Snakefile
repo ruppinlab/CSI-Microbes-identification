@@ -47,7 +47,7 @@ plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
 rule all:
     input:
-        expand(STAR_UNALIGNED_BAM_FILE, zip, patient=plates["patient"], sample=plates["sample"], plate=plates["plate"]),
+        expand(PathSeq_Cell_Score_File, zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
 
 
 ### Rules and functions for downloading sequencing data ###
