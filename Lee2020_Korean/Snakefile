@@ -8,8 +8,8 @@ configfile: join("config", "PathSeq-config.yaml")
 #validate(config, schema="schemas/config.schema.yaml")
 
 wildcard_constraints:
-    patient="SMC[0-1][0-9]",
-    sample="SMC[0-1][0-9]-[T|N]",
+    patient="SMC[0-2][0-9]",
+    sample="SMC[0-2][0-9]-[T|N]",
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
@@ -19,7 +19,8 @@ lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels]
 samples = lanes[["sample", "patient"]].drop_duplicates()
 cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
 cells = cells.loc[cells["sample"].isin(samples["sample"])]
-print(cells.shape)
+#print(cells.shape)
+#cells = cells.sample(200)
 # Snakemake includes
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
@@ -54,6 +55,5 @@ rule copy_FASTQ_files:
         temp(CB_FASTQ_FILE),
         temp(cDNA_FASTQ_FILE),
     shell:
-        "echo {params} && "
-        "cp {output[0]} {params[R1]} && "
-        "cp {output[1]} {params[R2]}"
+        "cp {params[R1]} {output[0]} && "
+        "cp {params[R2]} {output[1]}"
