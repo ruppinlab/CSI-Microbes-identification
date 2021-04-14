@@ -9,5 +9,5 @@ snakemake \
 --jobs 100 \
 --latency-wait 60 \
 --keep-going \
---group-components download_FASTQ_from_SRA=15 compress_FASTQ_File=12 run_fastp=12 \
+--group-components download_FASTQ_from_SRA=15 compress_FASTQ_File=15 run_fastp=15 \
 --local-cores 4 all

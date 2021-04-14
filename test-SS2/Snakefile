@@ -47,7 +47,7 @@ plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
 rule all:
     input:
-        expand(TRIMMED_FASTQ1_FILE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["cell"]),
+        expand(STAR_UNALIGNED_BAM_FILE, zip, patient=plates["patient"], sample=plates["sample"], plate=plates["plate"]),
 
 
 ### Rules and functions for downloading sequencing data ###
