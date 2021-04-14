@@ -1,0 +1,18 @@
+{
+  "__default__" :
+  {
+    "time" : "08:00:00",
+    "mem": "16g",
+    "nthreads" : 4,
+    "gres": 10,
+    "partition": "norm,ccr"
+  },
+  "build_BWA_image":
+  {
+    "nthreads": 2,
+    "mem": "400g",
+    "gres": 200,
+    "time": "4-00:00:00",
+    "partition": "largemem"
+  }
+}
