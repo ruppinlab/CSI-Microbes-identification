@@ -38,7 +38,7 @@ GFF_READCOUNT_FILE = join("output", "{patient}", "{sample}-{plate}-{cell}", "{ge
 
 localrules: intersect_BAM_GFF
 
-rule all:
+rule SRPRISM_files:
     input:
         expand(GFF_READCOUNT_FILE, zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"], genome=["LT2"]*cells.shape[0]),
         expand(GFF_READCOUNT_FILE, zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"], genome=["D23580"]*cells.shape[0]),
