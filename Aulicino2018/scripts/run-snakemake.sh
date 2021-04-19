@@ -1,6 +1,6 @@
 #!/bin/bash
 
-module load snakemake/5.13.0
+module load snakemake/6.0.5
 snakemake \
 --use-conda \
 --nolock \
