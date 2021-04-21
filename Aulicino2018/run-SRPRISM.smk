@@ -36,7 +36,6 @@ GFF_READCOUNT_FILE = join("output", "{patient}", "{sample}-{plate}-{cell}", "{ge
 
 
 
-localrules: intersect_BAM_GFF
 
 rule SRPRISM_files:
     input:
@@ -48,7 +47,7 @@ rule SRPRISM_files:
 # filter only reads from cell of interest from the STAR bam file
 rule split_STAR_unaligned_BAM_by_RG:
     group:
-        "SRPRISM"
+        "split_STAR_unaligned_BAM_by_RG"
     input:
         join("output", "star", "{patient}-{sample}-{plate}", "_STARpe", "unaligned.bam"),
     output:
@@ -59,7 +58,7 @@ rule split_STAR_unaligned_BAM_by_RG:
 
 rule extract_FQ_files_from_BAM:
     group:
-        "SRPRISM"
+        "extract_FQ_files_from_BAM"
     input:
         join("output", "star", "{patient}-{sample}-{plate}-{cell}", "_STARpe", "unaligned.bam"),
     output:
@@ -70,6 +69,8 @@ rule extract_FQ_files_from_BAM:
         "bamToFastq -i {input} -fq {output[0]} -fq2 {output[1]}"
 
 rule intersect_BAM_GFF:
+    group:
+        "intersect_BAM_GFF"
     input:
         SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAM,
         GENOME_GFF
