@@ -49,4 +49,12 @@
     "mem": "80g",
     "nthreads": 16
   },
+  "convert_BAMs_to_fastq_dir":
+  {
+    "nthreads": 2,
+    "mem": "600g",
+    "gres": 200,
+    "time": "8:00:00",
+    "partition": "largemem"
+  }
 }
