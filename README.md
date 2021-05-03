@@ -1,6 +1,6 @@
 # CSI-Microbes Identification
 
-This repository contains part of the workflows for reproducing the results from the bioarxiv paper [Identifying the Landscape of Intratumoral Microbes via a Single Cell Transcriptomic Analysis](https://www.biorxiv.org/content/10.1101/2020.05.14.096230v1) by Welles Robinson, Fiorella Schischlik, Michael Gertz, Alejandro Schaffer and Eytan Ruppin.  This repository contains the workflows to identify microbial reads from droplet-based (10x) and plate-based (Smart-seq2) scRNA-seq datasets. These microbial reads can then be analyzed using the [CSI-Microbes-analysis repository](https://github.com/ruppinlab/CSI-Microbes-analysis). The code in this repository was written by Welles Robinson and alpha-tested by Alejandro Schaffer.
+This repository contains part of the workflows for reproducing the results from the bioarxiv paper [Identifying the Landscape of Intratumoral Microbes via a Single Cell Transcriptomic Analysis](https://www.biorxiv.org/content/10.1101/2020.05.14.096230v1) by Welles Robinson, Fiorella Schischlik, Michael Gertz, Alejandro Schaffer and Eytan Ruppin.  This repository contains the workflows to identify microbial reads from 10x and Smart-seq2 scRNA-seq datasets. These microbial reads can then be analyzed using the [CSI-Microbes-analysis repository](https://github.com/ruppinlab/CSI-Microbes-analysis). The code in this repository was written by Welles Robinson and alpha-tested by Alejandro Schaffer.
 
 ## Set-up
 
@@ -32,7 +32,7 @@ git submodule update
 
 ## Software Dependencies
 
-CSI-Microbes-identification depends on the following software packages that are loaded via the Biowulf module system: snakemake (latest=5.24.1)<sup>[REF](#Snakemake)</sup>, sratoolkit (2.10.9)<sup>[REF](#SRAToolkit)</sup>, cellranger (5.0.1)<sup>[REF](#CellRanger)</sup>, samtools (1.11)<sup>[REF](#SAMtools)</sup>, bedtools (2.29.2)<sup>[REF](#BedTools)</sup>, picard (latest=2.25.0)<sup>[REF](#Picard)</sup> and GATK (4.1.8.1) <sup>[REF](#PathSeq)</sup>. CSI-Microbes-identification also depends on the following conda software packages from the conda-forge channel: fastp (0.20.1)<sup>[REF](#Fastp)</sup> and pysam (1.16.0)<sup>[REF](#pysam)</sup>. CSI-Microbes-identification for Smart-seq2 also depends on STAR (2.7.6a_patch_2020-11-16)<sup>[REF](#STAR)</sup>, which must be downloaded from GitHub (there is currently no rule to download the executable and the current path to the STAR executable is hardecoded and requires access to the Biowulf directory `/data/Robinson-SB`).
+CSI-Microbes-identification depends on the following software packages that are loaded via the Biowulf module system: snakemake (6.0.5)<sup>[REF](#Snakemake)</sup>, sratoolkit (2.10.9)<sup>[REF](#SRAToolkit)</sup>, cellranger (5.0.1)<sup>[REF](#CellRanger)</sup>, samtools (1.11)<sup>[REF](#SAMtools)</sup>, bedtools (2.29.2)<sup>[REF](#BedTools)</sup>, picard (latest=2.25.0)<sup>[REF](#Picard)</sup> and GATK (4.1.8.1) <sup>[REF](#PathSeq)</sup>. CSI-Microbes-identification also depends on the following conda software packages from the conda-forge channel: fastp (0.20.1)<sup>[REF](#Fastp)</sup> and pysam (1.16.0)<sup>[REF](#pysam)</sup>. CSI-Microbes-identification for Smart-seq2 also depends on STAR (2.7.6a_patch_2020-11-16)<sup>[REF](#STAR)</sup>, which must be downloaded from GitHub (there is currently no rule to download the executable and the current path to the STAR executable is hardecoded and requires access to the Biowulf directory `/data/Robinson-SB`).
 
 ## Database Dependencies
 
@@ -46,7 +46,11 @@ The code in this pipeline is designed to analyze scRNA-seq datasets generated us
 
 ### Test Run CSI-Microbes-identification
 
-We have created a small test directory `test-10x` for users to run to ensure that they can properly run the code base. The input fastq files are located at `test-10x/FASTQ/raw/Pt0/` (Yes, they were added to git. No, I do not feel good about it.). The input fastq files contains the reads belonging to 12 cells from Ben-Moshe2019. To run this directory, use the below command, which submits the job running the Snakemake instance to the server.
+We have created two small test directories: `test-10x` and `test-SS2` for users to quickly test that they can properly run the code base.
+
+#### Running 10x test dataset
+
+The input fastq files are located at `test-10x/FASTQ/raw/Pt0/` (Yes, they were added to git. No, I do not feel good about it.). The input fastq files contain all reads from 12 cells from Ben-Moshe2019. To run this directory, use the below command, which submits the job running the Snakemake instance to the server.
 
 ```
 ./scripts/run-test-10x.sh
@@ -59,6 +63,8 @@ diff -r output/PathSeq/ expected_output/PathSeq/
 ```
 
 which should yield a list of files that exist only in `output/PathSeq/` but no differences between the files that exist in both directories.
+
+#### Running Smart-seq2 test dataset
 
 ### Running CSI-Microbes-identification for Ben-Moshe2019 10x dataset
 
