@@ -51,5 +51,10 @@
       "mem": "32g",
       "time": "4:00:00",
       "nthreads": 16
+    },
+    "run_CAMMiQ_species_long_reads":
+    {
+      "mem": "450g",
+      "partition": "largemem"
     }
 }
