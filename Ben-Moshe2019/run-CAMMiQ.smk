@@ -2,8 +2,8 @@
 include: "Snakefile"
 
 # include rules
-include: "../pathogen-discovery-rules/rules/CAMMiQ-SS2.smk"
+include: "../pathogen-discovery-rules/rules/CAMMiQ-10x.smk"
 
-rule CAMMiQ:
+rule:
     input:
         expand(CAMMIQ_COUNT_FILE, tax_level="genus")
