@@ -32,7 +32,7 @@ SRPRISM_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "{genome
 # SRPRISM_NON_FILTER_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.non.{filter}.primary.sorted.bam")
 # MPILEUP_FILE = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.primary.sorted.mpileup")
 
-GFF_READCOUNT_FILE = join("output", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired-count.gff")
+GFF_READCOUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired-count.gff")
 
 
 
