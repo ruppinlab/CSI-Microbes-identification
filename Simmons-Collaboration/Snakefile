@@ -19,9 +19,9 @@ lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient"
 lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
 samples = lanes[["sample", "patient"]].drop_duplicates()
 
-cells = pd.read_csv(config["units"], sep="\t", usecols=["sample", "barcode"]).set_index(["sample", "barcode"], drop=False).sort_index()
-cells = cells.loc[cells["sample"] != 53]
-cells = cells.sample(n=500, random_state=0)
+cells = pd.read_csv(config["units"], sep="\t", usecols=["sample", "barcode", "patient"]).set_index(["sample", "barcode", "patient"], drop=False).sort_index()
+#cells = cells.loc[cells["sample"] != 53]
+#cells = cells.sample(n=500, random_state=0)
 # Directories
 FASTQ_DIR = "FASTQ"
 PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")

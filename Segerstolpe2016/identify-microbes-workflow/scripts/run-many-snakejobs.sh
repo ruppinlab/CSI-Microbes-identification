@@ -1,5 +1,5 @@
 #!/bin/bash
-INPUT=scripts/test_data.csv
+INPUT=scripts/data.csv
 OLDIFS=$IFS
 IFS=','
 [ ! -f $INPUT ] && { echo "$INPUT file not found"; exit 99; }

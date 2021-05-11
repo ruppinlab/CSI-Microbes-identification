@@ -9,7 +9,7 @@ ref:
   annotation: "raw/genome/gencode.v34.primary_assembly.annotation.gtf"
 
 params:
-  PathSeq: "--min-clipped-read-length 50 --min-base-quality 1 --max-masked-bases 10 --dust-t 24 --exclude-interval data/excluded_intervals.txt"
+  PathSeq: "--min-clipped-read-length 50 --min-base-quality 1 --max-masked-bases 10 --dust-t 24"
   STAR: ""
   PathSeqScore: ""
   fastp: "--length_required 31 "

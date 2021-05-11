@@ -12,12 +12,12 @@ configfile: "config/PathSeq-config.yaml"
 # patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
 
-cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
+cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False)
 
 # SRR7667879 won't download from SRA for some reason
-cells = cells.loc[~cells["Run"] == "SRR7667879"]
+cells = cells.loc[~(cells["Run"] == "SRR7667879")]
 # SRR7667876 has issues with the pairing of the reads - may be corrupted
-cells = cells.loc[~cells["Run"] == "SRR7667876"]
+cells = cells.loc[~(cells["Run"] == "SRR7667876")]
 cells = cells.loc[cells.patient.isin(["PT039", "PT058", "PT084", "PT089", "PT126"])]
 
 wildcard_constraints:
@@ -53,7 +53,7 @@ PATHSEQ_CELL_SCORE_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}-
 
 rule all:
     input:
-        expand(PATHSEQ_CELL_SCORE_FILE, zip, sample=samples["sample"], patient=samples["patient"]),
+        expand(PATHSEQ_CELL_SCORE_FILE, zip, sample=cells["sample"], patient=cells["patient"], plate=cells["plate"], cell=cells["cell"]),
 
 
 def get_SRA_fq_files(wildcards):
@@ -67,7 +67,7 @@ rule compress_FASTQ_File:
     group:
         "FASTQ"
     input:
-        get_SRA_fq_files
+        unpack(get_SRA_fq_files)
     output:
         FASTQ1_FILE,
         FASTQ2_FILE

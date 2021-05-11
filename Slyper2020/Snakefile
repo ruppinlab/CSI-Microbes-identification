@@ -7,7 +7,10 @@ min_version("5.1.2")
 configfile: join("config", "PathSeq-config.yaml")
 #validate(config, schema="schemas/config.schema.yaml")
 wildcard_constraints:
-    patient="HTAPP-\d-SMP-\d"
+    patient="HTAPP-\d+-SMP-\d+",
+    sample="HTAPP-254-SMP-571_LD_channel1|HTAPP-285-SMP-751_fresh_channel1|HTAPP-735-SMP-3841_fresh_channel2|HTAPP-963-SMP-4741_fresh_channel1",
+    lane="S1_L001",
+    cell="[A,C,G,T]{16}-1"
 
 patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
@@ -15,8 +18,8 @@ patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=F
 lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample", "lane"], drop=False)
 lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
 samples = lanes[["sample", "patient"]].drop_duplicates()
-# cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
-
+cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
+# cells = cells.iloc[0:100]
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
 

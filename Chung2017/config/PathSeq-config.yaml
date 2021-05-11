@@ -13,7 +13,7 @@ human_ref:
   annotation: "raw/genome/gencode.v34.primary_assembly.annotation.gtf"
 
 params:
-  PathSeq: "--min-clipped-read-length 50 --min-base-quality 1 --max-masked-bases 10 --dust-t 24 --exclude-interval data/excluded_intervals.txt"
+  PathSeq: "--min-clipped-read-length 50 --min-base-quality 1 --max-masked-bases 10 --dust-t 24 "
   STAR: ""
   PathSeqScore: ""
   fastp: "--length_required 50 "
@@ -31,5 +31,5 @@ PathSeq:
   microbe_dict: "../Aulicino2018/data/microbev1.dict"
   microbe_bwa_image: "../Aulicino2018/data/microbev1.fa.img"
   taxonomy_db: "../Aulicino2018/data/microbev1_release201_taxonomy.db"
-  host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host.fa.img"
+  host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host_RNA_spike.img"
   host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"

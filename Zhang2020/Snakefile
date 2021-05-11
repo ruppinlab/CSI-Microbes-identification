@@ -44,7 +44,7 @@ include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-batch.smk"
 
 rule all:
     input:
-        expand(TRIMMED_MERGED_BAM, zip, sample=samples["sample"], patient=samples["patient"])
+        expand(PATHSEQ_BAM, zip, sample=samples["sample"], patient=samples["patient"])
 
 rule sort_BAM:
     group:

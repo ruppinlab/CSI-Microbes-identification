@@ -14,7 +14,7 @@ configfile: join("config", "PathSeq-config.yaml")
 # patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
 
-cells = pd.read_csv(config["cells"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False)
+cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False)
 # print(samples)
 # cells.index = cells.index.set_levels([i.astype(str) for i in cells.index.levels])  # enforce str in index
 
@@ -30,7 +30,7 @@ plates_of_interest = [
     "cy82_CD45_pos_3", "cy94_cd45neg_cd90pos"
 ]
 # removed - "Cy80_II_CD45",
-samples = samples.loc[samples.plate.isin(plates_of_interest)]
+# samples = samples.loc[samples.plate.isin(plates_of_interest)]
 # samples = samples.loc[samples["patient"] == "Melanoma_53"]
 # print(samples)
 # directories
@@ -48,26 +48,26 @@ PATHSEQ_BAM_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}", "path
 PATHSEQ_CELL_SCORE_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell}", "pathseq.txt")
 
 # include rules
-include: "../RNA-snakemake-rules/rules/genome.smk"
-include: "../RNA-snakemake-rules/rules/trim.smk"
-include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
-include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+#include: "../RNA-snakemake-rules/rules/genome.smk"
+#include: "../RNA-snakemake-rules/rules/trim.smk"
+#include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
+#include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
+#include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 
 rule all:
     input:
-        expand(config["PathSeq"]["bam_file"], zip, patient=samples["patient"], sample=samples["sample"])
+        expand(FASTQ1_FILE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["cell"])
 
 
 rule download_FASTQ_files:
     group:
         "FASTQ"
     params:
-        fq1 = lambda wildcards: samples.at[(wildcards.patient, wildcards.sample), "fq1_url"],
-        fq2 = lambda wildcards: samples.at[(wildcards.patient, wildcards.sample), "fq2_url"],
+        fq1 = lambda wildcards: cells.at[(wildcards.patient, wildcards.sample, wildcards.cell), "fq1_url"],
+        fq2 = lambda wildcards: cells.at[(wildcards.patient, wildcards.sample, wildcards.cell), "fq2_url"],
     output:
-        fq1=temp(FASTQ1_FILE),
-        fq2=temp(FASTQ2_FILE)
+        fq1=FASTQ1_FILE,
+        fq2=FASTQ2_FILE
     shell:
         "module load google-cloud-sdk && "
         "gsutil cp {params.fq1} {output.fq1}  && "

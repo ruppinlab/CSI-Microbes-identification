@@ -12,7 +12,7 @@
       "mem":"64g",
       "nthreads": 12,
       "gres":"300",
-      "time": "3-00:00:00"
+      "time": "7-00:00:00"
     },
     "convert_FASTQ_to_BAM":
     {

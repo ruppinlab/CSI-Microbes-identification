@@ -7,12 +7,13 @@ PATHOGEN_BAM_FILE=join("output", "{patient}-{sample}", "pathseq_{taxid}.bam")
 PATHOGEN_FASTA_FILE=join("/data/Lab_ruppin/projects/CSI-Microbes/data/FASTA", "{patient}-{sample}", "pathseq_{taxid}.fasta")
 
 samples = pd.read_csv("data/genus_PathSeq_sample_metadata.tsv", sep="\t")
+samples["taxid"] = 5823
 samples = samples.loc[samples.patient == "MGH43"]
-samples = samples.iloc[0:2]
+#samples = samples.iloc[0:2]
 
 rule all:
     input:
-        expand(PATHOGEN_FASTA_FILE, zip, patient=samples["patient"], sample=samples["sample"], taxid=["5823"])
+        expand(PATHOGEN_FASTA_FILE, zip, patient=samples["patient"], sample=samples["sample"], taxid=samples["taxid"])
 
 rule extract_specific_reads:
     input:

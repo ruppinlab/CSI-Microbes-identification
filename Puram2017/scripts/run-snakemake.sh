@@ -10,4 +10,4 @@ snakemake \
 --jobs 100 \
 --latency-wait 60 \
 --keep-going \
---local-cores 16 all
+--local-cores 32 all

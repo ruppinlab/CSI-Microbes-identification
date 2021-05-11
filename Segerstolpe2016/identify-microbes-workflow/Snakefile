@@ -28,8 +28,8 @@ samples = samples.iloc[start:stop]
 FASTQ_DIR = join("FASTQ", "raw")
 
 # Intermediate Files
-FASTQ1_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
-FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
+FASTQ_FILE = join(FASTQ_DIR,  "{patient}-{sample}_1.fastq.gz")
+#FASTQ2_FILE = join(FASTQ_DIR, "{patient}-{sample}_2.fastq.gz")
 
 
 

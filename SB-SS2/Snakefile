@@ -10,7 +10,7 @@ min_version("5.1.2")
 ##### load config and sample sheets #####
 configfile: join("config", "PathSeq-config.yaml")
 cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False)
-
+cells = cells.loc[~(cells.cell == "H02")]
 wildcard_constraints:
     patient="|".join(cells["patient"].unique()),
     sample="|".join(cells["sample"].unique()),
@@ -37,11 +37,11 @@ PATHSEQ_BAM_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}", "path
 PATHSEQ_CELL_SCORE_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell}", "pathseq.txt")
 
 # include rules
-#include: "../RNA-snakemake-rules/rules/genome.smk"
+include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
-#include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
-#include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-#include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
+include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 
 BENCHMARK_FILE = join("benchmarks", "{patient}-{run}.{rule}.benchmark.txt")
 
@@ -49,7 +49,8 @@ plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
 rule all:
     input:
-        expand(TRIMMED_FASTQ1_FILE,  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
+        #expand(PE_MANIFEST_FILE, zip, patient=plates["patient"], sample=plates["sample"], plate=plates["plate"])
+        expand(PATHSEQ_CELL_SCORE_FILE,  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
 
 
 # PathSeq doesn't like names so just add to Git for now

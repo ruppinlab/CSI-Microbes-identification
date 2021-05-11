@@ -10,7 +10,7 @@
   "make_pathseq_host_DB":
   {
     "time" : "2-00:00:00",
-    "mem": "48g",
+    "mem": "150g",
     "nthreads" : 16,
     "gres": 10,
     "partition": "norm,ccr"

@@ -25,7 +25,7 @@ plates_of_interest = [
     "HNSCC5_P7", "HNSCC5_P9", "HNSCC6_P15_LN", "HNSCC6_P16"
 ]
 cells = cells.loc[cells.plate.isin(plates_of_interest)]
-
+print(cells.shape)
 wildcard_constraints:
     patient="|".join(cells["patient"].unique()),
     sample="|".join(cells["sample"].unique()),
@@ -96,7 +96,7 @@ rule download_FQ1_files_comb:
     group:
         "FASTQ"
     wildcard_constraints:
-        sample=".+_comb"
+        cell=".+_comb"
     params:
         fq = lambda wildcards: cells.loc[(wildcards.patient, wildcards.sample, wildcards.cell), "fastq_prefix"],
     output:
@@ -117,7 +117,7 @@ rule download_FQ2_files_comb:
     group:
         "FASTQ"
     wildcard_constraints:
-        sample=".+_comb"
+        cell=".+_comb"
     params:
         fq = lambda wildcards: cells.loc[(wildcards.patient, wildcards.sample, wildcards.cell), "fastq_prefix"],
     output:

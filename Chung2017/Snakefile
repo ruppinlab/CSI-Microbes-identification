@@ -22,7 +22,7 @@ wildcard_constraints:
     cell="|".join(cells["cell"].unique()),
 
 #samples = samples.loc[sample["patient"].isin(["BC08"])]
-#cells = cells.loc[cells["patient"].isin(["BC08"])]
+# cells = cells.loc[cells["patient"].isin(["BC03"])]
 # cells = cells.sample()
 # directories
 FASTQ_DIR = "FASTQ"
@@ -49,8 +49,8 @@ PATHSEQ_CELL_SCORE_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}-
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
 include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
-#include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-#include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
 
 BENCHMARK_FILE = join("benchmarks", "{patient}-{run}.{rule}.benchmark.txt")
 
@@ -58,8 +58,9 @@ plates = cells[["patient", "sample", "plate"]].drop_duplicates()
 
 rule all:
     input:
-        expand("output/star/{patient}-{sample}-{plate}/unmapped.bamtools.bam",  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
-        expand("output/star/{patient}-{sample}-{plate}/unmapped.samtools.bam",  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
+        #expand(join("output", "PathSeq", "{patient}-{sample}-{plate}", "pathseq.contaminants.bam"), zip, patient="BC03", sample="BC03", plate="BC03"),
+        expand(PATHSEQ_CELL_SCORE_FILE,  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
+        #expand("output/star/{patient}-{sample}-{plate}/unmapped.samtools.mthreads.bam",  zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
 
 # def get_benchmark_files(wildcards):
 #     c = cells.loc[cells.plate == wildcards.plate]
@@ -75,27 +76,27 @@ rule all:
 #     script:
 #         "src/combine_benchmark_statistics.py"
 
-rule filter_host_reads_with_bamtools:
-    input:
-        STAR_PE_BAM_FILE
-    output:
-        "output/star/{patient}-{sample}-{plate}/unmapped.bamtools.bam"
-    benchmark:
-        "benchmarks/{patient}-{sample}-{plate}.filter_pe_aligned_reads_bamtools.benchmark.txt"
-    shell:
-        "module load bamtools && "
-        "bamtools filter -tag 'uT:<=2' -in {input[0]} -out {output[0]}"
-
-rule filter_host_reads_with_samtools:
-    input:
-        STAR_PE_BAM_FILE
-    output:
-        "output/star/{patient}-{sample}-{plate}/unmapped.samtools.bam"
-    benchmark:
-        "benchmarks/{patient}-{sample}-{plate}.filter_pe_aligned_reads_samtools.benchmark.txt"
-    shell:
-        "module load samtools && "
-        "samtools view -b -f 4 {input} > {output}"
+#rule filter_unaligned_reads_with_bamtools:
+#    input:
+#        "output/star/{patient}-{sample}-{plate}/unmapped.samtools.mthreads.bam" 
+#    output:
+#        "output/star/{patient}-{sample}-{plate}/unmapped.samtools.bamtools.bam"
+#    benchmark:
+#        "benchmarks/{patient}-{sample}-{plate}.filter_pe_aligned_reads_samtools_bamtools.benchmark.txt"
+#    shell:
+#        "module load bamtools && "
+#        "bamtools filter -tag 'uT:<=2' -in {input[0]} -out {output[0]}"
+#
+#rule filter_host_reads_with_samtools:
+#    input:
+#        STAR_PE_BAM_FILE
+#    output:
+#        "output/star/{patient}-{sample}-{plate}/unmapped.samtools.mthreads.grep.bam"
+#    benchmark:
+#        "benchmarks/{patient}-{sample}-{plate}.filter_pe_aligned_reads_samtools.mthreads.grep.benchmark.txt"
+#    shell:
+#        "module load samtools && "
+#        "(samtools view -H {input}; samtools view -@ 8 -f 4 {input} | grep -w 'uT:A:[0-2]') | samtools view -@ 8 -bS - > {output}"
 
 rule combine_human_spikein_fasta:
     input:
