@@ -12,17 +12,17 @@
     "nthreads" : 16,
     "mem": "64g"
   },
-  "STAR":
+  "STAR_2pass":
   {
-    "time": "2:00:00",
-    "nthreads" : 16,
-    "mem": "48g"
+    "time": "24:00:00",
+    "nthreads" : 48,
+    "mem": "64g"
   },
   "FASTQ":
   {
-    "nthreads": 6,
+    "nthreads": 16,
     "gres": 200,
-    "mem": "32g"
+    "mem": "48g"
   },
   "PathSeqPipelineSpark":
   {

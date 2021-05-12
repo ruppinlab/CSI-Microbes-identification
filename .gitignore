@@ -11,3 +11,10 @@
 **/*.db
 **/*.fai
 **/raw/
+Yost2019/su0*
+Lee2020/SC0*
+Filbin2018/MUV*
+Filbin2018/BCH*
+Lee2020_Korean/SMC*
+**/*.mro
+**/benchmarks/

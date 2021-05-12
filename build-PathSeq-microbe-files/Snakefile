@@ -1,4 +1,5 @@
 from os.path import join
+import pandas as pd
 
 # URLs
 # if not using current release, should be "ftp://ftp.ncbi.nlm.nih.gov/refseq/release/release-catalog/archive/RefSeq-{release}.catalog.gz"

@@ -21,6 +21,7 @@ samples = lanes[["sample", "patient"]].drop_duplicates()
 
 cells = pd.read_csv(config["units"], sep="\t", usecols=["sample", "patient", "barcode"]).set_index(["sample", "barcode", "patient"], drop=False).sort_index()
 cells = cells.loc[cells["sample"].isin(["PreRxTumor", "Day615Tumor", "RelapseD565Tumor"])]
+# cells = cells.loc[(cells.barcode.isin(["TAAGAGATCGTTTAGG-1", "GACTACAAGAATTCCC-1", "TGACTTTTCCCTTGTG-1", "AAACCTGCAGTTCATG-1"]))]
 # cells = cells.sample(n=500, random_state=0)
 # Directories
 FASTQ_DIR = "FASTQ"
@@ -40,7 +41,7 @@ pathseq_output = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
 
 # Snakemake includes
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
-include: "../pathogen-discovery-rules/rules/scPathSeq.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
 
 rule all:
     input:

@@ -54,7 +54,7 @@
     },
     "run_CAMMiQ_species_long_reads":
     {
-      "mem": "450g",
+      "mem": "650g",
       "partition": "largemem"
     }
 }

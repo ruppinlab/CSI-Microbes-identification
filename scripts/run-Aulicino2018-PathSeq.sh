@@ -1,7 +1,7 @@
-cd SB-10x
+cd Aulicino2018
 sbatch \
---time=7-00:00:00 \
---cpus-per-task=2 \
+--time=1-00:00:00 \
+--cpus-per-task=4 \
 --mem=4g \
 --partition=norm,ccr \
 scripts/run-snakemake.sh
