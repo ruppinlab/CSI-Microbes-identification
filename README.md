@@ -397,6 +397,12 @@ This pipeline leverages the many open-source tools that are listed below.
 
 This repository processes data from the following publications.
 
-<a id="Aulicino2018"></a>Aulicino, A., Rue-Albrecht, K. C., Preciado-Llanes, L., Napolitani, G., Ashley, N., Cribbs, A., Koth, J., Lagerholm, B. C., Ambrose, T., Gordon, M. A., Sims, D., & Simmons, A. (2018). Invasive Salmonella exploits divergent immune evasion strategies in infected and bystander dendritic cell subsets. Nature Communications, 9(1). [https://doi.org/10.1038/s41467-018-07329-0](https://doi.org/10.1038/s41467-018-07329-0)
+<a id="Aulicino2018"></a> Aulicino, A. et al. Invasive Salmonella exploits divergent immune evasion strategies in infected and bystander dendritic cell subsets. Nat. Commun. 9, 4883 (2018).
 
-<a id="BenMoshe2019"></a> Bossel Ben-Moshe, N., Hen-Avivi, S., Levitin, N., Yehezkel, D., Oosting, M., Joosten, L. A. B., Netea, M. G., & Avraham, R. (2019). Predicting bacterial infection outcomes using single cell RNA-sequencing analysis of human immune cells. Nature Communications, 10(1), 1–16. [https://doi.org/10.1038/s41467-019-11257-y](https://doi.org/10.1038/s41467-019-11257-y)
+<a id="BenMoshe2019"></a> Bossel Ben-Moshe, N. et al. Predicting bacterial infection outcomes using single cell RNA-sequencing analysis of human immune cells. Nat. Commun. 10, 3266 (2019).
+
+<a id="Lee2020"></a> Lee, H. O. et al. Lineage-dependent gene expression programs influence the immune landscape of colorectal cancer. Nat. Genet. 52, 594–603 (2020).
+
+<a id="Maynard2020"></a> Maynard, A. et al. Therapy-Induced Evolution of Human Lung Cancer Revealed by Single-Cell RNA Sequencing. Cell 182, 1232-1251.e22 (2020).
+
+<a id="Paulson2018"></a> Paulson, K. G. et al. Acquired cancer resistance to combination immunotherapy from transcriptional loss of class I HLA. Nat. Commun. 9, (2018).
