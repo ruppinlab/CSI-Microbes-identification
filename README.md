@@ -1,6 +1,6 @@
 # CSI-Microbes Identification
 
-This repository contains part of the workflows for reproducing the results from the bioarxiv paper [Identifying the Landscape of Intratumoral Microbes via a Single Cell Transcriptomic Analysis](https://www.biorxiv.org/content/10.1101/2020.05.14.096230v1) by Welles Robinson, Fiorella Schischlik, Michael Gertz, Alejandro Schaffer and Eytan Ruppin.  This repository contains the workflows to identify microbial reads from 10x and Smart-seq2 scRNA-seq datasets. These microbial reads can then be analyzed using the [CSI-Microbes-analysis repository](https://github.com/ruppinlab/CSI-Microbes-analysis). The code in this repository was written by Welles Robinson and alpha-tested by Alejandro Schaffer.
+This repository contains part of the workflows for reproducing the results from the bioarxiv paper [CSI-Microbes: Identifying cell-type specific intracellular microbes from single-cell RNA-seq data](https://www.biorxiv.org/content/10.1101/2020.05.14.096230v1) by Welles Robinson, Fiorella Schischlik, E. Michael Gertz, Joo Sang Lee, Kaiyuan Zhu, S. Cenk Sahinalp, Rob Patro, Mark D.M. Leiserson, Alejandro A. Schäffer, and Eytan Ruppin. This repository contains the workflows to identify microbial reads from 10x and Smart-seq2 scRNA-seq datasets. These microbial reads can then be analyzed using the [CSI-Microbes-analysis repository](https://github.com/ruppinlab/CSI-Microbes-analysis). The code in this repository was written by Welles Robinson and alpha-tested by Alejandro Schaffer.
 
 ## Requirements
 
@@ -36,7 +36,7 @@ git submodule update
 
 CSI-Microbes-identification using PathSeq depends on the following software packages that are loaded via the Biowulf module system: snakemake (6.0.5)<sup>[REF](#Snakemake)</sup>, sratoolkit (2.10.9)<sup>[REF](#SRAToolkit)</sup>, cellranger (5.0.1)<sup>[REF](#CellRanger)</sup>, samtools (1.11)<sup>[REF](#SAMtools)</sup>, bedtools (2.29.2)<sup>[REF](#BedTools)</sup>, picard (latest=2.25.0)<sup>[REF](#Picard)</sup> and GATK (4.1.8.1) <sup>[REF](#PathSeq)</sup> and the following conda software packages from the conda-forge, bioconda and defaults channels: fastp (0.20.1)<sup>[REF](#Fastp)</sup>, STAR (2.7.8a)<sup>[REF](#STAR), and pysam (1.16.0)<sup>[REF](#pysam)</sup>.
 
-CSI-Microbes-identification using SRPRISM depends on SRPRISM (3.1.2)<sup>[REF](#SRPRISM)</sup>, which must be installed and added to the path separately. CSI-Microbes-identification using CAMMiQ <sup>[REF](#CAMMiQ)</sup>, which must be installed separately
+CSI-Microbes-identification using SRPRISM depends on SRPRISM (3.1.2)<sup>[REF](#SRPRISM)</sup>, which must be installed and added to the path separately. CSI-Microbes-identification using CAMMiQ (0.1)<sup>[REF](#CAMMiQ)</sup>, which must be installed separately
 
 ## Database Dependencies
 
