@@ -40,7 +40,55 @@ CSI-Microbes-identification using SRPRISM depends on SRPRISM (3.1.2)<sup>[REF](#
 
 ## Database Dependencies
 
-PathSeq and CAMMiQ build indices from a large number of microbial genomes (fasta format). The index used by PathSeq in this project is ~41 GB while the indices used by CAMMiQ are > 200 GB. Due to the large size of these indices, we do not distribute them with the rest of the package although they are available upon request. An example of how to build the PathSeq index (and other required files) is available in `build-PathSeq-microbes-files/Snakefile`.
+The workflows assume that the files needed by PathSeq and CAMMiQ are already built (the location should be specified in the `config/PathSeq-config.yaml` file). The index used by PathSeq in this project is ~41 GB while the indices used by CAMMiQ are > 200 GB so we do not distribute them with the rest of the package although they are available upon request. For convenience, we have
+
+### Construction of PathSeq files
+
+An example of how to build the PathSeq index (and other required files) is available in `build-PathSeq-microbes-files/Snakefile`.
+
+### Construction of CAMMiQ files
+
+The fastest way to obtain the collection of unique and doubly unique substrings is to run
+```./cammiq --build --both -f <MAP_FILE> -D <FASTA_DIR> -k <int> -L <int> -Lmax <int>
+			-h <int> -i <INDEX_FILES> -t <int>``` from command line
+where  ```<MAP_FILE>``` gives a list of reference genomes in fasta format, e.g., all/selected
+complete genomes in RefSeq for the bacterial, archaeal, and viral domains (can be downloaded
+with ```CAMMiQ-download```), which constitute CAMMiQ's database, possibly alongwith NCBI's
+taxonomic information. The input lines in ```<MAP_FILE>``` should contain at least 4
+tab-delimited fields; from left to right, they are:
+
+  * File names
+  * Genome IDs (encoded in the index files)
+  * NCBI taxonomic IDs
+  * Organism names
+
+  Here is an example format of ```<MAP_FILE>```:
+  ```
+  GCF_000010525.1_ASM1052v1_genomic.fna	1	7	Azorhizobium caulinodans ORS 571
+  GCF_000007365.1_ASM736v1_genomic.fna	2	9	Buchnera aphidicola str. Sg (Schizaphis graminum)
+  GCF_000218545.1_ASM21854v1_genomic.fna	3	11	Cellulomonas gilvus ATCC 13127
+  GCF_000020965.1_ASM2096v1_genomic.fna	4	14	Dictyoglomus thermophilum H-6-12
+  GCF_000012885.1_ASM1288v1_genomic.fna	5	19	Pelobacter carbinolicus DSM 2380
+  ......
+  ```
+  Other detailed format requirement for ```<MAP_FILE>``` can be found at
+	https://github.com/algo-cancer/CAMMiQ;
+<FASTA_DIR> should contain the list of (fasta) file names given in ```<MAP_FILE>```.
+-k <int> specifies the minimum length of a unique and doubly-unique substring to be considered
+in CAMMiQ index. Default value is 26.
+-L <int> specifies the potential read length in a query supported by CAMMiQ index. Default value is
+100.
+-Lmax <int> specifies the maximum length of a unique or doubly-unique substring to be considered in
+CAMMiQ index. Default value is 50.
+-h <int> specifies the length of the common prefixes of the unique or doubly-unique substrings to be
+hashed. Default value is 26, and the value of h is required to be less than or equal to k.
+<INDEX_FILES> include two file names (with directory): .bin1 specifies the index consisting of
+unique substrings and *.bin2 specifies the index specifies the index consisting of doubly unique
+substrings. The default file names (if ```-i``` is not specified) are index_u.bin1 and index_d.bin2.
+-t <int> specifies the number of threads used during CAMMiQ's index construction. Note that CAMMiQ
+uses OpenMP during its index construction, which, by default, is 'auto-threaded' (i.e. attempts to
+use all available CPUs on a computer).
+
 
 ## Running CSI-Microbes-identification
 
@@ -192,23 +240,23 @@ To run CSI-Microbes-identification using PathSeq on additional datasets, you wil
 
 ```
 Robinson2021/
-- config/
-  - cluster.json - specifies the cluster requirements for particular rules
-  - PathSeq-config.yaml - specifies parameters and files (such as host genome files)
-- scripts/
-  - run-snakemake.sh - code for running the Snakemake instance that runs local rules and submits jobs to the cluster
-- Snakefile - contains rules for downloading the data and includes .smk files that contain rules that are reused
+-   config/
+    -   cluster.json - specifies the cluster requirements for particular rules
+    -   PathSeq-config.yaml - specifies parameters and files (such as host genome files)
+-   scripts/
+  -   run-snakemake.sh - code for running the Snakemake instance that runs local rules and submits jobs to the cluster
+-   Snakefile - contains rules for downloading the data and includes .smk files that contain rules that are reused
 scripts/
-- run-Robinson2021-PathSeq.sh - submits Robinson2021/scripts/run-snakemake.sh to the Biowulf cluster
+-   run-Robinson2021-PathSeq.sh - submits Robinson2021/scripts/run-snakemake.sh to the Biowulf cluster
 ```
 
 For a 10x dataset, you will also need to include
 
 ```
 Robinson2021/
-- data/
-  - samples.tsv - must contain columns named patient, sample and lane (column order is irrelevant and additional columns may be included)
-  - units.tsv - must contain columns named patient, sample and barcode (column order is irrelevant and additional columns may be included); the barcode must match the "CB" tag from the BAM outputted by CellRanger; usually the cell-barcode and cell-type annotations are published by the original authors (when they are not, I have successfully requested them via email)
+-   data/
+  -   samples.tsv - must contain columns named patient, sample and lane (column order is irrelevant and additional columns may be included)
+  -   units.tsv - must contain columns named patient, sample and barcode (column order is irrelevant and additional columns may be included); the barcode must match the "CB" tag from the BAM outputted by CellRanger; usually the cell-barcode and cell-type annotations are published by the original authors (when they are not, I have successfully requested them via email)
 ```
 
 For a Smart-seq2 dataset, you will need to include the same files as above but with slightly different specifications
