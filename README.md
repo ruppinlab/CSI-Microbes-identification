@@ -4,7 +4,7 @@ This repository contains part of the workflows for reproducing the results from 
 
 ## Requirements
 
-The workflows in this repository are set-up to be run specifically on the NIH Biowulf cluster. This workflow expects that conda has been installed. For instructions on how to install conda, see [conda install documentation](https://docs.conda.io/projects/conda/en/latest/user-guide/install/).
+The workflows in this repository are set-up to be run specifically on Biowulf, which is a Linux cluster provided by the NIH for intramural use. This workflow expects that conda has been installed. For instructions on how to install conda, see [conda install documentation](https://docs.conda.io/projects/conda/en/latest/user-guide/install/).
 
 ## Software Installation
 
@@ -34,21 +34,60 @@ git submodule update
 
 ## Software Dependencies
 
-CSI-Microbes-identification using PathSeq depends on the following software packages that are loaded via the Biowulf module system: snakemake (6.0.5)<sup>[REF](#Snakemake)</sup>, sratoolkit (2.10.9)<sup>[REF](#SRAToolkit)</sup>, cellranger (5.0.1)<sup>[REF](#CellRanger)</sup>, samtools (1.11)<sup>[REF](#SAMtools)</sup>, bedtools (2.29.2)<sup>[REF](#BedTools)</sup>, picard (latest=2.25.0)<sup>[REF](#Picard)</sup> and GATK (4.1.8.1) <sup>[REF](#PathSeq)</sup> and the following conda software packages from the conda-forge, bioconda and defaults channels: fastp (0.20.1)<sup>[REF](#Fastp)</sup>, STAR (2.7.8a)<sup>[REF](#STAR), and pysam (1.16.0)<sup>[REF](#pysam)</sup>.
+CSI-Microbes-identification depends on the following software packages that are loaded via the Biowulf module system: snakemake (6.0.5)<sup>[REF](#Snakemake)</sup>, sratoolkit (2.10.9)<sup>[REF](#SRAToolkit)</sup>, cellranger (5.0.1)<sup>[REF](#CellRanger)</sup>, samtools (1.11)<sup>[REF](#SAMtools)</sup>, bedtools (2.29.2)<sup>[REF](#BedTools)</sup>, picard (latest=2.25.0)<sup>[REF](#Picard)</sup> and  and the following conda software packages from the conda-forge, bioconda and defaults channels: fastp (0.20.1)<sup>[REF](#Fastp)</sup>, STAR (2.7.8a)<sup>[REF](#STAR), and pysam (1.16.0)<sup>[REF](#pysam)</sup>.
 
-CSI-Microbes-identification using SRPRISM depends on SRPRISM (3.1.2)<sup>[REF](#SRPRISM)</sup>, which must be installed and added to the path separately. CSI-Microbes-identification using CAMMiQ (0.1)<sup>[REF](#CAMMiQ)</sup>, which must be installed separately
+Currently, we support three distinct approaches for quantifying the number of reads assigned to one or more microbial taxa: PathSeq, CAMMiQ and SRPRISM. Running CSI-Microbes-identification with PathSeq requires the above packages as well as GATK (4.1.8.1) <sup>[REF](#PathSeq)</sup>. Running CSI-Microbes-identification with SRPRISM requires the above packages as well as SRPRISM (3.1.2)<sup>[REF](#SRPRISM)</sup>, which must be installed via [https://github.com/ncbi/SRPRISM](https://github.com/ncbi/SRPRISM). Running CSI-Microbes-identification with CAMMiQ requires the above packages as well as CAMMiQ (0.1)<sup>[REF](#CAMMiQ)</sup>, which must be installed via [https://github.com/algo-cancer/CAMMiQ](https://github.com/algo-cancer/CAMMiQ), and Gurobi (tested using both 9.0.0 and 9.1.0 due to license limitations) <sup>[REF](#Gurobi)</sup> and gcc (7.4.0). GATK (4.1.8.1) <sup>[REF](#PathSeq)</sup> is also required to run CSI-Microbes-identification with CAMMiQ for now although this is due to how we structured the workflow and not an inherent dependence of CAMMiQ.
 
 ## Database Dependencies
 
-PathSeq and CAMMiQ build indices from a large number of microbial genomes (fasta format). The index used by PathSeq in this project is ~41 GB while the indices used by CAMMiQ are > 200 GB. Due to the large size of these indices, we do not distribute them with the rest of the package although they are available upon request. An example of how to build the PathSeq index (and other required files) is available in `build-PathSeq-microbes-files/Snakefile`.
+The workflows assume that the files needed by PathSeq and CAMMiQ are pre-built and their location is specified in `config/PathSeq-config.yaml`. The index used by PathSeq in this project is ~41 GB while the indices used by CAMMiQ are > 200 GB so we do not distribute them with the rest of the package although they are available upon request.
+
+### Construction of PathSeq files
+
+An example of how to build the PathSeq index (and other required files) is available in `build-PathSeq-microbes-files/Snakefile`.
+
+### Construction of CAMMiQ files
+
+The fastest way to obtain the index (of unique and doubly unique substrings) for CAMMiQ is to run
+
+```
+./cammiq --build --both -f <MAP_FILE> -D <FASTA_DIR> -k <int> -L <int> -Lmax <int> -h <int> -i <INDEX_FILES> -t <int>
+```
+
+Required arguments:
+
+```
+-f <MAP_FILE> gives a list of reference genomes in fasta format e.g., all/selected complete genomes in RefSeq for the bacterial, archaeal, and viral domains (can be downloaded with `CAMMiQ-download`), which constitute CAMMiQ's database, possibly along with NCBI's taxonomic information.
+-D <FASTA_DIR> should contain the list of (fasta) file names given in <MAP_FILE>.
+-k <int> specifies the minimum length of a unique and doubly-unique substring to be considered in CAMMiQ index. Default value is 26.
+-L <int> specifies the potential read length in a query supported by CAMMiQ index. Default value is 100.
+-Lmax <int> specifies the maximum length of a unique or doubly-unique substring to be considered in CAMMiQ index. Default value is 50.
+-h <int> specifies the length of the common prefixes of the unique or doubly-unique substrings to be hashed. Default value is 26, and the value of h is required to be less than or equal to k.
+-i <INDEX_FILES> include two file names (with directory): .bin1 specifies the index consisting of unique substrings and *.bin2 specifies the index specifies the index consisting of doubly unique substrings. The default file names (if ```-i``` is not specified) are index_u.bin1 and index_d.bin2.
+-t <int> specifies the number of threads used during CAMMiQ's index construction. Note that CAMMiQ uses OpenMP during its index construction, which, by default, is 'auto-threaded' (i.e. attempts to use all available CPUs on a computer).
+```
+
+The input lines in `<MAP_FILE>` should contain at least the 4 tab-delimited fields in the below example
+
+| File names | Genome IDs  | NCBI taxonomic IDs | Organism names |
+| ---------------------- | ------------ | ------- | ----------------------------------- |
+| GCF_000010525.1_ASM1052v1_genomic.fna | 1 | 7 | Azorhizobium caulinodans ORS 571 |
+| GCF_000007365.1_ASM736v1_genomic.fna | 2 | 9 | Buchnera aphidicola str. Sg (Schizaphis graminum) |
+| GCF_000218545.1_ASM21854v1_genomic.fna | 3 | 11 | Cellulomonas gilvus ATCC 13127 |
+| GCF_000020965.1_ASM2096v1_genomic.fna | 4 | 14 | Dictyoglomus thermophilum H-6-12 |
+| GCF_000012885.1_ASM1288v1_genomic.fna | 5 | 19 | Pelobacter carbinolicus DSM 2380 |
+
+Other detailed format requirement for ```<MAP_FILE>``` can be found at [https://github.com/algo-cancer/CAMMiQ](https://github.com/algo-cancer/CAMMiQ);
+
+
 
 ## Running CSI-Microbes-identification
 
-The output of the CSI-Microbes-identification pipeline is microbial read count files. Currently, we support three distinct approaches for quantifying the read abundance of one or more microbes: PathSeq, CAMMiQ and SRPRISM. PathSeq and CAMMiQ both map reads against a large number of microbial genomes. PathSeq uses a (more computationally expensive) alignment-based approach and reports matches across all levels of the taxonomy while CAMMiQ uses a much faster _k_-mer-based approach and reports matches at the specificied taxonomic level of interest. SRPRISM is a read alignment tool that we use to align reads against a single microbial genome and identify the genome location of reads.
+Currently, CSI-Microbes-identification can be run with three distinct approaches for quantifying the number of reads assigned to one or more microbial genomes: PathSeq, CAMMiQ and SRPRISM. PathSeq and CAMMiQ are used to quantify the number of reads assigned to a large number of microbial genomes while SRPRISM is an error-tolerant and ambiguity-character-tolerant aligner used to align reads against a single microbial genome and identify the genome location of reads. PathSeq uses a (more computationally expensive) alignment-based approach and reports matches across all levels of the taxonomy while CAMMiQ uses a much faster _k_-mer-based approach and reports matches at the specificied taxonomic level of interest.
 
 The code in this pipeline is designed to analyze scRNA-seq datasets generated using either Smart-Seq2 (or similar plate-based approaches) or 10x although it should be straightforward to extend this pipeline to analyze scRNA-seq datasets from additional approaches.
 
-### CSI-Microbes-identification Test Run
+### Test for CSI-Microbes-identification using PathSeq
 
 We have created two small test directories: `test-10x` and `test-SS2` for users to quickly test that they can properly run CSI-Microbes-identification using PathSeq.
 
@@ -124,7 +163,7 @@ The key output file from this analysis is `output/CAMMiQ/read_cnts_genus.txt`, w
 
 In our paper, we analyze a Smart-seq2 dataset generated by `Aulicino2018`<sup>[REF](#Aulicino2018)</sup>, which performed Smart-seq2 scRNA-seq (read length=58bp) on 342 monocyte-derived dendritic cells exposed to either the _Salmonella LT2_ or _Salmonella D23580_ strain.
 
-To reproduce our analysis using CSI-Microbes-identification with PathSeq on Aulicino2018 (which can take ~XXX hours), run the below command.
+To reproduce our analysis using CSI-Microbes-identification with PathSeq on Aulicino2018 (which can take ~8 hours), run the below command.
 
 ```
 ./scripts/run-Aulicino2018-PathSeq.sh
@@ -192,23 +231,23 @@ To run CSI-Microbes-identification using PathSeq on additional datasets, you wil
 
 ```
 Robinson2021/
-- config/
-  - cluster.json - specifies the cluster requirements for particular rules
-  - PathSeq-config.yaml - specifies parameters and files (such as host genome files)
-- scripts/
-  - run-snakemake.sh - code for running the Snakemake instance that runs local rules and submits jobs to the cluster
-- Snakefile - contains rules for downloading the data and includes .smk files that contain rules that are reused
+-   config/
+    -   cluster.json - specifies the cluster requirements for particular rules
+    -   PathSeq-config.yaml - specifies parameters and files (such as host genome files)
+-   scripts/
+  -   run-snakemake.sh - code for running the Snakemake instance that runs local rules and submits jobs to the cluster
+-   Snakefile - contains rules for downloading the data and includes .smk files that contain rules that are reused
 scripts/
-- run-Robinson2021-PathSeq.sh - submits Robinson2021/scripts/run-snakemake.sh to the Biowulf cluster
+-   run-Robinson2021-PathSeq.sh - submits Robinson2021/scripts/run-snakemake.sh to the Biowulf cluster
 ```
 
 For a 10x dataset, you will also need to include
 
 ```
 Robinson2021/
-- data/
-  - samples.tsv - must contain columns named patient, sample and lane (column order is irrelevant and additional columns may be included)
-  - units.tsv - must contain columns named patient, sample and barcode (column order is irrelevant and additional columns may be included); the barcode must match the "CB" tag from the BAM outputted by CellRanger; usually the cell-barcode and cell-type annotations are published by the original authors (when they are not, I have successfully requested them via email)
+-   data/
+  -   samples.tsv - must contain columns named patient, sample and lane (column order is irrelevant and additional columns may be included)
+  -   units.tsv - must contain columns named patient, sample and barcode (column order is irrelevant and additional columns may be included); the barcode must match the "CB" tag from the BAM outputted by CellRanger; usually the cell-barcode and cell-type annotations are published by the original authors (when they are not, I have successfully requested them via email)
 ```
 
 For a Smart-seq2 dataset, you will need to include the same files as above but with slightly different specifications
@@ -271,7 +310,7 @@ snakemake -n --quiet
 
 ### What if I don't have access to the ccr partition?
 
-This workflow assumes access to the ccr and norm partition. This assumption is hardcoded in files such as `scripts/run-Ben-Moshe2019.sh` script and `Ben-Moshe2019/config/cluster.json`.
+CSI-Microbes-identification is intended to be run on distributed compute farms that use slurm, such as NIH’s Biowulf system. On such systems, there may be multiple queues for jobs. On Biowulf, the relevant queues are called 'ccr' and 'norm'. All biowulf users have access to the 'norm' partition. This workflow assumes additional access to the 'ccr' partition. This assumption is hardcoded in files such as `scripts/run-Ben-Moshe2019.sh` script and `Ben-Moshe2019/config/cluster.json`.
 
 If you do not have access to the ccr partition, you should change `scripts/run-Ben-Moshe2019-PathSeq.sh` from
 
@@ -356,7 +395,7 @@ Currently, the pipeline is set-up to generate the second set of files. To genera
 
 ### How to file a problem report?
 
-Send a detailed e-mail to Welles Robinson (Wells.Robinson@nih.gov). You may wish to record the commands you issued and the responses you received within an instance of the unix script and then send the contents of the script as part of your report. A run of a program or pipeline such as CSI-Microbes-Identification is an experiment. Please report what you observe and why the output you received  differs from what you expected without speculating as to the cause of the discrepancy.
+Send a detailed e-mail to Welles Robinson (Wells.Robinson@nih.gov). You may wish to record the commands you issued and the responses you received within an instance of the unix command `script` and then send the contents of the script as part of your report. A run of a program or pipeline such as CSI-Microbes-Identification is an experiment. Please report what you observe and why the output you received  differs from what you expected without speculating as to the cause of the discrepancy.
 
 ### How to resume a run that did not complete?
 
@@ -375,11 +414,13 @@ This pipeline leverages the many open-source tools that are listed below.
 
 <a id="STAR"></a> Dobin, A., Davis, C. A., Schlesinger, F., Drenkow, J., Zaleski, C., Jha, S., Batut, P., Chaisson, M., & Gingeras, T. R. (2013). STAR: Ultrafast universal RNA-seq aligner. Bioinformatics, 29(1), 15–21. [https://doi.org/10.1093/bioinformatics/bts635](https://doi.org/10.1093/bioinformatics/bts635)
 
+<a id="Gurobi"></a> Gurobi Optimization, LLC (2021). Gurobi Optimizer Reference Manual. [http://www.gurobi.com](http://www.gurobi.com)
+
 <a id="Snakemake"></a> Köster, J., & Rahmann, S. (2012). Snakemake-a scalable bioinformatics workflow engine. Bioinformatics, 28(19), 2520–2522. [https://doi.org/10.1093/bioinformatics/bts480](https://doi.org/10.1093/bioinformatics/bts480)
 
 <a id="SAMtools"></a> Li, H., Handsaker, B., Wysoker, A., Fennell, T., Ruan, J., Homer, N., Marth, G., Abecasis, G., & Durbin, R. (2009). The Sequence Alignment/Map format and SAMtools. Bioinformatics, 25(16), 2078–2079. [https://doi.org/10.1093/bioinformatics/btp352](https://doi.org/10.1093/bioinformatics/btp352)
 
-<a id="SRPRISM"></a> Morgulis, A., & Agarwala, R. (2020). SRPRISM (Single Read Paired Read Indel Substitution Minimizer): an efficient aligner for assemblies with explicit guarantees. GigaScience, 9(4), 1–12. [https://doi.org/10.1093/gigascience/giaa023](https://doi.org/10.1093/gigascience/giaa023)
+<a id="SRPRISM"></a> Morgulis, A., & Agarwala, R. (2020). SRPRISM (Single Read Paired Read Indel Substitution Minimizer): an efficient aligner for assemblies with explicit guarantees. GigaScience, 9(4), giaa023. [https://doi.org/10.1093/gigascience/giaa023](https://doi.org/10.1093/gigascience/giaa023)
 
 <a id="Picard"></a> Picard [http://broadinstitute.github.io/picard/](http://broadinstitute.github.io/picard/)
 
@@ -391,7 +432,7 @@ This pipeline leverages the many open-source tools that are listed below.
 
 <a id="PathSeq"></a> Walker, M. A., Pedamallu, C. S., Ojesina, A. I., Bullman, S., Sharpe, T., Whelan, C. W., & Meyerson, M. (2018). GATK PathSeq: a customizable computational tool for the discovery and identification of microbial sequences in libraries from eukaryotic hosts. Bioinformatics (Oxford, England), 34(24), 4287–4289. [https://doi.org/10.1093/bioinformatics/bty501](https://doi.org/10.1093/bioinformatics/bty501)
 
-<a id="CAMMiQ"></a> Zhu, K., Robinson, W., Schaffer, A. A., Xu, J., Ruppin, E., Ergun, F., Ye, Y., & Sahinalp, C. (2020). Strain Level Microbial Detection and Quantification with Applications to Single Cell Metagenomics. BioRxiv, 2020.06.12.149245. [https://www.biorxiv.org/content/10.1101/2020.06.12.149245v2](https://www.biorxiv.org/content/10.1101/2020.06.12.149245v2)
+<a id="CAMMiQ"></a> Zhu, K., Robinson, W., Schaffer, A. A., Xu, J., Ruppin, E., Ergun, F., Ye, Y., & Sahinalp, S. C. (2020). Strain Level Microbial Detection and Quantification with Applications to Single Cell Metagenomics. Abstract to appear in Proceedings of the 25th International Conference on Research in Computational Molecular Biology. [https://www.biorxiv.org/content/10.1101/2020.06.12.149245v2](https://www.biorxiv.org/content/10.1101/2020.06.12.149245v2)
 
 ### Publications
 
