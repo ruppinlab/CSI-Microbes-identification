@@ -1,17 +1,17 @@
-# include Snakefile
+# include
 include: "Snakefile"
 
 # URLs
-SL1344_genome_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.fna.gz"
-SL1344_GFF_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/945/GCF_000006945.2_ASM694v2/GCF_000006945.2_ASM694v2_genomic.gff.gz"
+Fn_genome_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/457/555/GCF_001457555.1_NCTC10562/GCF_001457555.1_NCTC10562_genomic.fna.gz"
+Fn_GFF_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/457/555/GCF_001457555.1_NCTC10562/GCF_001457555.1_NCTC10562_genomic.gff.gz"
 
-samples["genome"] = "SL1344"
+samples["genome"] = "Fn"
 
 include: "../RNA-snakemake-rules/rules/SRPRISM-unpaired.smk"
 
 # SRPRISM files
 GENOME_FA = join("raw", "{genome}.fa")
-GENOME_GTF = join("raw", "{genome}.gff")
+GENOME_GFF = join("raw", "{genome}.gff")
 TRIMMED_FQ1 = join("FASTQ", "unmapped", "trimmed", "{patient}-{sample}_1.fastq.gz")
 SRPRISM_UNPAIRED_INPUT_FQ = join("output", "SRPRISM", "{patient}", "{sample}", "unaligned_3.fq")
 SRPRISM_UNPAIRED_PRIMARY_SORTED_BAM = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-unpaired.primary.sorted.bam")
@@ -22,7 +22,7 @@ SRPRISM_CB_UMI_COUNT = join("output", "SRPRISM", "{patient}", "{sample}", "CB-UM
 
 GFF_READCOUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-unpaired-count.gff")
 
-localrules: download_SL1344_genome, download_SL1344_GFF, move_FQ_for_SRPRISM
+localrules: download_Fn_genome, download_Fn_GFF, move_FQ_for_SRPRISM
 
 rule SRPRISM_output:
     input:
@@ -41,7 +41,7 @@ rule add_CR_tags_SRPRISM:
         SRPRISM_CB_UMI_TABLE,
         SRPRISM_CB_UMI_COUNT
     script:
-        "src/add_CR_tags_to_SRPRISM_bam.py"
+        "../Ben-Moshe2019/src/add_CR_tags_to_SRPRISM_bam.py"
 
 # get a read count per gene per sample file
 rule intersect_BAM_GFF:
@@ -66,23 +66,24 @@ rule move_FQ_for_SRPRISM:
 
 
 
-### rules to download SL1344 reference files ###
 
-rule download_SL1344_genome:
+
+### rules to download Fn reference files ###
+rule download_Fn_genome:
     wildcard_constraints:
-        genome="SL1344"
+        genome="Fn"
     params:
-        SL1344_genome_URL
+        Fn_genome_URL
     output:
         GENOME_FA
     shell:
         "wget -O - {params[0]} | gunzip -c > {output}"
 
-rule download_SL1344_GFF:
+rule download_Fn_GFF:
     wildcard_constraints:
-        genome="SL1344"
+        genome="Fn"
     params:
-        SL1344_GFF_URL
+        Fn_GFF_URL
     output:
         GENOME_GFF
     shell:
