@@ -29,7 +29,11 @@ plates_of_interest = [
 #     "1001000339", "1001000340",
 #     "B003518", "B003522", "B003527", "B003529", "B003588"
 # ]
+
+# plates_of_interest = ["B003648", "B003659"]
+
 cells = cells.loc[cells.plate.isin(plates_of_interest)]
+samples = cells[["patient", "sample", "plate"]].drop_duplicates()
 
 wildcard_constraints:
     patient="|".join(cells["patient"].unique()),
@@ -58,14 +62,14 @@ PATHSEQ_CELL_SCORE_FILE = join("output", "PathSeq", "{patient}-{sample}-{plate}-
 include: "../RNA-snakemake-rules/rules/ERCC92.smk"
 include: "../RNA-snakemake-rules/rules/genome.smk"
 include: "../RNA-snakemake-rules/rules/trim.smk"
-include: "../RNA-snakemake-rules/rules/STAR.smk"
+include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
 include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
-include: "../pathogen-discovery-rules/rules/PathSeq-host-filter-single.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-SS2-STARsolo.smk"
 
 
 rule all:
     input:
-        expand(STAR_PE_READCOUNT_FILE, zip, sample=cells["sample"], patient=cells["patient"], plate=cells["plate"], cell=cells["cell"])
+        expand(PATHSEQ_CELL_SCORE_FILE, zip, sample=cells["sample"], patient=cells["patient"], plate=cells["plate"], cell=cells["cell"]),
 
 
 def get_SRA_fq_files(wildcards):
