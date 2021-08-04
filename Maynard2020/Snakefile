@@ -30,7 +30,7 @@ plates_of_interest = [
 #     "B003518", "B003522", "B003527", "B003529", "B003588"
 # ]
 
-plates_of_interest = ["B003648", "B003659"]
+# plates_of_interest = ["B003648", "B003659"]
 
 cells = cells.loc[cells.plate.isin(plates_of_interest)]
 samples = cells[["patient", "sample", "plate"]].drop_duplicates()
@@ -69,9 +69,7 @@ include: "../pathogen-discovery-rules/rules/PathSeq-SS2-STARsolo.smk"
 
 rule all:
     input:
-        expand(STAR_PE_RAW_MATRIX_FILE, zip, sample=samples["sample"], patient=samples["patient"], plate=samples["plate"]),
-        expand(STAR_PE_RAW_FEATURES_FILE, zip, sample=samples["sample"], patient=samples["patient"], plate=samples["plate"]),
-        expand(STAR_PE_RAW_BARCODE_FILE, zip, sample=samples["sample"], patient=samples["patient"], plate=samples["plate"])
+        expand(PATHSEQ_CELL_SCORE_FILE, zip, sample=cells["sample"], patient=cells["patient"], plate=cells["plate"], cell=cells["cell"]),
 
 
 def get_SRA_fq_files(wildcards):
