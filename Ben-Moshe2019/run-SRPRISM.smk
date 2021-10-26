@@ -11,7 +11,7 @@ include: "../RNA-snakemake-rules/rules/SRPRISM-unpaired.smk"
 
 # SRPRISM files
 GENOME_FA = join("raw", "{genome}.fa")
-GENOME_GTF = join("raw", "{genome}.gff")
+GENOME_GFF = join("raw", "{genome}.gff")
 TRIMMED_FQ1 = join("FASTQ", "unmapped", "trimmed", "{patient}-{sample}_1.fastq.gz")
 SRPRISM_UNPAIRED_INPUT_FQ = join("output", "SRPRISM", "{patient}", "{sample}", "unaligned_3.fq")
 SRPRISM_UNPAIRED_PRIMARY_SORTED_BAM = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-unpaired.primary.sorted.bam")

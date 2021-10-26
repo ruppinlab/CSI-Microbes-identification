@@ -5,7 +5,7 @@ include: "Snakefile"
 Fn_genome_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/457/555/GCF_001457555.1_NCTC10562/GCF_001457555.1_NCTC10562_genomic.fna.gz"
 Fn_GFF_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/457/555/GCF_001457555.1_NCTC10562/GCF_001457555.1_NCTC10562_genomic.gff.gz"
 
-samples["genome"] = "Fn"
+#samples["genome"] = "Fn"
 
 include: "../RNA-snakemake-rules/rules/SRPRISM-unpaired.smk"
 
@@ -26,9 +26,9 @@ localrules: download_Fn_genome, download_Fn_GFF, move_FQ_for_SRPRISM
 
 rule SRPRISM_output:
     input:
-        expand(GFF_READCOUNT_FILE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
-        expand(SRPRISM_CB_UMI_TABLE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
-        expand(SRPRISM_CB_UMI_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
+        expand(GFF_READCOUNT_FILE, patient="SC028", sample="Sample6a", genome="Fn"),
+        #expand(SRPRISM_CB_UMI_TABLE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
+        #expand(SRPRISM_CB_UMI_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
 
 # add cell barcode and UMI tags to the BAM and use to count UMIs per cell
 rule add_CR_tags_SRPRISM:
