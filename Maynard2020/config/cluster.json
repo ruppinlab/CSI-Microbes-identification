@@ -12,9 +12,15 @@
     "nthreads" : 16,
     "mem": "64g"
   },
-  "STAR_2pass":
+  "STAR_manifest_PE":
   {
-    "time": "24:00:00",
+    "time": "8:00:00",
+    "nthreads" : 48,
+    "mem": "64g"
+  },
+  "STAR_manifest_SE":
+  {
+    "time": "8:00:00",
     "nthreads" : 48,
     "mem": "64g"
   },
