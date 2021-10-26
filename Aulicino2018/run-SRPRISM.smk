@@ -27,11 +27,6 @@ SRPRISM_PROPER_PAIRED_PRIMARY_BAM = join("output", "SRPRISM", "{patient}", "{sam
 SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.primary.sorted.bam")
 SRPRISM_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}_read_counts.tsv")
 
-# SRPRISM_FILTER_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "{filter}_read_counts.tsv")
-# SRPRISM_FILTER_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.{filter}.primary.sorted.bam")
-# SRPRISM_NON_FILTER_BAM = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.non.{filter}.primary.sorted.bam")
-# MPILEUP_FILE = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired.primary.sorted.mpileup")
-
 GFF_READCOUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired-count.gff")
 
 
@@ -80,30 +75,6 @@ rule intersect_BAM_GFF:
         "module load bedtools && "
         "bedtools intersect -a {input[1]} -b {input[0]} -c > {output}"
 
-
-# rule get_genome_coverage:
-#     input:
-#         SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAM,
-#         SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAI,
-#     shell:
-#         "module load bedtools && "
-#         "bedtools genomecov -d -ibam {input[0]} "
-
-
-
-# rules for manipulating SPRISM bam files
-# rule filter_reads:
-#     input:
-#         SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAM,
-#         SRPRISM_PROPER_PAIRED_PRIMARY_SORTED_BAI,
-#         BED_FILTER_FILE
-#     output:
-#         SRPRISM_FILTER_BAM,
-#         SRPRISM_NON_FILTER_BAM
-#     shell:
-#         "module load samtools && "
-#         "samtools view -h -b -L {input[2]} -U {output[1]} {input[0]} > {output[0]}"
-
 # count the reads and combine
 rule count_total_reads:
     params:
@@ -118,39 +89,6 @@ rule count_total_reads:
         SRPRISM_COUNT_FILE
     script:
         "../src/count_nreads.py"
-
-
-# def get_filtered_bam_files(wildcards):
-#     return expand(SRPRISM_FILTER_BAM,  zip, patient=cells["patient"],
-#            sample=cells["sample"], plate=cells["plate"], cell=cells["cell"],
-#            genome=cells["infection"], filter=[wildcards.filter]*cells.shape[0])
-
-# rule count_filtered_reads:
-#     params:
-#         exposed_cells["cell"]
-#     conda:
-#         "../envs/pysam-env.yaml"
-#     input:
-#         get_filtered_bam_files
-#     output:
-#         SRPRISM_FILTER_COUNT_FILE
-#     script:
-#         "../src/count_nreads.py"
-
-
-# rule extract_filter_BED:
-#     wildcard_constraints:
-#         filter="rRNA|16S|protein_coding"
-#     conda:
-#         "../envs/pysam-env.yaml"
-#     input:
-#         GENOME_GTF
-#     output:
-#         BED_FILTER_FILE,
-#     script:
-#         "src/extract_rRNA_coordinates.py"
-
-
 
 ### Rules and functions for downloading Salmonella genome and transcriptome files ###
 rule download_D23580_genome:
