@@ -42,6 +42,29 @@ Currently, we support three distinct approaches for quantifying the number of re
 
 The workflows assume that the files needed by PathSeq and CAMMiQ are pre-built and their location is specified in `config/PathSeq-config.yaml`. The index used by PathSeq in this project is ~41 GB while the indices used by CAMMiQ are > 200 GB so we do not distribute them with the rest of the package although they are available upon request.
 
+The existing projects assume that these database files will be in the top-level directory so the first step is to create the directory `CSI-Microbes-identification/data` (if it doesn't already exist) using
+
+```
+mkdir data
+```
+
+The PathSeq files can be divided into two groups: the microbial reference files and the host (human) reference files. To download the host reference files (which can take a while), use the below commands
+
+```
+cd data
+wget ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/pathseq/pathseq_host.tar.gz
+tar -xf pathseq_host.tar.gz
+cd ..
+```
+
+ The microbial reference fasta file (`microbev1.fa`), VecScreen hits (`microbev1-vecscreen-combined-matches.bed`) and taxonomy hierarchy file (`microbev1_release201_taxonomy.db`) used in our paper are available from zenodo (TODO insert link). The microbial reference fasta file (`microbev1.fa`) can be used to build the additional microbial files required by PathSeq (`microbev1.fa.fai`, `microbev1.dict` and `microbev1.fa.img`) using the below command.
+
+ ```
+ ./scripts/run-build-PathSeq-microbe-files.sh
+ ```
+
+ Please note that building the `microbev1.fa.img` file will take ~1 day.
+
 ### Construction of PathSeq files
 
 An example of how to build the PathSeq index (and other required files) is available in `build-PathSeq-microbes-files/Snakefile`.
