@@ -383,6 +383,14 @@ to
 }
 ```
 
+### What if I don't have access to Biowulf?
+
+Biowulf is the NIH's linux cluster that uses the slurm workload manager. It should be relatively straightforward to run CSI-Microbes-identification to another linux cluster that uses the slurm workload manager. Users should ensure that there is a module system that includes snakemake (6.0.5)<sup>[REF](#Snakemake)</sup>, sratoolkit (2.10.9)<sup>[REF](#SRAToolkit)</sup>, cellranger (5.0.1)<sup>[REF](#CellRanger)</sup>, samtools (1.11)<sup>[REF](#SAMtools)</sup>, bedtools (2.29.2)<sup>[REF](#BedTools)</sup>, and picard (latest=2.25.0)<sup>[REF](#Picard)</sup>.
+
+Users may also need to change the names of the partitions to the partitions used by their server (see above question for an example). To speed up and effectively parallelize the PathSeq step, it is important to use nodes with at least 200 GB of local storage because we copy the PathSeq files to the local node before running PathSeq. In our experience, running PathSeq on multiple nodes using the same reference files will be much slower because of network latency as well competition for access to the one PathSeq reference files between the nodes (which will also sometimes cause errors).
+
+Currently, the example 10x analyses use an HG38 genome that exists on biowulf. Therefore, the `CellRanger`: `genome_dir` value in `config/PathSeq-config.yaml` will need to updated as well.
+
 ### What are the expected output files?
 
 The expected output files from CSI-Microbes-identification are pathseq.txt files, which are output in `output/PathSeq`. For example, the pathseq file for cell barcode TTTCCTCTCCACTGGG-1 from sample GSM3454529 (exposed to _Salmonella_) is located at `output/PathSeq/Pt0-GSM3454529-TTTCCTCTCCACTGGG-1/pathseq.txt`. These output files are used as input to [CSI-Microbes-analysis](https://github.com/ruppinlab/CSI-Microbes-analysis), which computes the differential abundance of microbes across cell-types.
