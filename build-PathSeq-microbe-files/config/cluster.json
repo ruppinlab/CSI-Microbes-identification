@@ -10,9 +10,8 @@
   "build_BWA_image":
   {
     "nthreads": 2,
-    "mem": "400g",
+    "mem": "100g",
     "gres": 200,
-    "time": "4-00:00:00",
-    "partition": "largemem"
+    "time": "2-00:00:00"
   }
 }
