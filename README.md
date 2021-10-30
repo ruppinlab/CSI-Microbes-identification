@@ -57,7 +57,7 @@ tar -xf pathseq_host.tar.gz
 cd ..
 ```
 
- The microbial reference fasta file (`microbev1.fa`), VecScreen hits (`microbev1-vecscreen-combined-matches.bed`) and taxonomy hierarchy file (`microbev1_release201_taxonomy.db`) used in our paper are available from zenodo. The microbial reference fasta file (`microbev1.fa`) can be used to build the additional microbial files required by PathSeq (`microbev1.fa.fai`, `microbev1.dict` and `microbev1.fa.img`) using the below command.
+ The microbial reference fasta file (`microbev1.fa`), VecScreen hits (`microbev1-vecscreen-combined-matches.bed`) and taxonomy hierarchy file (`microbev1_release201_taxonomy.db`) used in our paper are available from [zenodo](https://zenodo.org/record/5604433). The microbial reference fasta file (`microbev1.fa`) can be used to build the additional microbial files required by PathSeq (`microbev1.fa.fai`, `microbev1.dict` and `microbev1.fa.img`) using the below command.
 
  ```
  ./scripts/run-build-PathSeq-microbe-files.sh
