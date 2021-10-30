@@ -3,46 +3,44 @@ import pandas as pd
 
 # URLs
 # if not using current release, should be "ftp://ftp.ncbi.nlm.nih.gov/refseq/release/release-catalog/archive/RefSeq-{release}.catalog.gz"
-REFSEQ_CATALOG_URL = "ftp://ftp.ncbi.nlm.nih.gov/refseq/release/release-catalog/archive/RefSeq-{release}.catalog.gz"
+# REFSEQ_CATALOG_URL = "ftp://ftp.ncbi.nlm.nih.gov/refseq/release/release-catalog/archive/RefSeq-{release}.catalog.gz"
 # PathSeq expects taxdump in tar.gz file format - the archived taxdump files are in zip
 # NCBI_TAX_DUMP_URL = "ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz"
 
 # Directories
-RAW_DIR = "raw"
-DATA_DIR = "data"
+#RAW_DIR = "raw"
+DATA_DIR = "../data"
 
 # other downloaded files
-REFSEQ_CATALOG = join(RAW_DIR, "RefSeq-{release}.catalog.gz")
-NCBI_TAX_DUMP = join(RAW_DIR, "ncbi_taxdump.tar.gz")
+#REFSEQ_CATALOG = join(RAW_DIR, "RefSeq-{release}.catalog.gz")
+#NCBI_TAX_DUMP = join(RAW_DIR, "ncbi_taxdump.tar.gz")
 
 # output files
-TAXONOMY = join(DATA_DIR, "{microbe}_{release}_taxonomy.db")
-FASTA_FILE = join(DATA_DIR, "{microbe}.fa")
-FASTA_IDX_FILE = join(DATA_DIR, "{microbe}.fa.fai")
-FASTA_DICT_FILE = join(DATA_DIR, "{microbe}.dict")
-BWA_IMAGE_INDEX = join(DATA_DIR, "{microbe}.fa.img")
+TAXONOMY = join(DATA_DIR, "microbev1_release201_taxonomy.db")
+FASTA_FILE = join(DATA_DIR, "microbev1.fa")
+FASTA_IDX_FILE = join(DATA_DIR, "microbev1.fa.fai")
+FASTA_DICT_FILE = join(DATA_DIR, "microbev1.dict")
+BWA_IMAGE_INDEX = join(DATA_DIR, "microbev1.fa.img")
 
 
 rule all:
     input:
-        TAXONOMY.format(microbe="microbev1", release="release201"),
-        FASTA_FILE.format(microbe="microbev1"),
         FASTA_IDX_FILE.format(microbe="microbev1"),
         FASTA_DICT_FILE.format(microbe="microbev1"),
         BWA_IMAGE_INDEX.format(microbe="microbev1"),
 
 
-rule download_combine_subspe_genomes:
-    input:
-        join("data", "microbe_subset_assembly_summary.txt")
-    output:
-        join("data", "microbev1.fa")
-    run:
-        df = pd.read_csv(input[0], sep="\t")
-        shell("touch {output}")
-        for index, row in df.iterrows():
-            url = row["url"]
-            shell("wget -O - {url} | gunzip -c >> {output}")
+# rule download_combine_subspe_genomes:
+#     input:
+#         join("data", "microbe_subset_assembly_summary.txt")
+#     output:
+#         join("data", "microbev1.fa")
+#     run:
+#         df = pd.read_csv(input[0], sep="\t")
+#         shell("touch {output}")
+#         for index, row in df.iterrows():
+#             url = row["url"]
+#             shell("wget -O - {url} | gunzip -c >> {output}")
 
 
 # rules for generating PathSeq data
@@ -54,30 +52,30 @@ rule download_combine_subspe_genomes:
 #     shell:
 #         "wget {params} -O {output}"
 
-rule download_RefSeq_accession_catalog:
-    params:
-        REFSEQ_CATALOG_URL
-    output:
-        REFSEQ_CATALOG
-    shell:
-        "wget {params} -O {output}"
+# rule download_RefSeq_accession_catalog:
+#     params:
+#         REFSEQ_CATALOG_URL
+#     output:
+#         REFSEQ_CATALOG
+#     shell:
+#         "wget {params} -O {output}"
 
-rule build_taxonomy_file:
-    input:
-        fa = FASTA_FILE,
-        catalog = REFSEQ_CATALOG,
-        taxdump = NCBI_TAX_DUMP,
-        fai = FASTA_IDX_FILE,
-        dict = FASTA_DICT_FILE
-    output:
-        TAXONOMY
-    shell:
-        "module load GATK/4.1.8.1 && "
-        "gatk PathSeqBuildReferenceTaxonomy "
-        "-R '{input.fa}' "
-        "--refseq-catalog '{input.catalog}' "
-        "--tax-dump '{input.taxdump}' "
-        "-O '{output}'"
+# rule build_taxonomy_file:
+#     input:
+#         fa = FASTA_FILE,
+#         catalog = REFSEQ_CATALOG,
+#         taxdump = NCBI_TAX_DUMP,
+#         fai = FASTA_IDX_FILE,
+#         dict = FASTA_DICT_FILE
+#     output:
+#         TAXONOMY
+#     shell:
+#         "module load GATK/4.1.8.1 && "
+#         "gatk PathSeqBuildReferenceTaxonomy "
+#         "-R '{input.fa}' "
+#         "--refseq-catalog '{input.catalog}' "
+#         "--tax-dump '{input.taxdump}' "
+#         "-O '{output}'"
 
 rule create_fasta_dict:
     input:

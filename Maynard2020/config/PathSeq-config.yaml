@@ -26,13 +26,13 @@ trimming:
 
 PathSeq:
   bam_file: "output/star/{patient}-{sample}-{plate}/unaligned.bam"
-  microbe_fasta: "../Aulicino2018/data/microbev1.fa"
-  microbe_fai: "../Aulicino2018/data/microbev1.fa.fai"
-  microbe_dict: "../Aulicino2018/data/microbev1.dict"
-  microbe_bwa_image: "../Aulicino2018/data/microbev1.fa.img"
-  taxonomy_db: "../Aulicino2018/data/microbev1_release201_taxonomy.db"
-  host_img: "/data/Robinson-SB/PathSeq-data/pathseq_host_ERCC92.img"
-  host_bfi: "/data/Robinson-SB/PathSeq-data/pathseq_host.bfi"
+  microbe_fasta: "../data/microbev1.fa"
+  microbe_fai: "../data/microbev1.fa.fai"
+  microbe_dict: "../data/microbev1.dict"
+  microbe_bwa_image: "../data/microbev1.fa.img"
+  taxonomy_db: "../data/microbev1_release201_taxonomy.db"
+  host_img: "../data/pathseq_host.fa.img"
+  host_bfi: "../data/pathseq_host.bfi"
 
 VecScreen:
-  contaminant_hits: "/data/Robinson-SB/run-VecScreen/output/microbev1-vecscreen-combined-matches.bed"
+  contaminant_hits: "../data/microbev1-vecscreen-combined-matches.bed"
