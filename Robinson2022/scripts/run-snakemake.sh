@@ -10,5 +10,5 @@ snakemake \
 --jobs 10 \
 --latency-wait 60 \
 --keep-going \
---group-components score_PathSeq_cell_BAM=50 extract_unpaired_reads=100 sort_paired_reads=100 extract_paired_reads=100 split_PathSeq_BAM_by_RG=50 \
+--group-components FASTQ=100 score_PathSeq_cell_BAM=50 extract_unpaired_reads=100 sort_paired_reads=100 extract_paired_reads=100 split_PathSeq_BAM_by_RG=50 \
 --local-cores 4 all

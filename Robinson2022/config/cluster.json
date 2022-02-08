@@ -24,12 +24,6 @@
     "nthreads" : 48,
     "mem": "64g"
   },
-  "FASTQ":
-  {
-    "nthreads": 6,
-    "gres": 200,
-    "mem": "32g"
-  },
   "build_host_kmer_file":
   {
     "mem": "80g",
