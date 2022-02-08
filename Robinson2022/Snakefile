@@ -1,0 +1,63 @@
+from os.path import join
+import pandas as pd
+from snakemake.utils import min_version
+##### set minimum snakemake version #####
+min_version("5.1.2")
+
+##### load config and sample sheets #####
+configfile: "config/PathSeq-config.yaml"
+
+
+# metadata
+#patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
+#samples = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample"], drop=False)
+cells = pd.read_csv(config["units"], dtype=str, sep="\t").set_index(["patient", "sample", "cell"], drop=False)
+
+wildcard_constraints:
+    patient="|".join(cells["patient"].unique()),
+    sample="|".join(cells["sample"].unique()),
+    plate="|".join(cells["plate"].unique()),
+    cell="|".join(cells["cell"].unique())
+
+# include rules
+include: "../RNA-snakemake-rules/rules/ERCC92.smk"
+include: "../RNA-snakemake-rules/rules/genome.smk"
+include: "../RNA-snakemake-rules/rules/trim.smk"
+include: "../RNA-snakemake-rules/rules/STARsolo_SmartSeq.smk"
+include: "../pathogen-discovery-rules/rules/filter-host-reads.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-SS2-STARsolo.smk"
+
+# directories
+FASTQ_DIR = join("FASTQ")
+RAW_FASTQ_DIR = join(FASTQ_DIR, "raw")
+
+# Intermediate Files for STARsolo
+RAW_FASTQ1_FILE = "/data/Robinson-SB/Seq1_AAAT5MNM5_PLX/{cell}_R1_001.fastq.gz"
+RAW_FASTQ2_FILE = "/data/Robinson-SB/Seq1_AAAT5MNM5_PLX/{cell}_R2_001.fastq.gz"
+FASTQ1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_1.fastq.gz")
+FASTQ2_FILE = join(RAW_FASTQ_DIR, "{patient}-{sample}-{cell}_2.fastq.gz")
+
+# PathSeq Output Files
+PathSeq_BAM_File = join("output", "PathSeq", "{patient}-{sample}-{plate}", "pathseq.bam")
+PathSeq_Cell_Score_File = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell}", "pathseq.txt")
+
+plates = cells[["patient", "sample", "plate"]].drop_duplicates()
+
+rule all:
+    input:
+        expand(PathSeq_Cell_Score_File, zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"]),
+
+
+
+rule copy_FASTQ_File:
+    group:
+        "FASTQ"
+    input:
+        RAW_FASTQ1_FILE,
+        RAW_FASTQ2_FILE
+    output:
+        FASTQ1_FILE,
+        FASTQ2_FILE
+    shell:
+        "cp {input[0]} {output[0]} && "
+        "cp {input[1]} {output[1]}"
