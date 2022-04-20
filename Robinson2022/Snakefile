@@ -32,8 +32,8 @@ FASTQ_DIR = join("FASTQ")
 RAW_FASTQ_DIR = join(FASTQ_DIR, "raw")
 
 # Intermediate Files for STARsolo
-RAW_FASTQ1_FILE = "/data/Robinson-SB/Seq1_AAAT5MNM5_PLX/{cell}_R1_001.fastq.gz"
-RAW_FASTQ2_FILE = "/data/Robinson-SB/Seq1_AAAT5MNM5_PLX/{cell}_R2_001.fastq.gz"
+RAW_FASTQ1_FILE = "/data/Robinson-SB/Seq1_AAAMF3MHV_PLX/{cell}_R1_001.fastq.gz"
+RAW_FASTQ2_FILE = "/data/Robinson-SB/Seq1_AAAMF3MHV_PLX/{cell}_R2_001.fastq.gz"
 FASTQ1_FILE = join(RAW_FASTQ_DIR,  "{patient}-{sample}-{cell}_1.fastq.gz")
 FASTQ2_FILE = join(RAW_FASTQ_DIR, "{patient}-{sample}-{cell}_2.fastq.gz")
 
