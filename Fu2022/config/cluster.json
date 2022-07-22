@@ -12,7 +12,12 @@
         "mem": "32g",
         "gres": 200
     },
-    "cellranger_count":
+    "create_star_index" :
+    {
+      "nthreads" : 16,
+      "mem": "64g"
+    },
+    "STAR_SE":
     {
       "mem": "64g",
       "nthreads": 16,

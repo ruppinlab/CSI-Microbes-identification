@@ -1,0 +1,7 @@
+name: trim-galore-env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - trim-galore 
