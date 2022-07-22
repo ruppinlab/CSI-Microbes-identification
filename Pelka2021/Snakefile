@@ -67,8 +67,9 @@ rule download_FASTQ_from_SRA:
         temp(SRA_FASTQ2_FILE),
         temp(SRA_FASTQ3_FILE),
     shell:
-        "module load sratoolkit/2.9.6 && "
+        "module load sratoolkit/3.0.0 && "
         "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
+        "--ngc /data/robinsonwi/dgGAP/prj_25966_D21255.ngc "
         "--include-technical --split-files {wildcards.run}"
 
 def get_sra_fq_files(wildcards):
