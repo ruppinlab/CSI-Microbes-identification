@@ -1,0 +1,92 @@
+from os.path import join
+import pandas as pd
+from snakemake.utils import min_version
+##### set minimum snakemake version #####
+min_version("5.1.2")
+
+##### load config and sample sheets #####
+configfile: "config/PathSeq-config.yaml"
+
+
+wildcard_constraints:
+    patient="C1[0-9][0-9]",
+
+patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
+# validate(samples, schema="schemas/samples.schema.yaml")
+
+lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample", "lane"], drop=False)
+lanes = lanes.iloc[0:2]
+lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
+samples = lanes[["sample", "patient"]].drop_duplicates()
+
+cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
+
+# Snakemake includes
+include: "../RNA-snakemake-rules/rules/cellranger.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
+
+# Directories
+FASTQ_DIR = "FASTQ"
+PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")
+CR_SAMPLE_ODIR = "{patient}-{sample}"
+
+# STAR Input Files
+SRA_FASTQ1_FILE = join(FASTQ_DIR, "{run}_1.fastq")
+SRA_FASTQ2_FILE = join(FASTQ_DIR, "{run}_2.fastq")
+SRA_FASTQ3_FILE = join(FASTQ_DIR, "{run}_3.fastq")
+
+# CellRanger Files
+CB_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_R1_001.fastq.gz")
+cDNA_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_R2_001.fastq.gz")
+CR_BAM_FILE = join(CR_SAMPLE_ODIR, "outs", "possorted_genome_bam.bam")
+
+
+# PathSeq files
+PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq.txt")
+
+rule all:
+    input:
+        expand(cDNA_FASTQ_FILE, patient=lanes["patient"], sample=lanes["sample"], lane=lanes["lane"]),
+        #expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"])
+        #expand(SRPRISM_TAG_BAM, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"])
+
+
+### rules to download FASTQ files ###
+
+# download files from SRA
+# need to --include-technical to get the 10x UMI and CB reads
+# this requires
+rule download_FASTQ_from_SRA:
+    group:
+        "FASTQ"
+    params:
+        FASTQ_DIR
+    output:
+        temp(SRA_FASTQ1_FILE),
+        temp(SRA_FASTQ2_FILE),
+        temp(SRA_FASTQ3_FILE),
+    shell:
+        "module load sratoolkit/2.9.6 && "
+        "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
+        "--include-technical --split-files {wildcards.run}"
+
+def get_sra_fq_files(wildcards):
+    run_of_interest = lanes.at[(wildcards.patient, wildcards.sample, wildcards.lane), "Run"]
+    return {
+        "CellBarcode_fq": expand(SRA_FASTQ1_FILE, run=run_of_interest),
+        "cDNA_fq": expand(SRA_FASTQ2_FILE, run=run_of_interest),
+    }
+
+# compress and rename
+rule compress_rename_SRA_FASTQ_files:
+    group:
+        "FASTQ"
+    input:
+        unpack(get_sra_fq_files)
+    output:
+        CellBarcode_fq = CB_FASTQ_FILE,
+        cDNA_fq = cDNA_FASTQ_FILE,
+    shell:
+        "gzip -vc {input.CellBarcode_fq} > {output.CellBarcode_fq} && "
+        "gzip -vc {input.cDNA_fq} > {output.cDNA_fq}"
