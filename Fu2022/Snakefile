@@ -4,7 +4,7 @@ from snakemake.utils import min_version
 ##### set minimum snakemake version #####
 min_version("5.1.2")
 ##### load config and sample sheets #####
-configfile: join("config", "PathSeq-config.yaml")
+# configfile: join("config", "PathSeq-config.yaml")
 #validate(config, schema="schemas/config.schema.yaml")
 
 # wildcard_constraints:
@@ -58,10 +58,9 @@ rule download_FASTQ_from_SRA:
     params:
         FASTQ_DIR
     output:
-        temp(SRA_FASTQ1_FILE),
-        temp(SRA_FASTQ2_FILE),
-        temp(SRA_FASTQ3_FILE),
+        SRA_FASTQ1_FILE,
+        SRA_FASTQ2_FILE,
     shell:
         "module load sratoolkit && "
         "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
-        "--include-technical --split-files {wildcards.run}"
+        "--split-files {wildcards.run}"
