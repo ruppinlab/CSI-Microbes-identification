@@ -7,11 +7,12 @@ min_version("5.1.2")
 configfile: join("config", "PathSeq-config.yaml")
 #validate(config, schema="schemas/config.schema.yaml")
 
-# wildcard_constraints:
-#     patient="SC0[0-3][0-9]",
-#     sample="Sample[0-9][a-c]",
+samples = pd.read_csv(config["samples"], sep="\t")
 
-# patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
+wildcard_constraints:
+    sample=samples["sample"].unique(),
+
+
 # # validate(samples, schema="schemas/samples.schema.yaml")
 #
 # lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample", "lane"], drop=False)
@@ -27,18 +28,20 @@ include: "../pathogen-discovery-rules/rules/PathSeq-SS2-STARsolo.smk"
 # Directories
 FASTQ_DIR = "FASTQ"
 PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")
-CR_SAMPLE_ODIR = "{patient}-{sample}"
 
 # Input Files
 SRA_FASTQ1_FILE = join(FASTQ_DIR, "{run}_1.fastq")
 SRA_FASTQ2_FILE = join(FASTQ_DIR, "{run}_2.fastq")
 
-VAL_FQ1_FILE = join(FASTQ_DIR, "validated", "{run}_1_val_1.fq")
-VAL_FQ2_FILE = join(FASTQ_DIR, "validated", "{run}_2_val_2.fq")
-BARCODE_FQ_FILE = join(FASTQ_DIR, "barcode", "{run}_AA.fq")
-FQ1_WITH_BARCODE_FILE = join(FASTQ_DIR, "barcoded", "{run}_1.fq")
-EXTRACTED_BARCODE_FQ = join(FASTQ_DIR, "extracted_barcodes", "{run}_extracted_barcodes.fq")
-WHITELIST_BARCODES_FILE = join("output", "whitelist_barcodes", "{run}_whitelist_barcodes.txt")
+cDNA_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{plate}_R1.fastq")
+CB_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{plate}_R2.fastq")
+
+VAL_cDNA_FILE = join(PATIENT_FASTQ_DIR, "validated", "{sample}_{plate}_R1_val_1.fq")
+VAL_CB_FILE = join(PATIENT_FASTQ_DIR, "validated", "{sample}_{plate}_R2_val_2.fq") # contains the barcodes
+BARCODE_FQ_FILE = join(PATIENT_FASTQ_DIR, "barcode", "{run}_AA.fq")
+cDNA_WITH_BARCODE_FILE = join(PATIENT_FASTQ_DIR, "barcoded", "{sample}_{plate}_1.fq")
+EXTRACTED_BARCODE_FQ = join(PATIENT_FASTQ_DIR, "extracted_barcodes", "{sample}_{plate}_extracted_barcodes.fq")
+WHITELIST_BARCODES_FILE = join(PATIENT_FASTQ_DIR, "whitelist_barcodes", "{sample}_{plate}_whitelist_barcodes.txt")
 
 # mouse files
 GENCODE_MOUSE_GENOME_FASTA_FILE = join("raw", "genome", "GRCm38.primary_assembly.genome.fa")
@@ -57,8 +60,7 @@ PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pat
 
 rule all:
     input:
-        expand(pathseq_bam, patient="P0", sample="SRR13160581", plate="P0"),
-        # expand(FQ1_WITH_BARCODE_FILE, run="SRR13160581"),
+        expand(cDNA_WITH_BARCODE_FILE, zip, patient=samples["patient"], sample=samples["sample"], plate=samples["plate"]),
 
 rule create_star_index:
     conda:
@@ -86,7 +88,7 @@ rule STAR_SE:
         odir = join(STAR_SE_OUTPUT_DIR, "")
     input:
         STAR_GENOME_INDEX,
-        FQ1_WITH_BARCODE_FILE
+        cDNA_WITH_BARCODE_FILE
     output:
         STAR_SE_BAM_FILE,
         STAR_SE_READCOUNT_FILE
@@ -108,7 +110,7 @@ rule umi_barcode:
         "../envs/umi-tools-env.yaml"
     input:
         WHITELIST_BARCODES_FILE,
-        VAL_FQ1_FILE,
+        VAL_cDNA_FILE,
         BARCODE_FQ_FILE
     output:
         FQ1_WITH_BARCODE_FILE,
@@ -131,7 +133,7 @@ rule umi_whitelist:
 # not sure what the sed command does
 rule extract_barcode_from_FQ:
     input:
-        VAL_FQ2_FILE
+        VAL_CB_FILE
     output:
         BARCODE_FQ_FILE
     shell:
@@ -141,17 +143,38 @@ rule clean_FASTQ_files:
     conda:
         "../envs/trim_galore-env.yaml"
     input:
-        SRA_FASTQ1_FILE,
-        SRA_FASTQ2_FILE,
+        cDNA_FASTQ_FILE,
+        CB_FASTQ_FILE,
     params:
         odir = join("FASTQ", "validated")
     output:
-        VAL_FQ1_FILE,
-        VAL_FQ2_FILE
+        VAL_cDNA_FILE,
+        VAL_CB_FILE
     shell:
         "trim_galore --paired -q 20 --fastqc -o {params.odir} {input[0]} {input[1]}"
 
 ### rules to download FASTQ files ###
+
+# cell barcode FQ file is FQ2
+def get_sra_fq_files(wildcards):
+    run_of_interest = samples.at[(wildcards.patient, wildcards.sample, wildcards.plate), "Run"]
+    return {
+        "cDNA_fq": expand(SRA_FASTQ1_FILE, run=run_of_interest),
+        "CellBarcode_fq": expand(SRA_FASTQ2_FILE, run=run_of_interest),
+    }
+
+# compress and rename
+rule compress_rename_SRA_FASTQ_files:
+    group:
+        "FASTQ"
+    input:
+        unpack(get_sra_fq_files)
+    output:
+        CellBarcode_fq = CB_FASTQ_FILE,
+        cDNA_fq = cDNA_FASTQ_FILE,
+    shell:
+        "gzip -vc {input.CellBarcode_fq} > {output.CellBarcode_fq} && "
+        "gzip -vc {input.cDNA_fq} > {output.cDNA_fq}"
 
 # download files from SRA
 # need to --include-technical to get the 10x UMI and CB reads
@@ -162,8 +185,8 @@ rule download_FASTQ_from_SRA:
     params:
         FASTQ_DIR
     output:
-        SRA_FASTQ1_FILE,
-        SRA_FASTQ2_FILE,
+        temp(SRA_FASTQ1_FILE),
+        temp(SRA_FASTQ2_FILE),
     shell:
         "module load sratoolkit && "
         "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
