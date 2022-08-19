@@ -1,0 +1,75 @@
+from os.path import join
+import pandas as pd
+from snakemake.utils import min_version
+##### set minimum snakemake version #####
+min_version("5.1.2")
+
+##### load config and sample sheets #####
+configfile: "config/PathSeq-config.yaml"
+
+
+wildcard_constraints:
+    patient="C1[0-9][0-9]",
+
+cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
+
+samples = cells[["patient", "sample", "library_id"]].reset_index(drop=True).drop_duplicates().set_index(["patient", "sample"])
+samples = samples.iloc[0:2]
+
+# Snakemake includes
+# include: "../RNA-snakemake-rules/rules/cellranger.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
+
+# Directories
+CR_SAMPLE_ODIR = "{patient}-{sample}"
+FASTQ_DIR = "/data/Robinson-SB/scRNAseq_46samples_fastq/{library}"
+
+# CellRanger Files
+CR_BAM_FILE = join(CR_SAMPLE_ODIR, "outs", "possorted_genome_bam.bam")
+
+PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")
+
+# cellranger complains when you pass directory as --id
+CR_SAMPLE_ODIR = "{patient}-{sample}"
+
+
+
+
+# PathSeq files
+PATHSEQ_BAM = join("output", "PathSeq", "{patient}-{sample}", "pathseq.bam")
+PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq.txt")
+
+rule all:
+    input:
+        expand(CR_BAM_FILE, patient=samples["patient"], sample=samples["sample"]),
+        #expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"])
+        #expand(SRPRISM_TAG_BAM, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"])
+
+def get_cellranger_input_directory(wildcards):
+    library_id = lanes.loc[(wildcards.patient, wildcards.sample), "library_id"]
+    return {
+        "dir": expand(FASTQ_DIR, library=library_id)
+    }
+
+# expected input format for FASTQ file
+rule cellranger_count:
+    input:
+        unpack(get_cellranger_input_directory)
+    params:
+        PATIENT_FASTQ_DIR,
+        CR_SAMPLE_ODIR,
+        config["CellRanger"]["genome_dir"],
+        config["CellRanger"]["chemistry"]
+    output:
+        CR_BAM_FILE
+    shell:
+        "module load cellranger/5.0.1 && "
+        # snakemake auto creates directories for output files but cellranger expects existing directories to pipestance directory
+        "rm -rf {params[1]} && "
+        "cellranger count --id={params[1]} "
+        "--fastqs={input[0]} " # this is the path to the directory containing the FASTQ files
+        "--sample={wildcards.sample} " # this is the sample to use
+        "--transcriptome={params[2]} "
+        "--localcores=$SLURM_CPUS_PER_TASK "
+        "--chemistry={params[3]} "
+        "--localmem=60"
