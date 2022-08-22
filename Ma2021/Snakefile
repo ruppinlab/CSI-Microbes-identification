@@ -8,13 +8,16 @@ min_version("5.1.2")
 configfile: "config/PathSeq-config.yaml"
 
 
-wildcard_constraints:
-    patient="C1[0-9][0-9]",
 
 cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
 
-samples = cells[["patient", "sample", "library_id"]].reset_index(drop=True).drop_duplicates().set_index(["patient", "sample"])
-samples = samples.iloc[0:2]
+samples = cells[["patient", "sample", "library_id"]].reset_index(drop=True).drop_duplicates().set_index(["patient", "sample"], drop=False)
+# samples = samples.iloc[0:2]
+
+cells = cells.loc[cells.patient.isin(["H08", "H37"])]
+wildcard_constraints:
+    patient="|".join(samples["patient"]),
+    sample="|".join(samples["sample"])
 
 # Snakemake includes
 # include: "../RNA-snakemake-rules/rules/cellranger.smk"
@@ -41,15 +44,18 @@ PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pat
 
 rule all:
     input:
-        expand(CR_BAM_FILE, patient=samples["patient"], sample=samples["sample"]),
-        #expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"])
+        expand(PATHSEQ_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"])
         #expand(SRPRISM_TAG_BAM, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"])
 
 def get_cellranger_input_directory(wildcards):
-    library_id = lanes.loc[(wildcards.patient, wildcards.sample), "library_id"]
+    library_id = samples.loc[(wildcards.patient, wildcards.sample), "library_id"]
     return {
         "dir": expand(FASTQ_DIR, library=library_id)
     }
+
+def get_library_id(wildcards):
+    return samples.loc[(wildcards.patient, wildcards.sample), "library_id"]
 
 # expected input format for FASTQ file
 rule cellranger_count:
@@ -59,7 +65,8 @@ rule cellranger_count:
         PATIENT_FASTQ_DIR,
         CR_SAMPLE_ODIR,
         config["CellRanger"]["genome_dir"],
-        config["CellRanger"]["chemistry"]
+        config["CellRanger"]["chemistry"],
+        get_library_id
     output:
         CR_BAM_FILE
     shell:
@@ -67,8 +74,8 @@ rule cellranger_count:
         # snakemake auto creates directories for output files but cellranger expects existing directories to pipestance directory
         "rm -rf {params[1]} && "
         "cellranger count --id={params[1]} "
-        "--fastqs={input[0]} " # this is the path to the directory containing the FASTQ files
-        "--sample={wildcards.sample} " # this is the sample to use
+        "--fastqs={input[0]}/ " # this is the path to the directory containing the FASTQ files
+        "--sample={params[4]} " # this is the sample to use
         "--transcriptome={params[2]} "
         "--localcores=$SLURM_CPUS_PER_TASK "
         "--chemistry={params[3]} "
