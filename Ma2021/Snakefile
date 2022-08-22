@@ -55,7 +55,7 @@ def get_cellranger_input_directory(wildcards):
     }
 
 def get_library_id(wildcards):
-    return samples.loc[(wildcards.patient, wildcards.sample), "library_id"]
+    return samples.loc[(wildcards.patient, wildcards.sample), "sample_prefix"]
 
 # expected input format for FASTQ file
 rule cellranger_count:
