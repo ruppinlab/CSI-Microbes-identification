@@ -10,13 +10,14 @@
     "FASTQ":
     {
         "mem": "32g",
+        "time": "8:00:00",
         "gres": 200
     },
     "cellranger_count":
     {
       "mem": "64g",
       "nthreads": 16,
-      "time": "12:00:00"
+      "time": "24:00:00"
     },
     "run_fastp":
     {
@@ -32,7 +33,7 @@
     },
     "add_CB_UB_tags_to_PathSeq_BAM":
     {
-      "mem": "96g",
+      "mem": "180g",
       "time": "4:00:00"
     },
     "add_CR_tags_SRPRISM":
@@ -49,7 +50,7 @@
     "PathSeqScoreSpark":
     {
       "mem": "32g",
-      "time": "4:00:00",
+      "time": "6:00:00",
       "nthreads": 16
     },
     "run_CAMMiQ_species_long_reads":

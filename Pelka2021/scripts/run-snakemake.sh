@@ -1,6 +1,6 @@
 #!/bin/bash
 
-module load snakemake/6.0.5
+module load snakemake/7.7.0
 snakemake \
 --use-conda \
 --rerun-incomplete \
@@ -9,5 +9,5 @@ snakemake \
 --jobs 100 \
 --latency-wait 60 \
 --keep-going \
---group-components split_PathSeq_BAM_by_CB_UB=500 PathSeqScoreSpark=500 \
+--group-components split_PathSeq_BAM_by_CB_UB=500 \ #PathSeqScoreSpark=100 \
 --local-cores 4 all
