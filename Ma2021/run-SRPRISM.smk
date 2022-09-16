@@ -9,7 +9,7 @@ wildcard_constraints:
     genome="RefSeq_HEPB",
     filter="rRNA|16S|protein_coding"
 
-samples["genome"] = "SL1344"
+samples["genome"] = "RefSeq_HEPB"
 
 include: "../RNA-snakemake-rules/rules/SRPRISM-unpaired.smk"
 
@@ -30,8 +30,8 @@ localrules: download_SL1344_genome, download_SL1344_GFF, move_FQ_for_SRPRISM
 rule SRPRISM_output:
     input:
         expand(GFF_READCOUNT_FILE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
-        expand(SRPRISM_CB_UMI_TABLE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
-        expand(SRPRISM_CB_UMI_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
+        #expand(SRPRISM_CB_UMI_TABLE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
+        #expand(SRPRISM_CB_UMI_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
 
 # add cell barcode and UMI tags to the BAM and use to count UMIs per cell
 rule add_CR_tags_SRPRISM:
