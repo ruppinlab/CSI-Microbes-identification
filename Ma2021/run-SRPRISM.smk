@@ -25,13 +25,13 @@ SRPRISM_CB_UMI_COUNT = join("output", "SRPRISM", "{patient}", "{sample}", "CB-UM
 
 GFF_READCOUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "{genome}-unpaired-count.gff")
 
-localrules: download_SL1344_genome, download_SL1344_GFF, move_FQ_for_SRPRISM
+localrules: download_RefSeq_HEPB_genome, download_RefSeq_HEPB_GFF, move_FQ_for_SRPRISM
 
 rule SRPRISM_output:
     input:
         expand(GFF_READCOUNT_FILE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
-        #expand(SRPRISM_CB_UMI_TABLE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
-        #expand(SRPRISM_CB_UMI_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
+        expand(SRPRISM_CB_UMI_TABLE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
+        expand(SRPRISM_CB_UMI_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
 
 # add cell barcode and UMI tags to the BAM and use to count UMIs per cell
 rule add_CR_tags_SRPRISM:
@@ -44,7 +44,7 @@ rule add_CR_tags_SRPRISM:
         SRPRISM_CB_UMI_TABLE,
         SRPRISM_CB_UMI_COUNT
     script:
-        "src/add_CR_tags_to_SRPRISM_bam.py"
+        "../src/add_CR_tags_to_SRPRISM_bam.py"
 
 # get a read count per gene per sample file
 rule intersect_BAM_GFF:

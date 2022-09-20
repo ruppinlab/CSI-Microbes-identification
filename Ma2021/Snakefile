@@ -11,10 +11,13 @@ configfile: "config/PathSeq-config.yaml"
 
 cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
 
-samples = cells[["patient", "sample", "library_id"]].reset_index(drop=True).drop_duplicates().set_index(["patient", "sample"], drop=False)
+samples = pd.read_csv(config["samples"], sep="\t").set_index(["patient", "sample"], drop=False)
+# samples = samples.loc[samples["Maximum read length"] == "57bp"]
+cells = cells.loc[cells["sample"].isin(samples["sample"])]
+# samples = cells[["patient", "sample", "library_id", "sample_prefix"]].reset_index(drop=True).drop_duplicates().set_index(["patient", "sample"], drop=False)
 # samples = samples.iloc[0:2]
 
-cells = cells.loc[cells.patient.isin(["H08", "H37"])]
+# cells = cells.loc[cells.patient.isin(["H08", "H37"])]
 wildcard_constraints:
     patient="|".join(samples["patient"]),
     sample="|".join(samples["sample"])
@@ -44,7 +47,7 @@ PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pat
 
 rule all:
     input:
-        expand(PATHSEQ_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
+        # expand(PATHSEQ_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
         expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"])
         #expand(SRPRISM_TAG_BAM, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"])
 

@@ -10,21 +10,11 @@ configfile: "config/PathSeq-config.yaml"
 
 # patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
-#mmrd_df = patients.loc[patients.MMRStatus == "MMRp"]
 lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample", "lane"], drop=False)
-#lanes = lanes.loc[lanes["patient"].isin(mmrd_df.patient)]
-#lanes = lanes.loc[lanes["Is_Tumor"] == "Yes"]
-#lanes = lanes.loc[lanes["ProcessingMethod"].isin(["CD45pMACS", "LiveMACS", "mixUnsortCD45MACS", "CD45pCD3nCD19nMACS"])]
-# there is a problem with SRR15653095 so drop C170_T_0_0_0_c1_v3 for now
-# lanes = lanes.loc[~lanes["sample"].isin(["C103_T_1_1_0_c1_v2", "C106_N_1_1_0_c1_v2", "C170_T_0_0_0_c1_v3"])]
-# lanes = lanes.loc[lanes["sample"].isin(["C104_T_1_1_0_c1_v2", "C105_T_1_1_0_c1_v2"])]
-# lanes = lanes.iloc[0:2]
 lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
 samples = lanes[["sample", "patient"]].drop_duplicates()
 
-#cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
-# cells = cells.loc[cells.patient == "C163"]
-#cells = cells.loc[cells["sample"].isin(samples["sample"])]
+cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
 
 wildcard_constraints:
     patient="P1",
@@ -58,15 +48,15 @@ rule all:
     input:
         # expand(cDNA_FASTQ_FILE, patient=lanes["patient"], sample=lanes["sample"], lane=lanes["lane"]),
         # expand(SRA_FASTQ3_FILE, run=["SRR15653095", "SRR15653115", "SRR15652839"]),
-        expand(PATHSEQ_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
-        # expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"])
+        # expand(PATHSEQ_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"])
         # expand(SRPRISM_TAG_BAM, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"])
 
 
 ### rules to download FASTQ files ###
 
 def get_fq_files(wildcards):
-    lane = lanes.loc[(lanes["patient"] == wildcards.patient) & (lanes["sample"] ==  wildcards.sample) & (lanes["lane"] ==  wildcards.lane), "Run"]
+    lane = lanes.loc[(lanes["patient"] == wildcards.patient) & (lanes["sample"] ==  wildcards.sample) & (lanes["lane"] ==  wildcards.lane)]
     return {
         "CellBarcode_fq": lane["R1_path"],
         "cDNA_fq": lane["R2_path"],
@@ -77,7 +67,7 @@ rule rename_FASTQ_files:
     group:
         "FASTQ"
     input:
-        unpack(get_sra_fq_files)
+        unpack(get_fq_files)
     output:
         CellBarcode_fq = CB_FASTQ_FILE,
         cDNA_fq = cDNA_FASTQ_FILE,
