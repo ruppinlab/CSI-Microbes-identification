@@ -12,6 +12,7 @@ samples = pd.read_csv(config["samples"], sep="\t").set_index(["patient", "sample
 #print(samples)
 #print(samples["sample"].unique())
 
+barcodes = pd.read_csv("FASTQ/raw/M0/whitelist_barcodes/Staph_BKDL202581088-1a_P0_whitelist_barcodes.txt", sep="\t", header=None)[0].values
 
 wildcard_constraints:
     sample="|".join(samples["sample"].unique()),
@@ -62,12 +63,47 @@ STAR_GENOME_INDEX = join("output", "star-index")
 STAR_SE_BAM_FILE = join(STAR_SE_OUTPUT_DIR, "Aligned.out.bam")
 STAR_SE_READCOUNT_FILE = join(STAR_SE_OUTPUT_DIR, "ReadsPerGene.out.tab")
 pathseq_bam = join("output", "PathSeq", "{patient}-{sample}-{plate}", "pathseq.bam")
-PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pathseq.txt")
+sorted_pathseq_bam = join("output", "PathSeq", "{patient}-{sample}-{plate}", "pathseq.sorted.bam")
+sorted_pathseq_bam_idx = join("output", "PathSeq", "{patient}-{sample}-{plate}", "pathseq.sorted.bam.bai")
+pathseq_cell_bam = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell}", "pathseq.bam")
+# PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{plate}", "by-cell", "{cell}", "pathseq.txt")
 
 rule all:
     input:
         # expand(SRA_FASTQ1_FILE, run=samples["Run"]),
-        expand(pathseq_bam, zip, patient=samples["patient"], sample=samples["sample"], plate=samples["plate"]),
+        expand(pathseq_cell_bam, patient="M0", sample="Staph_BKDL202581088-1a", plate="P0", cell="AACCTCTATC"),
+
+# umi_tools count --per-gene --gene-tag=XT --assigned-status-tag=XS --per-cell -I $sorted_file -S $result/06_umiCount/$id.counts.tsv.gz --wide-format-cell-counts
+# next step, need to add cell-barcodes to pathseq bam and then split
+# where are the cell-barcodes in the bam files?
+
+rule split_pathseq_bam:
+    input:
+        sorted_pathseq_bam,
+        sorted_pathseq_bam_idx,
+        "FASTQ/raw/M0/whitelist_barcodes/Staph_BKDL202581088-1a_P0_whitelist_barcodes.txt"
+    output:
+        expand(pathseq_cell_bam, patient="M0", sample="Staph_BKDL202581088-1a", plate="P0", cell=barcodes)
+    script:
+        "src/split_bam_by_cell_barcode.py"
+
+rule index_pathseq_bam:
+    input:
+        sorted_pathseq_bam
+    output:
+        sorted_pathseq_bam_idx
+    shell:
+        "module load samtools && "
+        "samtools index {input}"
+
+rule sort_pathseq_bam:
+    input:
+        pathseq_bam
+    output:
+        sorted_pathseq_bam
+    shell:
+        "module load samtools && "
+        "samtools sort -o {output} {input}"
 
 rule create_star_index:
     conda:
