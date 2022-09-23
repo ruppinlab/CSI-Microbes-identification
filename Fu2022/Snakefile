@@ -80,13 +80,14 @@ PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell
 
 rule all:
     input:
+        expand(join("output", "featureCounts", "{patient}-{sample}-{plate}", "gene_assigned"), patient="M0", sample="Staph_BKDL202581088-1a", plate="P0")
         # expand(SRA_FASTQ1_FILE, run=samples["Run"]),
-        expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Staph_BKDL202581088-1a", plate="P0", cell=Staph_barcodes),
-        expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Con_BKDL202581087-1a", plate="P0", cell=ctrl_barcodes),
-        expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Lac_BKDL202581091-1a", plate="P0", cell=Lac_barcodes),
-        expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Ef_BKDL202581093-1a", plate="P0", cell=Ef_barcodes),
-        expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Sc_BKDL202581089-1a", plate="P0", cell=Sc_barcodes),
-        expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Sk_BKDL202581092-1a", plate="P0", cell=Sk_barcodes),
+        # expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Staph_BKDL202581088-1a", plate="P0", cell=Staph_barcodes),
+        # expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Con_BKDL202581087-1a", plate="P0", cell=ctrl_barcodes),
+        # expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Lac_BKDL202581091-1a", plate="P0", cell=Lac_barcodes),
+        # expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Ef_BKDL202581093-1a", plate="P0", cell=Ef_barcodes),
+        # expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Sc_BKDL202581089-1a", plate="P0", cell=Sc_barcodes),
+        # expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Sk_BKDL202581092-1a", plate="P0", cell=Sk_barcodes),
 # umi_tools count --per-gene --gene-tag=XT --assigned-status-tag=XS --per-cell -I $sorted_file -S $result/06_umiCount/$id.counts.tsv.gz --wide-format-cell-counts
 # next step, need to add cell-barcodes to pathseq bam and then split
 # where are the cell-barcodes in the bam files?
@@ -250,6 +251,21 @@ rule create_star_index:
         "--genomeDir '{output}' "
         "--genomeFastaFiles '{input[genome]}' "
         "--sjdbGTFfile '{input[gtf]}'"
+
+rule run_featurecount:
+    conda:
+        "envs/subread.yml"
+    input:
+        gtf = config["ref"]["annotation"],
+        bam = STAR_SE_BAM_FILE
+    output:
+        join("output", "featureCounts", "{patient}-{sample}-{plate}", "gene_assigned")
+    shell:
+        "featureCounts -a {input.gtf} -o {output} -R BAM {input.bam}"
+        # output is $result/05_featureCount/$id.Aligned.sortedByCoord.out.bam.featureCounts.bam
+        # input file should actually be .../Aligned.out.bam
+
+
 
 # map reads using STAR
 rule STAR_SE:
