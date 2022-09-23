@@ -71,6 +71,10 @@ STAR_SE_OUTPUT_DIR = join(STAR_OUTPUT_DIR, "_STARse")
 STAR_ENV_FILE = join(ENV_DIR, "star.yml")
 STAR_GENOME_INDEX = join("output", "star-index")
 STAR_SE_BAM_FILE = join(STAR_SE_OUTPUT_DIR, "Aligned.out.bam")
+FEATURE_COUNTS_BAM_FILE = join(STAR_SE_OUTPUT_DIR, "Aligned.out.bam.featureCounts.bam")
+SORTED_FEATURE_COUNTS_BAM_FILE = join(STAR_SE_OUTPUT_DIR, "Aligned.out.bam.featureCounts.sorted.bam")
+SORTED_FEATURE_COUNTS_BAI_FILE = join(STAR_SE_OUTPUT_DIR, "Aligned.out.bam.featureCounts.sorted.bam.bai")
+UMI_TOOLS_COUNTS = join("output", "umi_tools", "{patient}-{sample}-{plate}", "counts.tsv.gz")
 STAR_SE_READCOUNT_FILE = join(STAR_SE_OUTPUT_DIR, "ReadsPerGene.out.tab")
 pathseq_bam = join("output", "PathSeq", "{patient}-{sample}-{plate}", "pathseq.bam")
 sorted_pathseq_bam = join("output", "PathSeq", "{patient}-{sample}-{plate}", "pathseq.sorted.bam")
@@ -252,6 +256,37 @@ rule create_star_index:
         "--genomeFastaFiles '{input[genome]}' "
         "--sjdbGTFfile '{input[gtf]}'"
 
+umitools_count:
+    conda:
+        "envs/umi_tools.yml"
+    input:
+        SORTED_FEATURE_COUNTS_BAM_FILE,
+        SORTED_FEATURE_COUNTS_BAI_FILE
+    output:
+        UMI_TOOLS_COUNTS
+    shell:
+        "umi_tools count --per-gene --gene-tag=XT "
+        "--assigned-status-tag=XS --per-cell -I {input[0]} "
+        "-S {output} --wide-format-cell-counts"
+
+rule index_feature_count_bam:
+    input:
+        SORTED_FEATURE_COUNTS_BAM_FILE
+    output:
+        SORTED_FEATURE_COUNTS_BAI_FILE
+    shell:
+        "module load samtools && "
+        "samtools index {input}"
+
+rule sort_feature_count_bam:
+    input:
+        FEATURE_COUNTS_BAM_FILE
+    output:
+        SORTED_FEATURE_COUNTS_BAM_FILE
+    shell:
+        "module load samtools && "
+        "samtools sort -o {output} {input}"
+
 rule run_featurecount:
     conda:
         "envs/subread.yml"
@@ -259,9 +294,10 @@ rule run_featurecount:
         gtf = config["ref"]["annotation"],
         bam = STAR_SE_BAM_FILE
     output:
-        join("output", "featureCounts", "{patient}-{sample}-{plate}", "gene_assigned")
+        join("output", "featureCounts", "{patient}-{sample}-{plate}", "gene_assigned"),
+        FEATURE_COUNTS_BAM_FILE
     shell:
-        "featureCounts -a {input.gtf} -o {output} -R BAM {input.bam}"
+        "featureCounts -a {input.gtf} -o {output[0]} -R BAM {input.bam}"
         # output is $result/05_featureCount/$id.Aligned.sortedByCoord.out.bam.featureCounts.bam
         # input file should actually be .../Aligned.out.bam
 
