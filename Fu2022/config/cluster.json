@@ -7,6 +7,10 @@
         "gres": 10,
         "partition": "norm,ccr"
     },
+    "split_pathseq_bam":
+    {
+        "mem": "100g"
+    },
     "FASTQ":
     {
         "mem": "32g",

@@ -71,7 +71,9 @@ STAR_SE_OUTPUT_DIR = join(STAR_OUTPUT_DIR, "_STARse")
 STAR_ENV_FILE = join(ENV_DIR, "star.yml")
 STAR_GENOME_INDEX = join("output", "star-index")
 STAR_SE_BAM_FILE = join(STAR_SE_OUTPUT_DIR, "Aligned.out.bam")
-FEATURE_COUNTS_BAM_FILE = join(STAR_SE_OUTPUT_DIR, "Aligned.out.bam.featureCounts.bam")
+FEATURE_COUNTS_DIR = join("output", "featureCounts", "{patient}-{sample}-{plate}") #, "gene_assigned")
+FEATURE_COUNTS_BAM_FILE = join(FEATURE_COUNTS_DIR, "Aligned.out.bam.featureCounts.bam")
+FEATURE_COUNTS_GENE = join(FEATURE_COUNTS_DIR, "gene_assigned")
 SORTED_FEATURE_COUNTS_BAM_FILE = join(STAR_SE_OUTPUT_DIR, "Aligned.out.bam.featureCounts.sorted.bam")
 SORTED_FEATURE_COUNTS_BAI_FILE = join(STAR_SE_OUTPUT_DIR, "Aligned.out.bam.featureCounts.sorted.bam.bai")
 UMI_TOOLS_COUNTS = join("output", "umi_tools", "{patient}-{sample}-{plate}", "counts.tsv.gz")
@@ -84,7 +86,7 @@ PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{plate}-{cell
 
 rule all:
     input:
-        expand(join("output", "featureCounts", "{patient}-{sample}-{plate}", "gene_assigned"), patient="M0", sample="Staph_BKDL202581088-1a", plate="P0")
+        expand(UMI_TOOLS_COUNTS, patient="M0", sample=samples["sample"].unique(), plate="P0")
         # expand(SRA_FASTQ1_FILE, run=samples["Run"]),
         # expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Staph_BKDL202581088-1a", plate="P0", cell=Staph_barcodes),
         # expand(PATHSEQ_CELL_SCORE, patient="M0", sample="Con_BKDL202581087-1a", plate="P0", cell=ctrl_barcodes),
@@ -256,7 +258,7 @@ rule create_star_index:
         "--genomeFastaFiles '{input[genome]}' "
         "--sjdbGTFfile '{input[gtf]}'"
 
-umitools_count:
+rule umitools_count:
     conda:
         "envs/umi_tools.yml"
     input:
@@ -293,11 +295,12 @@ rule run_featurecount:
     input:
         gtf = config["ref"]["annotation"],
         bam = STAR_SE_BAM_FILE
+    params:
+        FEATURE_COUNTS_GENE
     output:
-        join("output", "featureCounts", "{patient}-{sample}-{plate}", "gene_assigned"),
         FEATURE_COUNTS_BAM_FILE
     shell:
-        "featureCounts -a {input.gtf} -o {output[0]} -R BAM {input.bam}"
+        "featureCounts -a {input.gtf} -o {params} -R BAM {input.bam}"
         # output is $result/05_featureCount/$id.Aligned.sortedByCoord.out.bam.featureCounts.bam
         # input file should actually be .../Aligned.out.bam
 

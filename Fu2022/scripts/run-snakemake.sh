@@ -1,6 +1,6 @@
 #!/bin/bash
 
-module load snakemake/6.0.5
+module load snakemake
 snakemake \
 --use-conda \
 --rerun-incomplete \
