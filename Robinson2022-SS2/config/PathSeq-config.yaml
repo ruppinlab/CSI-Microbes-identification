@@ -1,0 +1,34 @@
+---
+patients: data/patients.tsv
+samples: data/samples.tsv
+units: data/units.tsv
+
+ref:
+  annotation: "raw/genome/gencode.v34.primary_assembly.ERCC92.annotation.gtf"
+  genome: "raw/genome/GRCh38.primary_assembly.ERCC92.genome.fasta"
+
+human_ref:
+  genome: "raw/genome/GRCh38.primary_assembly.genome.fa"
+  annotation: "raw/genome/gencode.v34.primary_assembly.annotation.gtf"
+
+PathSeq:
+  bam_file: "output/star/{patient}-{sample}-{plate}/unaligned.bam"
+  microbe_fasta: "../data/microbev1.fa"
+  microbe_fai: "../data/microbev1.fa.fai"
+  microbe_dict: "../data/microbev1.dict"
+  microbe_bwa_image: "../data/microbev1.fa.img"
+  taxonomy_db: "../data/microbev1_release201_taxonomy.db"
+  host_img: "../data/pathseq_host.fa.img"
+  host_bfi: "../data/pathseq_host.bfi"
+
+VecScreen:
+  contaminant_hits: "../data/microbev1-vecscreen-combined-matches.bed"
+
+STAR:
+  FASTQ_dir: "FASTQ/trimmed"
+
+params:
+  PathSeq: "--min-clipped-read-length 50 --min-base-quality 1 --max-masked-bases 10 --dust-t 24"
+  STAR: ""
+  PathSeqScore: ""
+  fastp: ""
