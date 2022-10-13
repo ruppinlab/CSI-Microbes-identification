@@ -8,25 +8,22 @@ min_version("5.1.2")
 configfile: "config/PathSeq-config.yaml"
 #validate(config, schema="schemas/config.schema.yaml")
 
-patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
+# patients = pd.read_csv(config["patients"], sep="\t").set_index("patient", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
 lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample", "lane"], drop=False).sort_index()
 # print(samples)
 lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
 samples = lanes[["sample", "patient"]].drop_duplicates()
-samples = samples.iloc[0:4]
+# samples = samples.iloc[0:4]
 cells = pd.read_csv(config["units"], sep="\t", usecols=["sample", "patient", "barcode"]).set_index(["sample", "barcode", "patient"], drop=False).sort_index()
-# cells = cells.loc[cells["sample"].isin(["PreRxTumor", "Day615Tumor", "RelapseD565Tumor"])]
-
+cells = cells.loc[cells["sample"].isin(samples["sample"])]
+print(cells)
 wildcard_constraints:
     patient="|".join(samples["patient"].unique()),
     lane="S1_L001",
     sample="|".join(samples["sample"].unique())
 
-
-# cells = cells.loc[(cells.barcode.isin(["TAAGAGATCGTTTAGG-1", "GACTACAAGAATTCCC-1", "TGACTTTTCCCTTGTG-1", "AAACCTGCAGTTCATG-1"]))]
-# cells = cells.sample(n=500, random_state=0)
-# Directories
+print(samples)
 FASTQ_DIR = "FASTQ"
 PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")
 CR_SAMPLE_ODIR = "{patient}-{sample}"
@@ -34,7 +31,6 @@ CR_SAMPLE_ODIR = "{patient}-{sample}"
 # Input Files
 SRA_FASTQ1_FILE = join(FASTQ_DIR, "{run}_1.fastq")
 SRA_FASTQ2_FILE = join(FASTQ_DIR, "{run}_2.fastq")
-SRA_FASTQ3_FILE = join(FASTQ_DIR, "{run}_3.fastq")
 
 CB_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_R1_001.fastq.gz")
 cDNA_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_R2_001.fastq.gz")
@@ -49,8 +45,8 @@ include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
 rule all:
     input:
         # expand(CR_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
-        expand(pathseq_output, zip, patient=samples["patient"], sample=samples["sample"]),
-        # expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
+        # expand(pathseq_output, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
 
 
 # download files from SRA
@@ -64,7 +60,6 @@ rule download_FASTQ_from_SRA:
     output:
         temp(SRA_FASTQ1_FILE),
         temp(SRA_FASTQ2_FILE),
-        temp(SRA_FASTQ3_FILE),
     shell:
         "module load sratoolkit && "
         "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID "
@@ -73,8 +68,8 @@ rule download_FASTQ_from_SRA:
 def get_sra_fq_files(wildcards):
     run_of_interest = lanes.at[(wildcards.patient, wildcards.sample, wildcards.lane), "Run"]
     return {
-        "CellBarcode_fq": expand(SRA_FASTQ2_FILE, run=run_of_interest),
-        "cDNA_fq": expand(SRA_FASTQ3_FILE, run=run_of_interest),
+        "CellBarcode_fq": expand(SRA_FASTQ1_FILE, run=run_of_interest),
+        "cDNA_fq": expand(SRA_FASTQ2_FILE, run=run_of_interest),
     }
 
 # compress and rename

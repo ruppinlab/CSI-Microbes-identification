@@ -27,14 +27,14 @@
     "PathSeqPipelineSpark":
     {
       "time": "2-00:00:00",
-      "mem": "96g",
+      "mem": "136g",
       "nthreads": 10,
       "gres": 200
     },
     "add_CB_UB_tags_to_PathSeq_BAM":
     {
       "mem": "180g",
-      "time": "4:00:00"
+      "time": "12:00:00"
     },
     "add_CR_tags_SRPRISM":
     {
