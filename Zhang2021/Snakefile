@@ -17,13 +17,12 @@ samples = lanes[["sample", "patient"]].drop_duplicates()
 # samples = samples.iloc[0:4]
 cells = pd.read_csv(config["units"], sep="\t", usecols=["sample", "patient", "barcode"]).set_index(["sample", "barcode", "patient"], drop=False).sort_index()
 cells = cells.loc[cells["sample"].isin(samples["sample"])]
-print(cells)
+
 wildcard_constraints:
     patient="|".join(samples["patient"].unique()),
     lane="S1_L001",
     sample="|".join(samples["sample"].unique())
 
-print(samples)
 FASTQ_DIR = "FASTQ"
 PATIENT_FASTQ_DIR = join("FASTQ", "raw", "{patient}")
 CR_SAMPLE_ODIR = "{patient}-{sample}"
@@ -42,12 +41,37 @@ pathseq_output = join("output", "PathSeq", "{patient}-{sample}", "pathseq.txt")
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
 include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
 
+PLATYPUS_VCF_FILE = join("output", "platypus", "{patient}-{sample}_minreads_{minreads}", "variants.vcf")
+FILTERED_VCF_FILE = join("output", "platypus", "filtered", "{patient}-{sample}_minreads_{minreads}", "variants.recode.vcf")
+
+
 rule all:
     input:
-        # expand(CR_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
-        # expand(pathseq_output, zip, patient=samples["patient"], sample=samples["sample"]),
-        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
+        expand(FILTERED_VCF_FILE, zip, patient=["P38"]], sample=["P38T-CD45pos"]),
 
+
+rule filter_platypus_vcf:
+    conda:
+        "../envs/vcftools.yaml"
+    input:
+        PLATYPUS_VCF_FILE
+    output:
+        FILTERED_VCF_FILE
+    shell:
+        "vcftools --recode --vcf {input} --remove-filtered-all --out {output}"
+
+
+rule run_platypus:
+   conda:
+       "../envs/platypus-env.yaml"
+   input:
+       CR_BAM_FILE, # from novoalign file
+   output:
+       PLATYPUS_VCF_FILE
+   shell:
+       "platypus callVariants --bamFiles={input} " # don't use --regions because this rule could be used for > 1 bam, which could be from different exome kits
+       "--refFile=/fdb/cellranger/refdata-cellranger-3.0.0/fasta/genome.fa --minReads={wildcards.minreads} --genIndels=0 "
+       "--output={output[0]}"
 
 # download files from SRA
 # need to --include-technical to get the 10x UMI and CB reads

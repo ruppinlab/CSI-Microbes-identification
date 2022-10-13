@@ -1,0 +1,7 @@
+name: platypus-env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - platypus-variant
