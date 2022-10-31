@@ -11,18 +11,21 @@ samples = pd.read_csv(config["samples"], sep="\t").set_index(["patient", "sample
 #samples = samples.iloc[0:2]
 #print(samples)
 #print(samples["sample"].unique())
-Staph_barcodes_file = "FASTQ/raw/M0/whitelist_barcodes/Staph_BKDL202581088-1a_P0_whitelist_barcodes.txt"
-Staph_barcodes = pd.read_csv(Staph_barcodes_file, sep="\t", header=None)[0].values
-ctrl_barcodes_file = "FASTQ/raw/M0/whitelist_barcodes/Con_BKDL202581087-1a_P0_whitelist_barcodes.txt"
-ctrl_barcodes = pd.read_csv(ctrl_barcodes_file, sep="\t", header=None)[0].values
-Lac_barcodes_file = "FASTQ/raw/M0/whitelist_barcodes/Lac_BKDL202581091-1a_P0_whitelist_barcodes.txt"
-Lac_barcodes = pd.read_csv(Lac_barcodes_file, sep="\t", header=None)[0].values
-Ef_barcodes_file = "FASTQ/raw/M0/whitelist_barcodes/Ef_BKDL202581093-1a_P0_whitelist_barcodes.txt"
-Ef_barcodes = pd.read_csv(Ef_barcodes_file, sep="\t", header=None)[0].values
-Sc_barcodes_file = "FASTQ/raw/M0/whitelist_barcodes/Sc_BKDL202581089-1a_P0_whitelist_barcodes.txt"
-Sc_barcodes = pd.read_csv(Sc_barcodes_file, sep="\t", header=None)[0].values
-Sk_barcodes_file = "FASTQ/raw/M0/whitelist_barcodes/Sk_BKDL202581092-1a_P0_whitelist_barcodes.txt"
-Sk_barcodes = pd.read_csv(Sk_barcodes_file, sep="\t", header=None)[0].values
+# Staph_barcodes_file = "FASTQ/raw/M0/whitelist_barcodes/Staph_BKDL202581088-1a_P0_whitelist_barcodes.txt"
+# Staph_barcodes = pd.read_csv(Staph_barcodes_file, sep="\t", header=None)[0].values
+# ctrl_barcodes_file = "FASTQ/raw/M0/whitelist_barcodes/Con_BKDL202581087-1a_P0_whitelist_barcodes.txt"
+# ctrl_barcodes = pd.read_csv(ctrl_barcodes_file, sep="\t", header=None)[0].values
+# Lac_barcodes_file = "FASTQ/raw/M0/whitelist_barcodes/Lac_BKDL202581091-1a_P0_whitelist_barcodes.txt"
+# Lac_barcodes = pd.read_csv(Lac_barcodes_file, sep="\t", header=None)[0].values
+# Ef_barcodes_file = "FASTQ/raw/M0/whitelist_barcodes/Ef_BKDL202581093-1a_P0_whitelist_barcodes.txt"
+# Ef_barcodes = pd.read_csv(Ef_barcodes_file, sep="\t", header=None)[0].values
+# Sc_barcodes_file = "FASTQ/raw/M0/whitelist_barcodes/Sc_BKDL202581089-1a_P0_whitelist_barcodes.txt"
+# Sc_barcodes = pd.read_csv(Sc_barcodes_file, sep="\t", header=None)[0].values
+# Sk_barcodes_file = "FASTQ/raw/M0/whitelist_barcodes/Sk_BKDL202581092-1a_P0_whitelist_barcodes.txt"
+# Sk_barcodes = pd.read_csv(Sk_barcodes_file, sep="\t", header=None)[0].values
+
+# cell barcodes are 8 nucleotides
+# UMIs are 10 nucleotides
 
 wildcard_constraints:
     sample="|".join(samples["sample"].unique()),
@@ -53,9 +56,10 @@ SRA_FASTQ2_FILE = join(FASTQ_DIR, "{run}_2.fastq")
 cDNA_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{plate}_R1.fq")
 CB_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{plate}_R2.fq")
 
-VAL_cDNA_FILE = join(PATIENT_FASTQ_DIR, "validated", "{sample}_{plate}_R1_val_1.fq")
-VAL_CB_FILE = join(PATIENT_FASTQ_DIR, "validated", "{sample}_{plate}_R2_val_2.fq") # contains the barcodes
-BARCODE_FQ_FILE = join(PATIENT_FASTQ_DIR, "barcode", "{sample}_{plate}_AA.fq")
+VAL_cDNA_FILE = join(PATIENT_FASTQ_DIR, "validated", "{sample}_{plate}_R1_val_1.fq") # contains the biological read of interest
+VAL_CB_FILE = join(PATIENT_FASTQ_DIR, "validated", "{sample}_{plate}_R2_val_2.fq") # contains the barcodes and UMIs
+
+BARCODE_FQ_FILE = join(PATIENT_FASTQ_DIR, "barcode", "{sample}_{plate}_AA.fq") # exact same as VAL_CB_FILE but with AA prepended
 cDNA_WITH_BARCODE_FILE = join(PATIENT_FASTQ_DIR, "barcoded", "{sample}_{plate}_1.fq")
 EXTRACTED_BARCODE_FQ = join(PATIENT_FASTQ_DIR, "extracted_barcodes", "{sample}_{plate}_extracted_barcodes.fq")
 WHITELIST_BARCODES_FILE = join(PATIENT_FASTQ_DIR, "whitelist_barcodes", "{sample}_{plate}_whitelist_barcodes.txt")
@@ -126,85 +130,85 @@ rule PathSeqScoreSpark:
                 '--spark-master local[2] ' + config["params"]["PathSeqScore"]
             )
 
-rule split_pathseq_bam_Ef:
-    wildcard_constraints:
-        sample="Ef_BKDL202581093-1a"
-    conda:
-        "../envs/pysam-env.yaml"
-    group:
-        "split_pathseq_bam"
-    input:
-        sorted_pathseq_bam,
-        sorted_pathseq_bam_idx,
-        Ef_barcodes_file
-    output:
-        expand(pathseq_cell_bam, patient="{patient}", sample="{sample}", plate="{plate}", cell=Ef_barcodes)
-    script:
-        "src/split_bam_by_cell_barcode.py"
-
-rule split_pathseq_bam_Sk:
-    wildcard_constraints:
-        sample="Sk_BKDL202581092-1a"
-    conda:
-        "../envs/pysam-env.yaml"
-    group:
-        "split_pathseq_bam"
-    input:
-        sorted_pathseq_bam,
-        sorted_pathseq_bam_idx,
-        Sk_barcodes_file
-    output:
-        expand(pathseq_cell_bam, patient="{patient}", sample="{sample}", plate="{plate}", cell=Sk_barcodes)
-    script:
-        "src/split_bam_by_cell_barcode.py"
-
-rule split_pathseq_bam_Sc:
-    wildcard_constraints:
-        sample="Sc_BKDL202581089-1a"
-    conda:
-        "../envs/pysam-env.yaml"
-    group:
-        "split_pathseq_bam"
-    input:
-        sorted_pathseq_bam,
-        sorted_pathseq_bam_idx,
-        Sc_barcodes_file
-    output:
-        expand(pathseq_cell_bam, patient="{patient}", sample="{sample}", plate="{plate}", cell=Sc_barcodes)
-    script:
-        "src/split_bam_by_cell_barcode.py"
-
-rule split_pathseq_bam_Staph:
-    conda:
-        "../envs/pysam-env.yaml"
-    group:
-        "split_pathseq_bam"
-    wildcard_constraints:
-        sample="Staph_BKDL202581088-1a"
-    input:
-        sorted_pathseq_bam,
-        sorted_pathseq_bam_idx,
-        Staph_barcodes_file
-    output:
-        expand(pathseq_cell_bam, patient="{patient}", sample="{sample}", plate="{plate}", cell=Staph_barcodes)
-    script:
-        "src/split_bam_by_cell_barcode.py"
-
-rule split_pathseq_bam_ctrl:
-    conda:
-        "../envs/pysam-env.yaml"
-    group:
-        "split_pathseq_bam"
-    wildcard_constraints:
-        sample="Con_BKDL202581087-1a"
-    input:
-        sorted_pathseq_bam,
-        sorted_pathseq_bam_idx,
-        ctrl_barcodes_file
-    output:
-        expand(pathseq_cell_bam, patient="{patient}", sample="{sample}", plate="{plate}", cell=ctrl_barcodes)
-    script:
-        "src/split_bam_by_cell_barcode.py"
+# rule split_pathseq_bam_Ef:
+#     wildcard_constraints:
+#         sample="Ef_BKDL202581093-1a"
+#     conda:
+#         "../envs/pysam-env.yaml"
+#     group:
+#         "split_pathseq_bam"
+#     input:
+#         sorted_pathseq_bam,
+#         sorted_pathseq_bam_idx,
+#         Ef_barcodes_file
+#     output:
+#         expand(pathseq_cell_bam, patient="{patient}", sample="{sample}", plate="{plate}", cell=Ef_barcodes)
+#     script:
+#         "src/split_bam_by_cell_barcode.py"
+#
+# rule split_pathseq_bam_Sk:
+#     wildcard_constraints:
+#         sample="Sk_BKDL202581092-1a"
+#     conda:
+#         "../envs/pysam-env.yaml"
+#     group:
+#         "split_pathseq_bam"
+#     input:
+#         sorted_pathseq_bam,
+#         sorted_pathseq_bam_idx,
+#         Sk_barcodes_file
+#     output:
+#         expand(pathseq_cell_bam, patient="{patient}", sample="{sample}", plate="{plate}", cell=Sk_barcodes)
+#     script:
+#         "src/split_bam_by_cell_barcode.py"
+#
+# rule split_pathseq_bam_Sc:
+#     wildcard_constraints:
+#         sample="Sc_BKDL202581089-1a"
+#     conda:
+#         "../envs/pysam-env.yaml"
+#     group:
+#         "split_pathseq_bam"
+#     input:
+#         sorted_pathseq_bam,
+#         sorted_pathseq_bam_idx,
+#         Sc_barcodes_file
+#     output:
+#         expand(pathseq_cell_bam, patient="{patient}", sample="{sample}", plate="{plate}", cell=Sc_barcodes)
+#     script:
+#         "src/split_bam_by_cell_barcode.py"
+#
+# rule split_pathseq_bam_Staph:
+#     conda:
+#         "../envs/pysam-env.yaml"
+#     group:
+#         "split_pathseq_bam"
+#     wildcard_constraints:
+#         sample="Staph_BKDL202581088-1a"
+#     input:
+#         sorted_pathseq_bam,
+#         sorted_pathseq_bam_idx,
+#         Staph_barcodes_file
+#     output:
+#         expand(pathseq_cell_bam, patient="{patient}", sample="{sample}", plate="{plate}", cell=Staph_barcodes)
+#     script:
+#         "src/split_bam_by_cell_barcode.py"
+#
+# rule split_pathseq_bam_ctrl:
+#     conda:
+#         "../envs/pysam-env.yaml"
+#     group:
+#         "split_pathseq_bam"
+#     wildcard_constraints:
+#         sample="Con_BKDL202581087-1a"
+#     input:
+#         sorted_pathseq_bam,
+#         sorted_pathseq_bam_idx,
+#         ctrl_barcodes_file
+#     output:
+#         expand(pathseq_cell_bam, patient="{patient}", sample="{sample}", plate="{plate}", cell=ctrl_barcodes)
+#     script:
+#         "src/split_bam_by_cell_barcode.py"
 
 rule split_pathseq_bam_Lac:
     conda:
@@ -356,7 +360,7 @@ rule umi_whitelist:
         "umi_tools whitelist --stdin {input} --bc-pattern=CCCCCCCCCCNNNNNNNN --set-cell-number=110 --log2stderr > {output}"
 
 # FQ2 contains the cell barcode (and UMI?)
-# not sure what the sed command does
+# this command adds AA to the beginning of every sequence (which is every other line for a fastq file)
 rule extract_barcode_from_FQ:
     input:
         VAL_CB_FILE
