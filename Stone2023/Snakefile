@@ -15,7 +15,7 @@ lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient"
 lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
 samples = lanes[["sample", "patient"]].drop_duplicates()
 
-#cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
+cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
 # cells = cells.loc[cells.patient == "C163"]
 #cells = cells.loc[cells["sample"].isin(samples["sample"])]
 
@@ -25,7 +25,7 @@ wildcard_constraints:
     lane="|".join(lanes["lane"].unique())
 
 # Snakemake includes
-# include: "../RNA-snakemake-rules/rules/cellranger.smk"
+include: "../RNA-snakemake-rules/rules/cellranger.smk"
 # include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
 
 # Directories
@@ -51,7 +51,7 @@ PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pat
 
 rule all:
     input:
-        expand(SRA_FASTQ3_FILE, run=["SRR19978723", "SRR19978724"]),
+        expand(CR_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
 
 
 ### rules to download FASTQ files ###
@@ -74,22 +74,22 @@ rule download_FASTQ_from_SRA:
         "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID/ "
         "--include-technical --split-files {wildcards.run}"
 
-# def get_sra_fq_files(wildcards):
-#     run_of_interest = lanes.loc[(lanes["patient"] == wildcards.patient) & (lanes["sample"] ==  wildcards.sample) & (lanes["lane"] ==  wildcards.lane), "Run"]
-#     return {
-#         "CellBarcode_fq": expand(SRA_FASTQ2_FILE, run=run_of_interest),
-#         "cDNA_fq": expand(SRA_FASTQ3_FILE, run=run_of_interest),
-#     }
-#
-# # compress and rename
-# rule compress_rename_SRA_FASTQ_files:
-#     group:
-#         "FASTQ"
-#     input:
-#         unpack(get_sra_fq_files)
-#     output:
-#         CellBarcode_fq = CB_FASTQ_FILE,
-#         cDNA_fq = cDNA_FASTQ_FILE,
-#     shell:
-#         "gzip -vc {input.CellBarcode_fq} > {output.CellBarcode_fq} && "
-#         "gzip -vc {input.cDNA_fq} > {output.cDNA_fq}"
+def get_sra_fq_files(wildcards):
+    run_of_interest = lanes.loc[(lanes["patient"] == wildcards.patient) & (lanes["sample"] ==  wildcards.sample) & (lanes["lane"] ==  wildcards.lane), "Run"]
+    return {
+        "CellBarcode_fq": expand(SRA_FASTQ3_FILE, run=run_of_interest),
+        "cDNA_fq": expand(SRA_FASTQ4_FILE, run=run_of_interest),
+    }
+
+# compress and rename
+rule compress_rename_SRA_FASTQ_files:
+    group:
+        "FASTQ"
+    input:
+        unpack(get_sra_fq_files)
+    output:
+        CellBarcode_fq = CB_FASTQ_FILE,
+        cDNA_fq = cDNA_FASTQ_FILE,
+    shell:
+        "gzip -vc {input.CellBarcode_fq} > {output.CellBarcode_fq} && "
+        "gzip -vc {input.cDNA_fq} > {output.cDNA_fq}"
