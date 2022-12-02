@@ -71,7 +71,7 @@ rule download_FASTQ_from_SRA:
         SRA_FASTQ4_FILE
     shell:
         "module load sratoolkit && "
-        "fasterq-dump -O {params} -t /scratch/robinsonwi "
+        "fasterq-dump -O {params} -t /lscratch/$SLURM_JOBID/ "
         "--include-technical --split-files {wildcards.run}"
 
 # def get_sra_fq_files(wildcards):
