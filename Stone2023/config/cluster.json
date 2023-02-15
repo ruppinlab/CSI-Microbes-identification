@@ -27,14 +27,14 @@
     "PathSeqPipelineSpark":
     {
       "time": "2-00:00:00",
-      "mem": "96g",
+      "mem": "144g",
       "nthreads": 10,
       "gres": 200
     },
     "add_CB_UB_tags_to_PathSeq_BAM":
     {
       "mem": "180g",
-      "time": "4:00:00"
+      "time": "8:00:00"
     },
     "add_CR_tags_SRPRISM":
     {
@@ -44,14 +44,14 @@
     "split_PathSeq_BAM_by_CB_UB":
     {
       "mem": "8g",
-      "time": "4:00:00",
+      "time": "2:00:00",
       "nthreads": 16
     },
     "PathSeqScoreSpark":
     {
       "mem": "32g",
-      "time": "6:00:00",
-      "nthreads": 16
+      "time": "2:00:00",
+      "nthreads": 1
     },
     "run_CAMMiQ_species_long_reads":
     {

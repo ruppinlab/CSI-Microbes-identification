@@ -9,6 +9,8 @@ configfile: "config/PathSeq-config.yaml"
 
 
 lanes = pd.read_csv(config["samples"], dtype=str, sep="\t").set_index(["patient", "sample", "lane"], drop=False)
+# lanes = lanes.loc[~lanes["R1_path"].isin(["/data/Robinson-SB/Bukavina2022/10xfiles/37249_S12_L004_R1_001.fastq.gz", "/data/Robinson-SB/Bukavina2022/10xfiles/37249_S12_L003_R1_001.fastq.gz", "/data/Robinson-SB/Bukavina2022/10xfiles/37249_S12_L001_R1_001.fastq.gz", "/data/Robinson-SB/Bukavina2022/10xfiles/37236_S11_L004_R1_001.fastq.gz", "/data/Robinson-SB/Bukavina2022/10xfiles/37236_S11_L003_R1_001.fastq.gz"])]
+lanes = lanes.loc[~lanes["sample"].isin(["37249","37236"])]
 
 lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels])  # enforce str in index
 samples = lanes[["sample", "patient"]].drop_duplicates()
@@ -43,7 +45,7 @@ rule all:
 ### rules to download FASTQ files ###
 
 def get_fq_files(wildcards):
-    lane = lanes.loc[(lanes["patient"] == wildcards.patient) & (lanes["sample"] ==  wildcards.sample) & (lanes["lane"] ==  wildcards.lane), "Run"]
+    lane = lanes.loc[(lanes["patient"] == wildcards.patient) & (lanes["sample"] ==  wildcards.sample) & (lanes["lane"] ==  wildcards.lane)]
     return {
         "CellBarcode_fq": lane["R1_path"],
         "cDNA_fq": lane["R2_path"],

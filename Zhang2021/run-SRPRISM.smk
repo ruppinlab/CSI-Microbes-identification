@@ -5,6 +5,7 @@ include: "Snakefile"
 Ps_genome_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/013/343/155/GCF_013343155.1_ASM1334315v1/GCF_013343155.1_ASM1334315v1_genomic.fna.gz"
 Ps_GFF_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/013/343/155/GCF_013343155.1_ASM1334315v1/GCF_013343155.1_ASM1334315v1_genomic.gff.gz"
 
+
 include: "../RNA-snakemake-rules/rules/SRPRISM-unpaired.smk"
 
 # SRPRISM files
@@ -23,10 +24,12 @@ GFF_READCOUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "{genome
 localrules: download_Ps_genome, download_Ps_GFF, move_FQ_for_SRPRISM
 
 samples = samples.loc[samples["patient"].isin(["P83", "P79", "P8"])]
+samples["genome"] = "Ps"
+
 
 rule SRPRISM_output:
     input:
-        expand(GFF_READCOUNT_FILE, patient=samples["patient"], sample=samples["sample"], genome="Fn"),
+        expand(GFF_READCOUNT_FILE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
         #expand(SRPRISM_CB_UMI_TABLE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
         #expand(SRPRISM_CB_UMI_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
 

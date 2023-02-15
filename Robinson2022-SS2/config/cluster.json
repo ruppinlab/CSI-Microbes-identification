@@ -59,5 +59,9 @@
   {
     "mem": "450g",
     "partition": "largemem"
-  }
+  },
+  "score_PathSeq_cell_BAM":
+  {
+    "nthreads": 1
+  },
 }

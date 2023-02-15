@@ -4,8 +4,10 @@ include: "Snakefile"
 # URLs "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/277/795/GCF_000277795.1_ASM27779v1"
 MW_genome_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/277/795/GCF_000277795.1_ASM27779v1/GCF_000277795.1_ASM27779v1_genomic.fna.gz"
 MW_GFF_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/277/795/GCF_000277795.1_ASM27779v1/GCF_000277795.1_ASM27779v1_genomic.gff.gz"
+MWI_genome_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/265/155/GCF_003265155.1_ASM326515v1/GCF_003265155.1_ASM326515v1_genomic.fna.gz"
+MWI_GFF_URL = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/265/155/GCF_003265155.1_ASM326515v1/GCF_003265155.1_ASM326515v1_genomic.gff.gz"
 
-samples["genome"] = "MW"
+samples["genome"] = "MWI"
 samples = samples.loc[samples["patient"].isin(["C106", "C114", "C115"])]
 include: "../RNA-snakemake-rules/rules/SRPRISM-unpaired.smk"
 
@@ -27,8 +29,8 @@ localrules: download_MW_genome, download_MW_GFF, move_FQ_for_SRPRISM
 rule SRPRISM_output:
     input:
         expand(SRPRISM_UNPAIRED_PRIMARY_SORTED_BAM, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
-        #expand(SRPRISM_CB_UMI_TABLE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
-        #expand(SRPRISM_CB_UMI_COUNT, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
+        expand(SRPRISM_CB_UMI_TABLE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
+        expand(GFF_READCOUNT_FILE, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"]),
 
 # add cell barcode and UMI tags to the BAM and use to count UMIs per cell
 rule add_CR_tags_SRPRISM:
@@ -41,7 +43,7 @@ rule add_CR_tags_SRPRISM:
         SRPRISM_CB_UMI_TABLE,
         SRPRISM_CB_UMI_COUNT
     script:
-        "src/add_CR_tags_to_SRPRISM_bam.py"
+        "../Ben-Moshe2019/src/add_CR_tags_to_SRPRISM_bam.py"
 
 # get a read count per gene per sample file
 rule intersect_BAM_GFF:
@@ -83,6 +85,26 @@ rule download_MW_GFF:
         genome="MW"
     params:
         MW_GFF_URL
+    output:
+        GENOME_GFF
+    shell:
+        "wget -O - {params[0]} | gunzip -c > {output}"
+
+rule download_MWI_genome:
+    wildcard_constraints:
+        genome="MWI"
+    params:
+        MWI_genome_URL
+    output:
+        GENOME_FA
+    shell:
+        "wget -O - {params[0]} | gunzip -c > {output}"
+
+rule download_MWI_GFF:
+    wildcard_constraints:
+        genome="MWI"
+    params:
+        MWI_GFF_URL
     output:
         GENOME_GFF
     shell:

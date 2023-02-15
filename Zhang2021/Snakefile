@@ -47,7 +47,7 @@ FILTERED_VCF_FILE = join("output", "platypus", "filtered", "{patient}-{sample}_m
 
 rule all:
     input:
-        expand(FILTERED_VCF_FILE, zip, patient=["P38"], sample=["P38T-CD45pos"]),
+        # expand(FILTERED_VCF_FILE, zip, patient=["P38"], sample=["P38T-CD45pos"]),
 
 
 rule filter_platypus_vcf:

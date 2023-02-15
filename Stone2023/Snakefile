@@ -16,17 +16,18 @@ lanes.index = lanes.index.set_levels([i.astype(str) for i in lanes.index.levels]
 samples = lanes[["sample", "patient"]].drop_duplicates()
 
 cells = pd.read_csv(config["units"], sep="\t").set_index(["sample", "barcode", "patient"], drop=False)
+# cells = cells.iloc[0:100]
 # cells = cells.loc[cells.patient == "C163"]
 #cells = cells.loc[cells["sample"].isin(samples["sample"])]
 
 wildcard_constraints:
-    patient="C1[0-9][0-9]",
+    patient="M0",
     sample="|".join(lanes["sample"].unique()),
     lane="|".join(lanes["lane"].unique())
 
 # Snakemake includes
 include: "../RNA-snakemake-rules/rules/cellranger.smk"
-# include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
+include: "../pathogen-discovery-rules/rules/PathSeq-10x.smk"
 
 # Directories
 FASTQ_DIR = "FASTQ"
@@ -51,7 +52,7 @@ PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pat
 
 rule all:
     input:
-        expand(CR_BAM_FILE, zip, patient=samples["patient"], sample=samples["sample"]),
+        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"]),
 
 
 ### rules to download FASTQ files ###

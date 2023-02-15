@@ -7,7 +7,7 @@ Fn_GFF_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/457/555/GCF_0014575
 
 wildcard_constraints:
     genome="Fn",
-    filter="rRNA|16S|protein_coding"
+    # filter="rRNA|16S|protein_coding"
 
 # include rules
 include: "../RNA-snakemake-rules/rules/SRPRISM-paired.smk"
@@ -27,13 +27,13 @@ SRPRISM_COUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}", "{genome
 
 GFF_READCOUNT_FILE = join("output", "SRPRISM", "{patient}", "{sample}-{plate}-{cell}", "{genome}-paired-count.gff")
 
-
+samples = cells[["patient", "sample"]].drop_duplicates()
 
 
 rule SRPRISM_files:
     input:
         expand(GFF_READCOUNT_FILE, zip, patient=cells["patient"], sample=cells["sample"], plate=cells["plate"], cell=cells["cell"], genome=["Fn"]*cells.shape[0]),
-        expand(SRPRISM_COUNT_FILE, patient="Pt0", sample="S0", genome=["Fn"]),
+        expand(SRPRISM_COUNT_FILE, patient=samples["patient"], sample=samples["sample"], genome=["Fn"]),
 
 ### rules for analyzing SRPRISM output ###
 # filter only reads from cell of interest from the STAR bam file
