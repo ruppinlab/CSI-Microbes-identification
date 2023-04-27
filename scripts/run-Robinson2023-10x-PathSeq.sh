@@ -1,4 +1,4 @@
-cd Fu2022
+cd Robinson2023-10x
 sbatch \
 --time=2-00:00:00 \
 --cpus-per-task=4 \
