@@ -1,6 +1,0 @@
-name: subread-env
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - subread
