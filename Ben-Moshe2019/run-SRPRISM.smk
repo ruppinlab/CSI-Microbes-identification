@@ -41,7 +41,7 @@ rule add_CR_tags_SRPRISM:
         SRPRISM_CB_UMI_TABLE,
         SRPRISM_CB_UMI_COUNT
     script:
-        "src/add_CR_tags_to_SRPRISM_bam.py"
+        "../src/add_CR_tags_to_SRPRISM_bam.py"
 
 # get a read count per gene per sample file
 rule intersect_BAM_GFF:
