@@ -46,7 +46,7 @@ PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pat
 
 rule all:
     input:
-        expand(CB_FASTQ_FILE, patient="P1", sample="SCAF2963_3_Live", lane="S3_L001"),
+        expand(CB_FASTQ_FILE, patient="P1", sample="SCAF2963_3_Live", lane=["S3_L001"]),
         # expand(cDNA_FASTQ_FILE, patient=lanes["patient"], sample=lanes["sample"], lane=lanes["lane"]),
         # expand(SRA_FASTQ3_FILE, run=["SRR15653095", "SRR15653115", "SRR15652839"]),
         # expand(PATHSEQ_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
@@ -66,7 +66,7 @@ rule download_FASTQ_from_SRA:
         mem_mb=16000,
         disk_mb=10000,
         time="4:00:00",
-        tscratch=16000
+        tscratch=16
     params:
         FASTQ_DIR
     output:
@@ -74,6 +74,7 @@ rule download_FASTQ_from_SRA:
         SRA_FASTQ2_FILE,
     shell:
         "mkdir -p /scratch0/wrobinso/$JOB_ID \n"
+        "prefetch {wildcards.run} && "
         "fasterq-dump -O {params} -t /scratch0/wrobinso/$JOB_ID "
         "--include-technical --split-files {wildcards.run} \n"
         'trap "rm -rf /scratch0/wrobinso/$JOB_ID" EXIT ERR INT TERM'
@@ -87,8 +88,6 @@ def get_sra_fq_files(wildcards):
 
 # compress and rename
 rule compress_rename_SRA_FASTQ_files:
-    group:
-        "FASTQ"
     input:
         unpack(get_sra_fq_files)
     output:
