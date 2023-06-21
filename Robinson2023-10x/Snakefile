@@ -33,7 +33,7 @@ CR_SAMPLE_ODIR = "{patient}-{sample}"
 # STAR Input Files
 SRA_FASTQ1_FILE = join(FASTQ_DIR, "{run}_1.fastq")
 SRA_FASTQ2_FILE = join(FASTQ_DIR, "{run}_2.fastq")
-SRA_FASTQ3_FILE = join(FASTQ_DIR, "{run}_3.fastq")
+# SRA_FASTQ3_FILE = join(FASTQ_DIR, "{run}_3.fastq")
 
 # CellRanger Files
 CB_FASTQ_FILE = join(PATIENT_FASTQ_DIR, "{sample}_{lane}_R1_001.fastq.gz")
@@ -46,31 +46,54 @@ PATHSEQ_CELL_SCORE = join("output", "PathSeq", "{patient}-{sample}-{cell}", "pat
 
 rule all:
     input:
+        expand(CB_FASTQ_FILE, patient="P1", sample="SCAF2963_3_Live", lane="S3_L001"),
         # expand(cDNA_FASTQ_FILE, patient=lanes["patient"], sample=lanes["sample"], lane=lanes["lane"]),
         # expand(SRA_FASTQ3_FILE, run=["SRR15653095", "SRR15653115", "SRR15652839"]),
         # expand(PATHSEQ_BAM, zip, patient=samples["patient"], sample=samples["sample"]),
-        expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"])
+        # expand(PATHSEQ_CELL_SCORE, zip, patient=cells["patient"], sample=cells["sample"], cell=cells["barcode"])
         # expand(SRPRISM_TAG_BAM, zip, patient=samples["patient"], sample=samples["sample"], genome=samples["genome"])
+
 
 
 ### rules to download FASTQ files ###
 
-def get_fq_files(wildcards):
-    lane = lanes.loc[(lanes["patient"] == wildcards.patient) & (lanes["sample"] ==  wildcards.sample) & (lanes["lane"] ==  wildcards.lane)]
+# download files from SRA
+# need to --include-technical to get the 10x UMI and CB reads
+rule download_FASTQ_from_SRA:
+    conda:
+        "../envs/sratoolkit-env.yaml"
+    resources:
+        mem_mb=16000,
+        disk_mb=10000,
+        time="4:00:00",
+        tscratch=16000
+    params:
+        FASTQ_DIR
+    output:
+        SRA_FASTQ1_FILE,
+        SRA_FASTQ2_FILE,
+    shell:
+        "mkdir -p /scratch0/wrobinso/$JOB_ID \n"
+        "fasterq-dump -O {params} -t /scratch0/wrobinso/$JOB_ID "
+        "--include-technical --split-files {wildcards.run} \n"
+        'trap "rm -rf /scratch0/wrobinso/$JOB_ID" EXIT ERR INT TERM'
+
+def get_sra_fq_files(wildcards):
+    run_of_interest = lanes.loc[(lanes["patient"] == wildcards.patient) & (lanes["sample"] ==  wildcards.sample) & (lanes["lane"] ==  wildcards.lane), "Run"]
     return {
-        "CellBarcode_fq": lane["R1_path"],
-        "cDNA_fq": lane["R2_path"],
+        "CellBarcode_fq": expand(SRA_FASTQ1_FILE, run=run_of_interest),
+        "cDNA_fq": expand(SRA_FASTQ2_FILE, run=run_of_interest),
     }
 
 # compress and rename
-rule rename_FASTQ_files:
+rule compress_rename_SRA_FASTQ_files:
     group:
         "FASTQ"
     input:
-        unpack(get_fq_files)
+        unpack(get_sra_fq_files)
     output:
         CellBarcode_fq = CB_FASTQ_FILE,
         cDNA_fq = cDNA_FASTQ_FILE,
     shell:
-        "cp {input.CellBarcode_fq} {output.CellBarcode_fq} && "
-        "cp {input.cDNA_fq} {output.cDNA_fq}"
+        "gzip -vc {input.CellBarcode_fq} > {output.CellBarcode_fq} && "
+        "gzip -vc {input.cDNA_fq} > {output.cDNA_fq}"
