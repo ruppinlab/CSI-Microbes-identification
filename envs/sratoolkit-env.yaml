@@ -1,0 +1,7 @@
+name: sratoolkit-env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - sra-tools
