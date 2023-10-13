@@ -65,10 +65,10 @@ rule download_FASTQ_from_SRA:
         SRA_FASTQ1_FILE,
         SRA_FASTQ2_FILE
     shell:
-        "mkdir -p /scratch0/wrobinso/$JOB_ID \n"
-        'trap "rm -rf /scratch0/wrobinso/$JOB_ID" EXIT ERR INT TERM \n'
+        "mkdir -p /tmp/wrobinso/$SLURM_JOB_ID \n"
+        'trap "rm -rf /tmp/wrobinso/$SLURM_JOB_ID" EXIT ERR INT TERM \n'
         "prefetch {wildcards.run} \n"
-        "fasterq-dump --mem 16000M -O {params} -t /scratch0/wrobinso/$JOB_ID --include-technical --split-files {wildcards.run} \n"
+        "fasterq-dump --mem 16000M -O {params} -t /tmp/wrobinso/$SLURM_JOB_ID --include-technical --split-files {wildcards.run} \n"
 
 def get_sra_fq_files(wildcards):
     run_of_interest = lanes.loc[(lanes["patient"] == wildcards.patient) & (lanes["sample"] ==  wildcards.sample) & (lanes["lane"] ==  wildcards.lane), "Run"]
