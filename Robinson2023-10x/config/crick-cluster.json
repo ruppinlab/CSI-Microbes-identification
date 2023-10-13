@@ -1,0 +1,61 @@
+{
+    "__default__" :
+    {
+        "time" : "4:00:00",
+        "mem": "16g",
+        "nthreads" : 4,
+        "gres": 10,
+        "partition": "cpu"
+    },
+    "FASTQ":
+    {
+        "mem": "32g",
+        "time": "8:00:00",
+        "gres": 200
+    },
+    "cellranger_count":
+    {
+      "mem": "64g",
+      "nthreads": 16,
+      "time": "24:00:00"
+    },
+    "run_fastp":
+    {
+      "mem": "32g",
+      "nthreads": 6
+    },
+    "PathSeqPipelineSpark":
+    {
+      "time": "2-00:00:00",
+      "mem": "96g",
+      "nthreads": 10,
+      "gres": 200
+    },
+    "add_CB_UB_tags_to_PathSeq_BAM":
+    {
+      "mem": "300g",
+      "time": "8:00:00"
+    },
+    "add_CR_tags_SRPRISM":
+    {
+      "mem": "96g",
+      "time": "4:00:00"
+    },
+    "split_PathSeq_BAM_by_CB_UB":
+    {
+      "mem": "8g",
+      "time": "4:00:00",
+      "nthreads": 16
+    },
+    "PathSeqScoreSpark":
+    {
+      "mem": "32g",
+      "time": "6:00:00",
+      "nthreads": 1
+    },
+    "run_CAMMiQ_species_long_reads":
+    {
+      "mem": "650g",
+      "partition": "largemem"
+    }
+}
