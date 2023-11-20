@@ -1,0 +1,12 @@
+name: SAHMI-env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - r-optparse
+  - r-stringr
+  - r-tidyverse
+  - r-dplyr 
+  - bioconductor-shortread
+  - r-data.table

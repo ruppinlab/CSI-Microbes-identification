@@ -1,0 +1,13 @@
+from os.path import join
+
+
+rule build_kraken_db:
+    singularity:
+        "library://wir963/csi-microbes/kraken2" 
+    shell:
+        "kraken2-build --download-library human --db microbev1 && "
+        "kraken2-build --download-library UniVec_Core --db microbev1 && "
+        "kraken2-build --add-to-library /data/microbev1.fa --db microbev1 && "
+        "kraken2-build --download-taxonomy --db microbev1 && "
+        "export OMP_NUM_THREADS=16 && kraken2-build --build --db microbev1 --threads 16"
+
