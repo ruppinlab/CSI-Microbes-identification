@@ -11,5 +11,5 @@ snakemake \
 --jobs 100 \
 --latency-wait 60 \
 --keep-going \
---group-components split_PathSeq_BAM_by_CB_UB=500 PathSeqScoreSpark=200 \
+--group-components split_PathSeq_BAM_by_CB_UB=10000 PathSeqScoreSpark=10000 \
 --local-cores 4 all

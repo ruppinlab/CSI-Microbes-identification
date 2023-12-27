@@ -39,7 +39,7 @@
     },
     "add_CB_UB_tags_to_PathSeq_BAM":
     {
-      "mem": "300g",
+      "mem": "150g",
       "time": "8:00:00"
     },
     "add_CR_tags_SRPRISM":

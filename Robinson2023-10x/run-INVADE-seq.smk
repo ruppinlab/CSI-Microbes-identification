@@ -2,7 +2,9 @@ include: "Snakefile"
 
 
 rule all:
-    expand("output/INVADEseq_raw/{patient}-{sample}.gex.filtered_matrix.genus.csv", patient="P1", sample=["SCAF2961_1_Uninfected", "SCAF2962_2_HK", "SCAF2963_3_Live", "SCAF2965_5_Live"]),
+    input:
+        # expand("output/INVADEseq_raw/{patient}-{sample}.gex.filtered_matrix.genus.csv", patient="P1", sample="SCAF2963_3_Live"),
+        expand("output/INVADEseq_raw/{patient}-{sample}.gex.filtered_matrix.genus.csv", patient="P1", sample=["SCAF2961_1_Uninfected", "SCAF2962_2_HK", "SCAF2963_3_Live", "SCAF2965_5_Live"]),
 
 ### rules to run PathSeq and get per-cell microbial read abundances ###
 rule PathSeqPipelineSpark:
@@ -21,7 +23,7 @@ rule PathSeqPipelineSpark:
     benchmark:
         "benchmarks/{patient}-{sample}.PathSeqPipelineSpark_host_filter_single.txt"
     run:
-    shell(
+        shell(
             "ml GATK/4.1.8.1-GCCcore-9.3.0-Java-1.8 && "
             "gatk PathSeqPipelineSpark "
             "--filter-duplicates false "
@@ -29,18 +31,17 @@ rule PathSeqPipelineSpark:
             "--input '{input.bam_file}' "
             "--is-host-aligned false "
             "--min-clipped-read-length 60 "
-            "--filter-bwa-image /lscratch/$SLURM_JOBID/{input.host_bwa_image} "
-            "--kmer-file /lscratch/$SLURM_JOBID/{input.host_hss_file} "
-            "--microbe-bwa-image /lscratch/$SLURM_JOBID/{input.microbe_bwa_image} "
-            "--microbe-dict /lscratch/$SLURM_JOBID/{input.microbe_dict_file} "
-            "--taxonomy-file /lscratch/$SLURM_JOBID/{input.taxonomy_db} "
+            "--filter-bwa-image {input.host_bwa_image} "
+            "--kmer-file {input.host_hss_file} "
+            "--microbe-bwa-image {input.microbe_bwa_image} "
+            "--microbe-dict {input.microbe_dict_file} "
+            "--taxonomy-file {input.taxonomy_db} "
             "--output '{output.pathseq_bam}' "
             "--scores-output '{output.pathseq_output}' "
             "--filter-metrics '{output.filter_metrics}' "
             "--score-metrics '{output.score_metrics}' "
             '--java-options "-Xmx96g -Xms96G -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=2" '
             '--spark-master local[8] '
-            + config["params"]["PathSeq"]
         )
 
 
