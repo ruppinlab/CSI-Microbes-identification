@@ -203,3 +203,12 @@ rule taxa_counts_5p:
     shell:
         "Rscript ../../SAHMI/functions/taxa_counts.r --sample_name {wildcards.sample} --fa1 {input.fa1} --fa2 {input.fa2} "
         "--taxa {input.taxa} --kraken_report {input.rep} --mpa_report {input.mpa} --out_path {params} --cb_len 16 --umi_len 10 "
+
+# note - we don't use this because it eliminates every genera and its not appropriate but keeping it here in case we get questions about it
+rule sample_level_denoising:
+    conda:
+        "../envs/SAHMI-env.yaml"
+    input:
+        expand("output/kraken2/{patient}/{sample}.kraken.report.txt", patient="P1", sample=["SCAF2961_1_Uninfected", "SCAF2962_2_HK", "SCAF2963_3_Live", "SCAF2965_5_Live"])
+    shell:
+        "Rscript src/sample_denoising.R"
