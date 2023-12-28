@@ -9,7 +9,7 @@ import pandas as pd
 
 # Directories
 #RAW_DIR = "raw"
-DATA_DIR = "../data"
+DATA_DIR = "../build-Kraken2-microbe-files/data"
 
 # other downloaded files
 #REFSEQ_CATALOG = join(RAW_DIR, "RefSeq-{release}.catalog.gz")
@@ -78,21 +78,24 @@ rule all:
 #         "-O '{output}'"
 
 rule create_fasta_dict:
+    conda:
+        "../envs/picard-env.yaml"
     input:
         FASTA_FILE
     output:
         FASTA_DICT_FILE
     shell:
-        "module load picard && java -jar $PICARDJARPATH/picard.jar "
-        "CreateSequenceDictionary R= '{input}' O= '{output}'"
+        "picard CreateSequenceDictionary R= '{input}' O= '{output}'"
 
 rule create_fasta_index_file:
+    conda:
+        "../pathogen-discovery-rules/envs/samtools-env.yaml"
     input:
         FASTA_FILE
     output:
         FASTA_IDX_FILE
     shell:
-        "module load samtools && samtools faidx {input}"
+        "samtools faidx {input}"
 
 rule build_BWA_image:
     input:
@@ -100,5 +103,6 @@ rule build_BWA_image:
     output:
         BWA_IMAGE_INDEX
     shell:
-        "module load GATK/4.1.8.1 && "
+        # "module load GATK/4.1.8.1 && "
+        "ml GATK/4.1.8.1-GCCcore-9.3.0-Java-1.8 && "
         "gatk BwaMemIndexImageCreator -I {input} -O {output}"
