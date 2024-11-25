@@ -1,6 +1,6 @@
 # CSI-Microbes Identification
 
-This repository contains part of the workflows for reproducing the results from the bioRxiv paper [CSI-Microbes: Identifying cell-type specific intracellular microbes from single-cell RNA-seq data](https://www.biorxiv.org/content/10.1101/2020.05.14.096230v2) by Welles Robinson, Fiorella Schischlik, E. Michael Gertz, Joo Sang Lee, Kaiyuan Zhu, S. Cenk Sahinalp, Rob Patro, Mark D.M. Leiserson, Alejandro A. Schäffer, and Eytan Ruppin. This repository contains the workflows to identify microbial reads from 10x and Smart-seq2 scRNA-seq datasets. These microbial reads can then be analyzed using the [CSI-Microbes-analysis repository](https://github.com/ruppinlab/CSI-Microbes-analysis). The code in this repository was written by Welles Robinson and alpha-tested by Alejandro Schaffer.
+This repository contains part of the workflows for reproducing the results from the bioRxiv paper [scRNA-seq analysis of colon and esophageal tumors uncovers abundant microbial reads in myeloid cells undergoing proinflammatory transcriptional alterations](https://www.biorxiv.org/content/10.1101/2020.05.14.096230v3) by Welles Robinson, Josh Stone, Fiorella Schischlik, Billel Gasmi, Michael Kelly, Charlie Seibert, Kimia Dadkhah, E. Michael Gertz, Joo Sang Lee, Kaiyuan Zhu, Lichun Ma, Xin Wang, S. Cenk Sahinalp, Rob Patro, Mark D.M. Leiserson, Curtis Harris, Alejandro A. Schäffer, and Eytan Ruppin. This repository contains the workflows to identify microbial reads from 10x and Smart-seq2 scRNA-seq datasets. These microbial reads can then be analyzed using the [CSI-Microbes-analysis repository](https://github.com/ruppinlab/CSI-Microbes-analysis). The code in this repository was written by Welles Robinson and alpha-tested by Alejandro Schaffer.
 
 ## Requirements
 
@@ -147,7 +147,75 @@ diff -r output/PathSeq/ expected_output/PathSeq/
 which should yield a list of files that exist only in `output/PathSeq/` but no differences between the files that exist in both directories.
 
 
-### Reproducing results in the manuscript
+### Comparing CSI-Microbes, INVADE-seq and SAHMI on Robinson2023-10x
+
+As part of the manuscript, we compare CSI-Microbes with two alternative approaches for identifying microbial reads from scRNA-seq (SAHMI<sup>[REF](#Ghaddar2022)</sup> and INVADE-seq<sup>[REF](#GaleanoNino2022)</sup>). SAHMI, CSI-Microbes and INVADE-seq all download the same Robinson2023-10x FASTQ files from SRA so you should run one tool first (which will download the files) and then after the files have been downloaded, run the remaining tools (which will use the already downloaded files).
+
+#### Running SAHMI on Robinson2023-10x
+
+[SAHMI](https://github.com/sjdlabgroup/SAHMI) involves running Kraken2Uniq first. To build the required input files for Kraken2Uniq, you need to navigate to the directory `build-Kraken2-microbe-files` and following the below steps (which require singularity to be installed). 
+
+```
+cd build-Kraken2-microbe-files
+mkdir data
+cp ../data/microbev1.fa data/microbev1.fa
+./scripts/run-snakemake.sh
+```
+
+This should create a directory named `microbev1`, which contains all the Kraken2Uniq files. You'll need to copy the directory containing the Kraken2Uniq files to the Robinson2023-10x directory.
+
+```
+cd Robinson2023-10x
+cp -r ../build-Kraken2-microbe-files/microbev1 microbev1
+```
+
+Next, you need to download our fork of the SAHMI codebase, which includes small changes to the code to get it running with our database (I suggest to do this in the same directory where the CSI-Microbes-identification codebase was cloned; otherwise you'll need to change any references to SAHMI within Robinson2023-10x/run-SAHMI.smk). 
+
+```
+git clone git@github.com:ruppinlab/SAHMI.git
+```
+
+Finally, you need to navigate to Robinson2023-10x and run SAHMI using the below commands
+
+```
+cd Robinson2023-10x
+./scripts/run-SAHMI.sh
+```
+
+#### Running INVADE-seq on Robinson2023-10x
+
+Similar to CSI-Microbes, INVADE-seq uses PathSeq and expects the PathSeq dependencies to exist (see above for how to download/build them). Next, you need to download the INVADE-seq GitHub repo (I suggest to do this in the same directory where the CSI-Microbes-identification codebase was cloned; otherwise you'll need to change any references to INVADE-seq within Robinson2023-10x/run-INVADE-seq.smk).
+
+```
+git clone git@github.com:FredHutch/Galeano-Nino-Bullman-Intratumoral-Microbiota_2022.git
+```
+
+Next, you can navigate to Robinson2023-10x and run INVADE-seq using the below commands
+
+```
+cd Robinson2023-10x
+./scripts/run-INVADE-seq.sh
+```
+
+#### Running CSI-Microbes on Robinson2023-10x
+
+CSI-Microbes uses PathSeq and expects the PathSeq dependencies to exist (see above for how to download/build them). Next, you can navigate to Robinson2023-10x and run CSI-Microbes using the below commands
+
+```
+cd Robinson2023-10x
+./scripts/run-CSI-Microbes.sh
+```
+
+#### Running CSI-Microbes on Robinson2023-plexWell
+
+CSI-Microbes uses PathSeq and expects the PathSeq dependencies to exist (see above for how to download/build them). Next, you can navigate to Robinson2023-SS2 and run CSI-Microbes using the below commands
+
+```
+cd Robinson2023-SS2
+./scripts/run-snakemake.sh
+```
+
+### Reproducing other results in the manuscript
 
 #### Reproducing results from Ben-Moshe2019 10x dataset
 
@@ -214,15 +282,6 @@ To run CSI-Microbes-identification using CAMMiQ on Aulicino2018, run the below c
 
 The key output file from this analysis is `output/CAMMiQ/read_cnts_genus.txt`, which is a table where the rows are NCBI tax ids and the rows are cells.
 
-#### Reproducing results from Paulson2018
-
-In our paper, we analyze a 10x dataset generated by `Paulson2018`<sup>[REF](#Paulson2018)</sup>, which performed 10x scRNA-seq on two Merkel cell carcinoma tumors.
-
-To reproduce our analysis using CSI-Microbes-identification with PathSeq on Paulson2018, run the below command.
-
-```
-./scripts/run-Paulson2018-PathSeq.sh
-```
 
 #### Reproducing results from Pelka2021
 
@@ -234,15 +293,6 @@ To reproduce our analysis using CSI-Microbes-identification with PathSeq on Pelk
 ./scripts/run-Pelka2021-PathSeq.sh
 ```
 
-#### Reproducing results from Robinson2023
-
-In our paper, we analyze a 10x dataset generated by us, where we performed 10x scRNA-seq and plexWell on multiple cell-lines with different microbial exposure. The raw FASTQ files are being uploaded to GEO/SRA.
-
-To reproduce our analysis using CSI-Microbes-identification with PathSeq on the 10x dataset from Robinson2023, run the below command (once the raw FASTQ files have been obtained)
-
-```
-./scripts/run-Robinson2023-10x-PathSeq.sh
-```
 
 #### Reproducing results from Zhang2021
 
@@ -276,7 +326,7 @@ For a 10x dataset, you will also need to include
 Example2023/
 -   data/
   -   samples.tsv - must contain columns named patient, sample and lane (column order is irrelevant and additional columns may be included)
-  -   units.tsv - must contain columns named patient, sample and barcode (column order is irrelevant and additional columns may be included); the barcode must match the "CB" tag from the BAM outputted by CellRanger; usually the cell-barcode and cell-type annotations are published by the original authors (when they are not, I have successfully requested them via email)
+  -   units.tsv - must contain columns named patient, sample and barcode (column order is irrelevant and additional columns may be included); the barcode must match the "CB" tag from the BAM outputted by CellRanger (check to see whether you need to include the -1 at the end); usually the cell-barcode and cell-type annotations are published by the original authors (when they are not, I have successfully requested them via email)
 ```
 
 For a Smart-seq2 dataset, you will need to include the same files as above but with slightly different specifications
@@ -401,34 +451,6 @@ Currently, the example 10x analyses use an HG38 genome that exists on biowulf. T
 
 The expected output files from CSI-Microbes-identification are pathseq.txt files, which are output in `output/PathSeq`. For example, the pathseq file for cell barcode TTTCCTCTCCACTGGG-1 from sample GSM3454529 (exposed to _Salmonella_) is located at `output/PathSeq/Pt0-GSM3454529-TTTCCTCTCCACTGGG-1/pathseq.txt`. These output files are used as input to [CSI-Microbes-analysis](https://github.com/ruppinlab/CSI-Microbes-analysis), which computes the differential abundance of microbes across cell-types.
 
-<!-- ## Aulicino2018
-
-There are two key sets of output files generated by this pipeline for Aulicino2018. The first set of files are the read count files resulting from directly mapping the unaligned reads (the reads that do not map to the human genome) against the _Salmonella_ strain genome used for infection (_LT2_ or _D23580_) using SRPRISM.
-
-The second set of files are the read counts files resulting from running PathSeq with a large database of microbial genomes on the unaligned reads (the reads that do not map to the human genome).
-
-
-## Ben-Moshe2019
-
-[Ben-Moshe2019](https://www.nature.com/articles/s41467-019-11257-y) performed 10x 3' v2 scRNA-seq (read length=58bp) on ~3,500 immune cells exposed to _Salmonella SL1344_ strain and ~3,500 control cells.
-
-There are two key sets of output files generated by this pipeline for Ben-Moshe2019. The first set of files are the read count files resulting from directly mapping the unaligned reads (the reads that do not map to the human genome) against the _Salmonella SL1344_ strain genome used for infection.
-
-The second set of files are the read counts files resulting from running PathSeq with a large database of microbial genomes on the unaligned reads (the reads that do not map to the human genome).
-
-Currently, the pipeline is set-up to generate the second set of files. To generate these files, from the top-level directory (CSI-Microbes-analysis), you should run the below command, which uses snakemake to submit the necessary jobs to the Biowulf cluster
-
-```
-./scripts/run-Ben-Moshe2019.sh
-```
-
-## Lee2020
-
-[Lee2020](https://www.nature.com/articles/s41588-020-0636-z) performed 10x 3' v2 scRNA-seq (read length=98 bp) on ~90,000 cells from patients with colorectal carcinomas (although we only analyze the 6 patients where raw reads are available).
-
-## Paulson2018
-
-[Paulson2018](https://www.nature.com/articles/s41467-018-06300-3) performed scRNA-seq (10x 3' scRNA-seq for patient 2586-4 (read length=98bp) and 5' scRNA-seq for patient 9245-3 (read length=91bp)) on two patients with Merkel cell carcinoma. -->
 
 ### How to file a problem report?
 
@@ -479,7 +501,9 @@ This repository processes data from the following publications.
 
 <a id="BenMoshe2019"></a> Bossel Ben-Moshe, N. et al. Predicting bacterial infection outcomes using single cell RNA-sequencing analysis of human immune cells. Nat. Commun. 10, 3266 (2019).
 
-<a id="Paulson2018"></a> Paulson, K. G. et al. Acquired cancer resistance to combination immunotherapy from transcriptional loss of class I HLA. Nat. Commun. 9, (2018).
+<a id="GaleanoNino2022"></a> Galeano Niño, J.L., Wu, H., LaCourse, K.D. et al. Effect of the intratumoral microbiota on spatial and cellular heterogeneity in cancer. Nature 611, 810–817 (2022).
+
+<a id="Ghaddar2022"></a> Ghaddar, B., et al. Tumor microbiome links cellular programs and immunity in pancreatic cancer. Cancer Cell Volume 40, Issue 10 (2022).
 
 <a id="Pelka2021"></a> Pelka, K. et al. Spatially organized multicellular immune hubs in human colorectal cancer. Cell, (2021).
 
